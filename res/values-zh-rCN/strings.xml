@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="hello">这里用中文</string>
+	<string name="app_name">cmwrap</string>
+	<string name="serviceTagUp">启用CMWAP穿越</string>
+	<string name="serviceTagDown">禁用CMWAP穿越</string>
+	<string name="buttonEnable">启 用</string>
+	<string name="buttonDisable">禁 用</string>
+	<string name="proxyServer">10.0.0.172</string>
+	<string name="proxyPort">80</string>
+	<string name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward</string>
+<string name="CMDipForwardDisable">echo 0 &gt;  /proc/sys/net/ipv4/ip_forward</string>
+<string name="CMDiptablesEnable">iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.172:80</string>
+<string name="CMDiptablesDisable">iptables -t nat -X</string>
+<string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。</string>
+</resources>

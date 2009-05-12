@@ -1,0 +1,402 @@
+使用Socket连接穿越CMWAP代理
+
+作者：陈跃峰
+
+出自：http://blog.csdn.net/mailbomb
+
+                                          版权所有，未经允许严禁转载！
+
+ 
+
+       在J2ME网络程序开发过程中，为了节约用户支付的网络费用，很多J2ME手机网络程序都支持CMWAP代理。
+
+       但是由于CMWAP只是中国移动建立的一个HTTP网络服务器，所以在使用HTTP网络编程中，可以很方便的使用。但是在使用socket方法操作时，这个方式好象就行不通了。
+
+       下面就介绍一下如何使用socket连接来穿越CMWAP代理。其实由于CMWAP是一个标准的HTTP代理服务器，也就是说可以处理任何的基于HTTP协议的转发请求，那么就可以使用socket方式编程时使用HTTP协议即可了。
+
+       实现原理：使用socket和CMWAP建立连接，然后将网络协议设计成HTTP协议的格式，这样CMWAP就可以继续实现请求的转发了，这就是实现的基本原理。
+
+       当然，由于socket连接方式可以实现持续连接，这里的持续连接只存在于手机和CMWAP之间，但是可以只建立一次连接就实现多次的发送，还是基于请求-响应结构实现的，所以可以说实现了一部分socket的功能，而服务器端可以采用已有的HTTP服务器，从而降低开发成本和时间。
+
+       该技术的优势主要有以下几点：
+
+u       使用CMWAP进行数据传输，可以为用户节约流量费用。
+
+u       由于手机和CMWAP之间建立的是持续连接，所以可以提高网络响应速度。
+
+u       使用该方式，可以实现服务器端兼容HTTP连接和socket连接，也就是使用一组服务器，降低开发成本和减少开发时间。
+
+       实现网络操作的代码如下所示：
+
+package cmwaptest;
+
+import java.io.*;
+
+import javax.microedition.io.*;
+
+/**
+
+ * 测试使用socket连接穿越CMWAP服务器
+
+ */
+
+public class CmwapThread  extends Thread{
+
+    CmwapForm cf;
+
+    public CmwapThread(CmwapForm cf){
+
+        this.cf = cf;
+
+    }
+
+ 
+
+    public void run(){
+
+        try{
+
+                //测试
+
+            cf.displayInfo("开始建立连接！");
+
+            //使用代理连接
+
+            SocketConnection sc = (SocketConnection)Connector.open("socket://10.0.0.172:80");
+
+ 
+
+            //测试
+
+            cf.displayInfo("连接建立完毕！");
+
+            //发送数据
+
+            OutputStream os = sc.openOutputStream();
+
+            String requestLine = "get http://www.freewebs.com/cqucyf/a.htm http/1.0\r\n";
+
+            String header = "accept:*/*\r\n\r\n";
+
+ 
+
+            os.write(requestLine.getBytes());
+
+            os.write(header.getBytes());
+
+            os.flush();
+
+ 
+
+            //测试
+
+            cf.displayInfo("数据发送完毕！");
+
+ 
+
+            //接收数据
+
+            InputStream is = sc.openInputStream();
+
+            byte[] data = new byte[10240];
+
+            int num = is.read(data);
+
+            //测试
+
+            cf.displayInfo("数据接受完毕！" + "数据长度为："+ num);
+
+            //处理数据
+
+            cf.doStr(data,num);
+
+ 
+
+            sc.close();
+
+        }catch(Exception e){
+
+            //e.printStackTrace();
+
+            cf.doError(e.toString());
+
+        }
+
+    }
+
+}
+
+=============================
+在J2ME中使用Socket通过cmwap接入点访问安全HTTPS
+发表于 2009年03月30日 9:41 分类: 工作日志 统计: 1评/15阅 (收藏)
+
+本文章由杨芹勍原创，如需转载请注明作者及出处，否则保留追究法律责任的权利！
+
+这个问题是在我升级J2ME版XHTML浏览器的时候被引入的，我尝试了很多方法、发了很多帖子、问了很多人都没有找到可行的解决方案。最后我在PC上通用OTA连接方式使用WireShark拦截数据包才解决了问题，接下来我和大家分享一下解决问题的过程。
+
+所涉及的知识点：
+
+1、如何使用J2ME连接cmwap代理
+
+2、基于安全套接字的HTTPS
+ 
+尝试方法一：
+
+新建一个Midlet应用程序，在StartApp方法中加入如下代码：
+
+1 HttpConnection conn = null;
+2 InputStream is = null;
+3 try {
+4 // url: https://ebs.95559.com.cn/corporbank/es_logon.jsp
+5 conn = (HttpConnection) Connector.open("http://10.0.0.172:80/corporbank/es_logon.jsp", Connector.READ, true);
+6 String host = "ebs.95559.com.cn";
+7 conn.setRequestProperty("x-online-host", host);
+8 conn.setRequestMethod(HttpConnection.GET);
+9
+10 int code = conn.getResponseCode();
+11 System.out.println("Response Code: " + code);
+12
+13 is = conn.openDataInputStream();
+14
+15 System.out.println("Response Stream:");
+16 byte[] buf = new byte[128];
+17 while (true) {
+18 int availSize = is.read(buf, 0, buf.length);
+19 if (availSize == -1) {
+20 break;
+21 }
+22 System.out.println(new String(buf, 0, availSize));
+23 }
+24 } catch (Exception ex) {
+25 ex.printStackTrace();
+26 } finally {
+27 if (is != null) {
+28 try {
+29 is.close();
+30 } catch (IOException ex) {
+31 ex.printStackTrace();
+32 }
+33 }
+34
+35 if (conn != null) {
+36 try {
+37 conn.close();
+38 } catch (IOException ex) {
+39 ex.printStackTrace();
+40 }
+41 }
+42 }
+43
+
+此代码的作用是：使用cmwap代理，请求我们制定的页面，并在控制台中输出返回的状态码及内容。很显然，这是一种普通的cmwap连接方式，并没有考虑https因素的加入，输出的结果也在意料之内：
+
+ 
+
+Response Code: 502
+Response Stream:
+<?xml version="1.0"?>
+<!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN" "http://www.wapforum.org/DTD/wml_1.1.xml">
+<wml><card>
+<p><do type="prev" name="Back" label="Back"><prev/></do>Connection to host failed. Check your settings and try again. If the pro
+blem persists contact your operator.</p></card></wml>
+
+ 
+
+原因分析：我们要请求的是安全HTTP，端口443，而在我们的代码中并没有体现出我们要连接HTTPS的意图，我们只是告诉了cmwap代理我们要连接地址“ebs.95559.com.cn/corporbank/es_logon.jsp”，而并没有告诉cmwap代理我们所要访问的地址是基于HTTPS的，所以cmwap代理会按照地址“http://ebs.95559.com.cn/corporbank/es_logon.jsp”去连接，恰好这个地址是不支持HTTP:80的，cmwap代理返回了网关错误。
+ 
+尝试方法二：
+
+针对以上设想，我们将代码修改一下，想方设法让cmwap代理知道我们要访问的目标地址属于HTTPS:443。
+
+修改程序的第6行，使其变成：
+
+String host = "ebs.95559.com.cn:443";
+
+运行，控制台还是输出了以下错误：
+
+ 
+
+Response Code: 500
+Response Stream:
+<?xml version="1.0"?>
+<!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN" "http://www.wapforum.org/DTD/wml_1.1.xml">
+<wml><card>
+<p><do type="prev" name="Back" label="Back"><prev/></do>Your request for a service could not be fulfilled. Please try again or c
+ontact your operator if the problem persists. </p></card></wml>
+
+ 
+
+原因分析：不详。
+ 
+尝试方法三：
+
+以上两种方法都行不通，有没有可能cmwap代理服务器开通了SSL端口，来让应用程序通过此端口来访问HTTPS呢？
+
+将代码第5行修改如下：
+
+conn = (HttpConnection) Connector.open("https://10.0.0.172:443/corporbank/es_logon.jsp", Connector.READ, true);
+
+模拟器长时间没有响应。
+
+原因分析：一般手机自带的浏览器都支持访问HTTPS，而手机设置的cmwap代理地址都是10.0.0.172:80。所以可以肯定的是手机是可以通过10.0.0.172:80这个代理访问HTTPS而并不是10.0.0.172:443。上网查了资料，证明移动针对cmwap代理只开通了80 端口，而并没有开通443端口。
+ 
+尝试方法四（成功）：
+
+经过了以上三次失败，我不得不好好静下心来想想解决方法。我想到了使用OTA的方式，让PC连接到GPRS上进行调试。首先使用数据线连接电脑和手机，将电脑的本地连接禁用，把手机当猫用，创建基于手机拨号的网络连接，输入号码“*99#”，拨号，连接。给浏览器设置好代理 10.0.0.172:80后，能够正常浏览HTTPS地址。我忽然想到，既然HttpConnection不能够正常通过cmwap连接HTTPS，那我使用Socket模拟HTTP请求能成功吗？带着这个疑问，我开始进行准备：
+必备工具：
+
+Wireshark或HttpWatch或Openware Simulator
+
+最开始我是使用Firefox+Wireshark拦截80端口的包的，但是浏览器向服务器发出SSL Hello后传输的内容都会被加密，Wireshark所看到的都是密文，相当的不方便。如图：
+
+image
+
+后来我发现，Openware Simulator提供浏览器，且本身就提供了类似于Wireshark的功能，而且可以截获到HTTP层所传输的内容，能够很清楚的看见客户端与服务器端来往的过程。所以，我们以Openware Simulator的截图作为说明。Openware Simulator下载地址：这里（免费，需要邮件注册）
+
+还可以使用HttpWatch 6.0，新版HttpWatch已经可以作为Firefox的扩展嵌入。不过这个要收大洋，还是Openware Simulator来得直接一些。
+实现方法：
+
+打开Openwave V7 Simulator，在模拟器地址栏输入网址，截图如下：
+
+image
+
+通过右边的控制台输出窗口，我们可以很清楚的看到Openware Simulator通过向cmwap代理所发出的请求格式。并且，通过Socket连接，是不需要添加“x-online-host”请求头的。
+
+既然HttpConnection行不通，我们自己就使用Socket实现Http连接，向cmwap代理发出请求。
+
+此处要先说明以下两点：
+
+1、J2ME中的SocketConnection是MIDP 2.0的可选包，并不是每个手机都提供Socket的支持；
+
+2、我们必须使用Socket连接cmwap代理10.0.0.172:80，而MIDP 2.0对Socket访问80端口加了限制，在真机上使用必须得使用证书签署生成的JAD，否则会抛出安全异常。
+
+在此我不按照Openware Simulator控制台中显示的连接顺序（先Connect后Get）进行连接，使用Openware Simulator只是证明我想法的可行性，我将直接使用Get+完整URL的方式进行代码的编写。
+
+新建一个Midp应用程序，在startApp中加入以下代码：
+
+ 
+
+1 SocketConnection conn = null;
+2 OutputStream os = null;
+3 InputStream is = null;
+4 try {
+5 // url: https://ebs.95559.com.cn/corporbank/es_logon.jsp
+6 conn = (SocketConnection) Connector.open("socket://10.0.0.172:80", Connector.READ_WRITE, true);
+7 conn.setSocketOption(SocketConnection.DELAY, 0);
+8 conn.setSocketOption(SocketConnection.KEEPALIVE, 300);
+9
+10 // 发送和回复的请求
+11 os = conn.openDataOutputStream();
+12 is = conn.openDataInputStream();
+13
+14 // 在此我们使用HTTP 1.0，HTTP 1.1自己还需要处理chunk，比较麻烦
+15 String reqStr =
+16 "GET https://ebs.95559.com.cn/corporbank/es_logon.jsp HTTP/1.0\r\n" +
+17 "Host: ebs.95559.com.cn:443\r\n" +
+18 "User-Agent: FelixBrowser\r\n" +
+19 "Accept-Charset: utf-8;\r\n" +
+20 "Connection: close;\r\n" +
+21 "Accept-Language: zh-cn\r\n\r\n";
+22
+23 os.write(reqStr.getBytes());
+24 os.flush();
+25
+26 System.out.println("Response Stream:");
+27 byte[] buf = new byte[128];
+28 while (true) {
+29 int availSize = is.read(buf, 0, buf.length);
+30 if (availSize == -1) {
+31 break;
+32 }
+33 System.out.println(new String(buf, 0, availSize));
+34 }
+35 } catch (Exception ex) {
+36 ex.printStackTrace();
+37 } finally {
+38 if (is != null) {
+39 try {
+40 is.close();
+41 } catch (IOException ex) {
+42 ex.printStackTrace();
+43 }
+44 }
+45
+46 if (os != null) {
+47 try {
+48 os.close();
+49 } catch (IOException ex) {
+50 ex.printStackTrace();
+51 }
+52 }
+53
+54 if (conn != null) {
+55 try {
+56 conn.close();
+57 } catch (IOException ex) {
+58 ex.printStackTrace();
+59 }
+60 }
+61 }
+62
+
+ 
+
+输出结果：
+
+image
+
+OK，这就是我们想要的结果。
+ 
+封装并重构
+
+平时我们用习惯了HttpConnection，对于使用SocketConnection访问HTTP来说，太多的设置和属性拼凑给编码带来了不少麻烦。在完善J2ME-XHTML浏览器时，我将Socket访问HTTP这一块代码封装成一个类SocketHttpConnection，此类继承自HttpConnection，实现了接口方法。
+
+并且，我还构建了一个工厂类，可以通过枚举的方式创建SocketHttpConnection和纯HttpConnection，有工厂创建的类还可以制定是以代理的方式连接还是直连。在此，我将代码贡献出来给大家。下载地址：这里。
+
+几个类之间的关系如下：
+
+无标题
+
+使用方法很简单：
+
+1 // 请求地址
+2 String url = "https://ebs.95559.com.cn/corporbank/es_logon.jsp";
+3
+4 // 连接方式：SocketConnection/HttpConnection
+5 byte connType = HttpConnectionFactory.CONNTYPE_SOCKET_HTTP;
+6
+7 // 是否使用代理及代理地址、端口
+8 boolean isUseProxy = true;
+9 String proxyHost = "10.0.0.172";
+10 int proxyPort = 80;
+11
+12 HttpConnection conn = null;
+13 InputStream is = null;
+14 try {
+15 // 调用工厂创建
+16 conn = HttpConnectionFactory.getConnection(url, connType, isUseProxy, proxyHost, proxyPort);
+17
+18 // 像原生HttpConnection一样使用
+19 int code = conn.getResponseCode();
+20 System.out.println("Response Code: " + code);
+21
+22 is = conn.openDataInputStream();
+23
+24 System.out.println("Response Stream:");
+25 byte[] buf = new byte[128];
+26 while (true) {
+27 int availSize = is.read(buf, 0, buf.length);
+28 System.out.println(new String(buf, 0, availSize));
+29
+30 if (availSize < buf.length) {
+31 break;
+32 }
+33 }
+34 } catch (IOException ex) {
+35 ex.printStackTrace();
+36 }
+37
+
+ ==========================
+ 
+ http://www.forum.nokia.com/search/?k=cmwap&s=x&l=20&ea=1&i=20
