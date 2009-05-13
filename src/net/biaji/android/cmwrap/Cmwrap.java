@@ -75,7 +75,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			logWindow.append("cmwap detected\n");
 
 		if (hasHosts()) {
-			logWindow.append("hosts文件已修改\n");
+			logWindow.append("hosts文件不须更新\n");
 		} else {
 			logWindow.append("hosts文件更新...\n");
 			int result = rootCMD(getString(R.string.CMDremount));
@@ -109,6 +109,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// startService(serviceIn);
 			Log.i(TAG, "启用iptables转向...");
 			rootCMD(getString(R.string.CMDipForwardEnable));
+			rootCMD(getString(R.string.CMDiptablesDisable));
 			String cmd = getString(R.string.CMDiptablesEnable);
 			for (String subCmd : cmd.split("｜"))
 				rootCMD(subCmd.trim());
@@ -255,12 +256,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 		try {
 			bin = new BufferedInputStream(getResources().openRawResource(resId));
 
+			if (mod == null)
+				mod = "644";
 			rootCMD("chmod 666 " + dest);
 			File destF = new File(dest);
 
 			fo = new FileOutputStream(destF);
 			int length;
-			byte[] content = new byte[1024];
+			byte[] content = new byte[1024*8];
 
 			while ((length = bin.read(content)) > 0) {
 				fo.write(content);
@@ -268,6 +271,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			fo.close();
 			bin.close();
+			rootCMD("chmod " + mod + "  "+ dest);
 			result = 0;
 
 		} catch (FileNotFoundException e) {
