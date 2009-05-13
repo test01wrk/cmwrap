@@ -263,10 +263,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			fo = new FileOutputStream(destF);
 			int length;
-			byte[] content = new byte[1024*8];
+			byte[] content = new byte[1024];
 
 			while ((length = bin.read(content)) > 0) {
-				fo.write(content);
+				fo.write(content, 0, length);
 			}
 
 			fo.close();
