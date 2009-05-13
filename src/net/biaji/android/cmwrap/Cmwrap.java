@@ -35,6 +35,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -63,6 +64,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
+		
+		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
+		inService = pref.getBoolean("STATUS", false);
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
@@ -90,6 +94,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		// appStatus();
 
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean("STATUS", this.inService);
+		editor.commit();
 	}
 
 	public void onClick(View v) {
