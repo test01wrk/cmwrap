@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import android.R;
@@ -52,12 +53,13 @@ public class WapChannel extends Thread {
 	}
 
 	private void buildProxy() {
+		DataInputStream din = null;
+		DataOutputStream dout = null;
+
 		try {
 			innerSocket = new Socket(proxyHost, proxyPort);
-			DataInputStream din = new DataInputStream(innerSocket
-					.getInputStream());
-			DataOutputStream dout = new DataOutputStream(innerSocket
-					.getOutputStream());
+			din = new DataInputStream(innerSocket.getInputStream());
+			dout = new DataOutputStream(innerSocket.getOutputStream());
 
 			String connectStr = "CONNECT " + target
 					+ " HTTP/1.1\r\nUser-agent: " + this.UA + "\r\n\r\n";
@@ -71,20 +73,86 @@ public class WapChannel extends Thread {
 			Log.d(TAG, result);
 			if (result.contains("200"))
 				isConnected = true;
+			din.close();
+			dout.close();
 		} catch (UnknownHostException e) {
 			Log.e(TAG, "无法获取代理服务器的IP地址", e);
 		} catch (IOException e) {
 			Log.e(TAG, "建立隧道失败", e);
+		} finally {
+			if (din != null) {
+				try {
+					din.close();
+				} catch (IOException e) {
+				}
+			}
+			if (dout != null) {
+				try {
+					dout.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
 	@Override
 	public void run() {
-
+		if (orgSocket != null && innerSocket != null && orgSocket.isConnected()
+				&& innerSocket.isConnected()) {
+			Pipe go = new Pipe(orgSocket, innerSocket);
+			go.start();
+			Pipe come = new Pipe(innerSocket, orgSocket);
+			come.start();
+		}
 	}
 
 	public boolean isConnected() {
 		return this.isConnected;
+	}
+
+	class Pipe extends Thread {
+		Socket in = null, out = null;
+
+		Pipe(Socket in, Socket out) {
+			this.in = in;
+			this.out = out;
+		}
+
+		@Override
+		public void run() {
+
+			int count = 0;
+			DataInputStream sin = null;
+			DataOutputStream dout = null;
+			try {
+
+				sin = new DataInputStream(in.getInputStream());
+
+				dout = new DataOutputStream(out.getOutputStream());
+
+				while (true) {
+
+					byte[] buff = new byte[in.getReceiveBufferSize()];
+
+					count = sin.read(buff);
+
+					if (count > 0) {
+						dout.write(buff, 0, count);
+					} else if (count < 0) {
+						break;
+					}
+
+				}
+				sin.close();
+				dout.close();
+			} catch (SocketException e) {
+				Log.e(TAG, "该死的Socket不老实了也", e);
+			} catch (IOException e) {
+				Log.e(TAG, "管道通讯失败", e);
+			} finally {
+
+			}
+		}
 	}
 
 }
