@@ -1,0 +1,640 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="index,follow" />
+    <meta name="creator" content="rfcmarkup version 1.74" />
+    <link rel="icon" href="/images/id.png" type="image/png" />
+    <link rel="shortcut icon" href="/images/id.png" type="image/png" />
+    <title>draft-luotonen-web-proxy-tunneling-01 - Tunneling TCP based protocols through Web proxy servers</title>
+    
+    <style type="text/css">
+	body {
+	    margin: 0px 8px;
+            font-size: 1em;
+	}
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	    font-weight: bold;
+            line-height: 0pt;
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+	    font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+	.pre {
+	    white-space: pre;
+	    font-family: monospace;
+	}
+	.header{
+	    font-weight: bold;
+	}
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        @media print {
+            body {
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 10.5pt;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+	@media screen {
+	    .grey, .grey a:link, .grey a:visited {
+		color: #777;
+	    }
+            .docinfo {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+	}
+    </style>
+
+    <script type="text/javascript"><!--
+    function addHeaderTags() {
+	var spans = document.getElementsByTagName("span");
+	for (var i=0; i < spans.length; i++) {
+	    var elem = spans[i];
+	    if (elem) {
+		var level = elem.getAttribute("class");
+                if (level == "h1" || level == "h2" || level == "h3" || level == "h4" || level == "h5" || level == "h6") {
+                    elem.innerHTML = "<"+level+">"+elem.innerHTML+"</"+level+">";		
+                }
+	    }
+	}
+    }
+    var legend_html = "Colour legend:<br />      <table>         <tr><td>Unknown:</td>          <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft:</td>            <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Informational:</td>    <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Experimental:</td>     <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Best Common Practice:</td><td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Proposed Standard:</td><td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft Standard:</td>   <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Historic:</td>         <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Obsolete:</td>         <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>     </table>";
+    function showElem(id) {
+        var elem = document.getElementById(id);
+        elem.innerHTML = eval(id+"_html");
+        elem.style.visibility='visible';
+    }
+    function hideElem(id) {
+        var elem = document.getElementById(id);
+        elem.style.visibility='hidden';        
+        elem.innerHTML = "";
+    }
+    // -->
+    </script>
+</head>
+<body onload="addHeaderTags()">
+   <div style="height: 13px;">
+      <div onmouseover="this.style.cursor='pointer';"
+         onclick="showElem('legend');"
+         onmouseout="hideElem('legend')"
+	 style="height: 6px; position: absolute;"
+         class="pre noprint docinfo bgred"
+         title="Click for colour legend." >                                                                        </div>
+      <div id="legend"
+           class="docinfo noprint pre legend"
+           style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; "
+           onmouseover="showElem('legend');"
+           onmouseout="hideElem('legend');">
+      </div>
+   </div>
+<span class="pre noprint docinfo top">[<a href="../html/" title="Document search and retrieval page">RFCs/IDs</a>] [<a href="http://tools.ietf.org/id/draft-luotonen-web-proxy-tunneling-01.txt" title="Plaintext version of this document">Plain</a>] [<a href="/rfcdiff?difftype=--hwdiff&amp;url2=http://tools.ietf.org/id/draft-luotonen-web-proxy-tunneling-01.txt" title="Inline diff (wdiff)">Diff1</a>] [<a href="/rfcdiff?url2=http://tools.ietf.org/id/draft-luotonen-web-proxy-tunneling-01.txt" title="Side-by-side diff">Diff2</a>] [<a href="/idnits?url=http://tools.ietf.org/id/draft-luotonen-web-proxy-tunneling-01.txt" title="Run an idnits check of this document">Nits</a>]                               </span><br />
+<span class="pre noprint docinfo">                                                                        </span><br />
+<span class="pre noprint docinfo">Versions: <a href="./draft-luotonen-web-proxy-tunneling-00">00</a> <a href="./draft-luotonen-web-proxy-tunneling-01">01</a>                                                         </span><br />
+<span class="pre noprint docinfo">                                                                        </span><br />
+<pre>
+INTERNET-DRAFT                                              Ari Luotonen
+Expires: February 1999               Netscape Communications Corporation
+&lt;<a href="./draft-luotonen-web-proxy-tunneling-01.txt">draft-luotonen-web-proxy-tunneling-01.txt</a>&gt;                  August 1998
+
+
+        <span class="h1">Tunneling TCP based protocols through Web proxy servers</span>
+
+
+Status of this Memo
+
+   This document is an Internet-Draft.  Internet-Drafts are working
+   documents of the Internet Engineering Task Force (IETF), its areas,
+   and its working groups.  Note that other groups may also distribute
+   working documents as Internet-Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as ``work in progress.''
+
+   To learn the current status of any Internet-Draft, please check the
+   ``1id-abstracts.txt'' listing contained in the Internet-Drafts Shadow
+   Directories on ftp.is.co.za (Africa), nic.nordu.net (Europe),
+   munnari.oz.au (Pacific Rim), ds.internic.net (US East Coast), or
+   ftp.isi.edu (US West Coast).
+
+   Currently, this draft is stable and only waiting for its referenced
+   documents to become RFC's, so this draft can become an RFC as well.
+
+
+Abstract
+
+   This document specifies a generic tunneling mechanism for TCP based
+   protocols through Web proxy servers.  This tunneling mechanism was
+   initially introduced for the SSL protocol [<a href="#ref-SSL" title='"The SSL Protocol"'>SSL</a>] to allow secure Web
+   traffic to pass through firewalls, but its utility is not limited to
+   SSL.  Earlier drafts of this specification were titled "Tunneling SSL
+   through Web Proxy Servers" &lt;<a href="./draft-luotonen-ssl-tunneling-XX.txt">draft-luotonen-ssl-tunneling-XX.txt</a>&gt;.
+   Implementations of this tunneling feature are commonly referred to as
+   "SSL tunneling", although, again, it can be used for tunneling any
+   TCP based protocol.
+
+   A wide variety of existing client and proxy server implementations
+   conform to this specification.  The purpose of this specification is
+   to describe the current practice, to propose some good practices for
+   implementing this specification, and to document the security
+   considerations that are involved with this protocol.
+
+
+
+
+<span class="grey">Luotonen                                                        [Page 1]</span>
+</pre><pre class='newpage'><a name="page-2" id="page-2" href="#page-2" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+Table of Contents
+
+     <a href="#section-1">1</a>.  Overview ................................................. <a href="#page-2">2</a>
+     <a href="#section-2">2</a>.  General Considerations ................................... <a href="#page-3">3</a>
+     <a href="#section-3">3</a>.  Functional Specification ................................. <a href="#page-3">3</a>
+     <a href="#section-3.1">3.1</a>.  Request ................................................ <a href="#page-3">3</a>
+     <a href="#section-3.2">3.2</a>.  Proxy Response ......................................... <a href="#page-4">4</a>
+     <a href="#section-3.2.1">3.2.1</a>.  Response Content-Type Field .......................... <a href="#page-5">5</a>
+     <a href="#section-3.3">3.3</a>.  Data Pipelining ........................................ <a href="#page-6">6</a>
+     <a href="#section-4">4</a>.  Extensibility ............................................ <a href="#page-7">7</a>
+     <a href="#section-5">5</a>.  Multiple Proxy Servers ................................... <a href="#page-7">7</a>
+     <a href="#section-6">6</a>.  Security Considerations .................................. <a href="#page-8">8</a>
+     <a href="#section-7">7</a>.  References ............................................... <a href="#page-8">8</a>
+     <a href="#section-8">8</a>.  Author's Address ......................................... <a href="#page-9">9</a>
+
+
+<span class="h2"><a name="section-1">1</a>. Overview</span>
+
+   The wide success of the SSL (Secure Sockets Layer) protocol made it
+   vital for Web proxy servers to be able to tunnel requests performed
+   over SSL.  The easiest, and perhaps the most elegant, way to
+   accomplish this is to extend the HTTP/1.x protocol [HTTP/1.0,
+   HTTP/1.1] in such a way that it will be able to intiate a tunnel
+   through the proxy server.
+
+   This document specifies the HTTP/1.x extension to implement the
+   generic TCP protocol tunneling on Web proxy servers.  This extension
+   may be used between clients and proxy servers, and between two
+   proxies (in the case of daisy-chained proxies -- proxies that contact
+   other proxies to perform requests).  This document focuses on the
+   differences and additions to HTTP/1.x; refer to the HTTP/1.x
+   specifications for a full specification of HTTP/1.x.
+
+   Note that the HTTPS protocol, which is just HTTP on top of SSL, could
+   alternatively be proxied in the same way that other protocols are
+   handled by the proxies: to have the proxy (instead of the client)
+   initiate the secure session with the remote HTTPS server, and then
+   perform the HTTPS transaction on the client's part.  The response
+   will be received and decrypted by the proxy, and sent to the client
+   over (insecure) HTTP.  This is the way FTP and Gopher get handled by
+   proxies.  However, this approach has several disadvantages and
+   complications:
+
+     * The connection between the client and the proxy is normal HTTP,
+       and hence, not secure.  This may, however, often be acceptable if
+       the clients are in a trusted subnetwork (behind a firewall).
+
+     * The proxy will need to have full SSL implementation incorporated
+
+
+
+<span class="grey">Luotonen                                                        [Page 2]</span>
+</pre><pre class='newpage'><a name="page-3" id="page-3" href="#page-3" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+       into it -- something this tunneling mechanism does not require.
+
+     * The client will not be able to perform SSL client authentication
+       (authentication based on X509 certificates) to the remote server,
+       as the proxy will be the authenticated party.  Future versions of
+       SSL may, however, provide such delegated authentication.
+
+   This specification defines a tunneling mechanism for Web proxy
+   servers.  This mechanism is compatible with HTTP/1.x protocol, which
+   is currently being used by Web proxies.
+
+   Note that this mechanism, if used for SSL tunneling, does not require
+   an implementation of SSL in the proxy.  The SSL session is
+   established between the client generating the request, and the
+   destination (secure) Web server; the proxy server in between is
+   merely tunneling the encrypted data, and does not take any other part
+   in the secure transaction.
+
+
+<span class="h2"><a name="section-2">2</a>. General Considerations with Respect to SSL Tunneling</span>
+
+   When tunneling SSL, the proxy must not have access to the data being
+   transferred in either direction, for the sake of security.  The proxy
+   merely knows the source and destination addresses, and possibly, if
+   the proxy supports user authentication, the name of the requesting
+   user.
+
+   In other words, there is a handshake between the client and the proxy
+   to establish the connection between the client and the remote server
+   through the proxy.  In order to make this extension be backward
+   compatible, the handshake must be in the same format as HTTP/1.x
+   requests, so that proxies without support for this feature can still
+   cleanly determine the request as impossible for them to service, and
+   give proper error responses (rather than e.g. get hung on the
+   connection).
+
+
+<span class="h2"><a name="section-3">3</a>. Functional Specification</span>
+
+
+
+<span class="h3"><a name="section-3.1">3.1</a>. Request</span>
+
+   The client connects to the proxy server, and uses the CONNECT method
+   to specify the hostname and the port number to connect to.  The
+   hostname and port number are separated by a colon, and both of them
+   must be specified.
+
+
+
+
+<span class="grey">Luotonen                                                        [Page 3]</span>
+</pre><pre class='newpage'><a name="page-4" id="page-4" href="#page-4" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+   The host:port part is followed by a space and a string specifying the
+   HTTP version number, e.g. HTTP/1.0, and the line terminator (CR LF
+   pair.  Note that some applications may use just a LF on its own, and
+   it is recommended that applications be tolerant of this behavior.
+   When this document refers to CR LF pair, in all cases should a LF on
+   its own be treated the same as a CR LF pair).
+
+   After that there is a series of zero or more of HTTP request header
+   lines, followed by an empty line.  Each of those header lines is also
+   terminated by the CR LF pair.  The empty line is simply another CR LF
+   pair.
+
+   After the empty line, if the handshake to establish the connection
+   was successful, the tunnelled (SSL or other) data transfer can begin.
+   Before the tunneling begins, the proxy will respond, as described in
+   the next section (<a href="#section-3.2">Section 3.2</a>).
+
+   Example of an SSL tunneling request to host home.netscape.com, to
+   HTTPS port (443):
+
+         CONNECT home.netscape.com:443 HTTP/1.0
+         User-agent: Mozilla/4.0
+
+         ...data to be tunnelled to the server...
+
+   Note that the "...data to be tunnelled to the server..." is not a
+   part of the request.  It is shown here only to make the point that
+   once the tunnel is established, the same connection is used for
+   transferring the data that is to be tunnelled.
+
+   The advantage of extending the HTTP/1.x protocol in this manner (a
+   new method) is that this protocol is freely extensible just like
+   HTTP/1.x is.  For example, the proxy authentication may be used just
+   like with any other request to the proxy:
+
+         CONNECT home.netscape.com:443 HTTP/1.0
+         User-agent: Mozilla/4.0
+         Proxy-authorization: basic dGVzdDp0ZXN0
+
+         ...data to be tunnelled to the server...
+
+
+<span class="h3"><a name="section-3.2">3.2</a>. Proxy Response</span>
+
+   After the empty line in the request, the client will wait for a
+   response from the proxy.  The proxy will evaluate the request, make
+   sure that it is valid, and that the user is authorized to request
+   such a connection.  If everything is in order, the proxy will make a
+
+
+
+<span class="grey">Luotonen                                                        [Page 4]</span>
+</pre><pre class='newpage'><a name="page-5" id="page-5" href="#page-5" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+   connection to the destination server, and, if successful, send a "200
+   Connection established" response to the client.  Again, the response
+   follows the HTTP/1.x protocol, so the response line starts with the
+   protocol version specifier, and the response line is followed by zero
+   or more response headers, followed by an empty line.  The line
+   separator is CR LF pair.
+
+   Example of a response:
+
+         HTTP/1.0 200 Connection established
+         Proxy-agent: Netscape-Proxy/1.1
+
+         ...data tunnelled from the server...
+
+   After the empty line, the proxy will start passing data from the
+   client connection to the remote server connection, and vice versa.
+   At any time, there may be data coming from either connection, and
+   that data must be forwarded to the other connection immediately.
+
+   Note that since the tunnelled protocol is opaque to the proxy server,
+   the proxy cannot make any assumptions about which connection the
+   first, or any subsequent, packets will arrive.  In other words, the
+   proxy server must be prepared to accept packets from either of the
+   connections at any time.  Otherwise, a deadlock may occur.
+
+   If at any point either one of the peers gets disconnected, any
+   outstanding data that came from that peer will be passed to the other
+   one, and after that also the other connection will be terminated by
+   the proxy.  If there is outstanding data to that peer undelivered,
+   that data will be discarded.
+
+
+   An example of a tunneling request/response in an interleaved
+   multicolumn format:
+
+     CLIENT -&gt; SERVER                        SERVER -&gt; CLIENT
+     --------------------------------------  -----------------------------------
+     CONNECT home.netscape.com:443 HTTP/1.0
+     User-agent: Mozilla/4.0
+     &lt;&lt;&lt; empty line &gt;&gt;&gt;
+                                             HTTP/1.0 200 Connection established
+                                             Proxy-agent: Netscape-Proxy/1.1
+                                             &lt;&lt;&lt; empty line &gt;&gt;&gt;
+                  &lt;&lt;&lt; data tunneling to both directions begins &gt;&gt;&gt;
+
+
+<span class="h4"><a name="section-3.2.1">3.2.1</a>. Response Content-Type Field</span>
+
+
+
+
+<span class="grey">Luotonen                                                        [Page 5]</span>
+</pre><pre class='newpage'><a name="page-6" id="page-6" href="#page-6" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+   The proxy response does not necessarily have a Content-Type field,
+   which is otherwise mandatory in HTTP/1.x responses.  Currently there
+   is no content media type assigned to a tunnel.  Future versions of
+   this specification may introduce a standard media type, for example
+   "application/tunnel".  For forward compatibility, a Content-type
+   field should be allowed, but for backward compatibitity, one should
+   not be required by clients.
+
+
+<span class="h3"><a name="section-3.3">3.3</a>. Data Pipelining</span>
+
+   It is legal for the client to send some data intended for the server
+   before the "200 Connection established" (or any other success or
+   error code) is received.  This allows for reduced latency and
+   increased efficiency when any handshake data intended for the remote
+   server can be sent in the same TCP packet as the proxy request.  This
+   allows the proxy to immediately forward the data once the connection
+   to the remote server is established, without waiting for two round-
+   trip times to the client (sending 200 to client; waiting for the next
+   packet from client).
+
+   This means that the proxy server cannot assume that reading from the
+   client socket descriptor would only return the proxy request.
+   Rather, there may be any amount of opaque data following the proxy
+   request that must be forwarded to the server once the connection is
+   established.  However, if the connection to the remote server fails,
+   or if it is disallowed by the proxy server, the data intended to the
+   remote server will be discarded by the proxy.
+
+   At the same time this means that a client pipelining data intended
+   for the remote server immediately after sending the proxy request (or
+   in the same packet), must be prepared to re-issue the request and
+   re-compose any data that it had already sent, in case the proxy fails
+   the request, or challenges the client for authentication credentials.
+   This is due to the fact that HTTP by its nature may require the
+   request to be re-issued, accompanied by authentication credentials or
+   other data that was either missing or invalid in the original
+   request.
+
+   Note that it is not recommended to pipeline more data than the amount
+   that can fit to the remainder of the TCP packet that the proxy
+   request is in.  Pipelining more data can cause a TCP reset if the
+   proxy fails or challenges the request, and subsequently closes the
+   connection before all pipelined TCP packets are received by the proxy
+   server host.  A TCP reset will cause the proxy server's response to
+   be discarded, and not be available to the client -- thus being unable
+   to determine whether the failure was due to a network error, access
+   control, or an authentication challenge.
+
+
+
+<span class="grey">Luotonen                                                        [Page 6]</span>
+</pre><pre class='newpage'><a name="page-7" id="page-7" href="#page-7" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+<span class="h2"><a name="section-4">4</a>. Extensibility</span>
+
+   The tunneling handshake is freely extensible using the HTTP/1.x
+   headers; as an example, to enforce authentication for the proxy the
+   proxy will simply use the 407 status code and the Proxy-authenticate
+   response header (as defined by the HTTP/1.x specification) to ask the
+   client to send authentication information:
+
+         HTTP/1.0 407 Proxy authentication required
+         Proxy-authenticate: ...
+
+
+   The client would then reperform the request, and send the
+   authentication information in the Proxy-authorization header:
+
+         CONNECT home.netscape.com:443 HTTP/1.0
+         User-agent: ...
+         Proxy-authorization: ...
+
+         ...data to be tunnelled to the server...
+
+
+   The full example displayed in an interleaved multicolumn format:
+
+     CLIENT -&gt; SERVER                        SERVER -&gt; CLIENT
+     --------------------------------------  -----------------------------------
+     CONNECT home.netscape.com:443 HTTP/1.0
+     User-agent: Mozilla/4.0
+     &lt;&lt;&lt; empty line &gt;&gt;&gt;
+                                             HTTP/1.0 407 Proxy auth required
+                                             Proxy-agent: Netscape-Proxy/1.1
+                                             Proxy-authenticate: ...
+                                             &lt;&lt;&lt; empty line &gt;&gt;&gt;
+     CONNECT home.netscape.com:443 HTTP/1.0
+     User-agent: Mozilla/4.0
+     Proxy-authorization: ...
+     &lt;&lt;&lt; empty line &gt;&gt;&gt;
+                                             HTTP/1.0 200 Connection established
+                                             Proxy-agent: Netscape-Proxy/1.1
+                                             &lt;&lt;&lt; empty line &gt;&gt;&gt;
+                  &lt;&lt;&lt; data tunneling to both directions begins &gt;&gt;&gt;
+
+
+<span class="h2"><a name="section-5">5</a>. Multiple Proxy Servers</span>
+
+   This specification applies equally to proxy servers talking to other
+   proxy servers.  As an example, double firewalls make this necessary.
+   In this case, the inner proxy is simply considered a client with
+
+
+
+<span class="grey">Luotonen                                                        [Page 7]</span>
+</pre><pre class='newpage'><a name="page-8" id="page-8" href="#page-8" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+   respect to the outer proxy.
+
+
+<span class="h2"><a name="section-6">6</a>. Security Considerations</span>
+
+   The CONNECT tunneling mechanism is really a lower-level function than
+   the rest of the HTTP methods, kind of an escape mechanism for saying
+   that the proxy should not interfere with the transaction, but merely
+   forward the data.  In the case of SSL tunneling, this is because the
+   proxy should not need to know the entire URI that is being accessed
+   (privacy, security), only the information that it explicitly needs
+   (hostname and port number) in order to carry out its part.
+
+   Due to this fact, the proxy cannot necessarily verify that the
+   protocol being spoken is really what it is supposed to tunnel (SSL
+   for example), and so the proxy configuration should explicitly limit
+   allowed connections to well-known ports for that protocol (such as
+   443 for HTTPS, 563 for SNEWS, as assigned by IANA, the Internet
+   Assigned Numbers Authority).
+
+   Ports of specific concern are such as the telnet port (port 23), SMTP
+   port (port 25) and many UNIX specific service ports (range 512-600).
+   Allowing such tunnelled connections to e.g. the SMTP port might
+   enable sending of uncontrolled E-mail ("spam").
+
+
+<span class="h2"><a name="section-7">7</a>. References</span>
+
+   [HTTP/1.0] T. Berners-Lee, R. Fielding, and H. Frystyk.
+              Hypertext Transfer Protocol -- HTTP/1.0.
+              <a href="./rfc1945">RFC 1945</a>, MIT/LCS, UC Irvine, May 1996.
+
+   [HTTP/1.1] R. Fielding, J. Gettys, J. C. Mogul, H. Frystyk, and
+              T. Berners-Lee.  Hypertext Transfer Protocol -- HTTP/1.1.
+              <a href="./rfc2068">RFC 2068</a>, UC Irvine, DEC, MIT/LCS, January, 1997.
+
+   [<a name="ref-TLS" id="ref-TLS">TLS</a>]      T. Dierks, C. Allen, A. O. Freier, P. L. Karlton, and P. Kocher.
+              The TLS (Transport Layer Security) Protocol.
+              Internet-Draft <a href="./draft-ietf-tls-protocol-05.txt">draft-ietf-tls-protocol-05.txt</a>,
+              Consensus Development, Netscape Communications,
+              November 12, 1997.
+
+   [<a name="ref-SSL" id="ref-SSL">SSL</a>]      K. Hickman, T. Elgamal, "The SSL Protocol",
+              <a href="./draft-hickman-netscape-ssl-01.txt">draft-hickman-netscape-ssl-01.txt</a>, Netscape Communications
+              Corporation, June 1995.
+
+   [<a name="ref-SSL3" id="ref-SSL3">SSL3</a>]     A. O. Freier, P. Karlton, Paul C. Kocher,
+              "The SSL Protocol -- Version 3.0",
+
+
+
+<span class="grey">Luotonen                                                        [Page 8]</span>
+</pre><pre class='newpage'><a name="page-9" id="page-9" href="#page-9" class="invisible"> </a>
+<span class="grey">TCP PROTOCOL TUNNELING IN WEB PROXY SERVERS INTERNET-DRAFT   August 1998</span>
+
+
+              <a href="./draft-ietf-tls-ssl-version3-00.txt">draft-ietf-tls-ssl-version3-00.txt</a>, November 18, 1996.
+
+<span class="h2"><a name="section-8">8</a>. Author's Address:</span>
+
+   Ari Luotonen                                       &lt;ari@netscape.com&gt;
+   Mail-Stop MV-068
+   Netscape Communications Corporation
+   501 East Middlefield Road
+   Mountain View, CA 94043
+   USA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Luotonen                                                        [Page 9]
+</pre><pre class='newpage'>
+
+</pre><br />
+<span class="noprint"><small><small>Html markup produced by rfcmarkup 1.74, available from
+<a href="http://tools.ietf.org/tools/rfcmarkup/">http://tools.ietf.org/tools/rfcmarkup/</a>
+</small></small></span>
+</body></html>
