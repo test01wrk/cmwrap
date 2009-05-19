@@ -3,9 +3,9 @@ package net.biaji.android.cmwrap.services;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import net.biaji.android.cmwrap.R;
-import net.biaji.android.cmwrap.WapChannel;
 import net.biaji.android.cmwrap.R.drawable;
 import net.biaji.android.cmwrap.R.string;
 
@@ -26,15 +26,14 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private int servicePort = 7745;
+	private int servicePort = 5228;
 
-	private Thread serviceThread;
-
-	private ServerSocket server;
+	private ArrayList<WrapServer> servers;
 
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -44,34 +43,13 @@ public class WrapService extends Service {
 	@Override
 	public void onCreate() {
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		try {
-			server = new ServerSocket(servicePort);
-			showNotify();
-			Log.d(TAG, "Server Socket Start Sucesses");
 
-			inService = true;
+		WrapServer server = new WrapServer(servicePort);
+		servers.add(server);
+		server.start();
+		showNotify();
 
-			serviceThread = new Thread() {
-				@Override
-				public void run() {
-					while (inService) {
-						try {
-							// Log.d(TAG, "waiting for client");
-							Socket socket = server.accept();
-							// Log.d(TAG, "And Get One");
-							WapChannel channel = new WapChannel(socket);
-							channel.start();
-						} catch (IOException e) {
-							Log.e(TAG, "folk channelThread failed", e);
-						}
-					}
-				}
-
-			};
-			serviceThread.start();
-		} catch (IOException e) {
-			Log.e(TAG, "build Server Socket Failed", e);
-		}
+		inService = true;
 	}
 
 	@Override
@@ -83,14 +61,15 @@ public class WrapService extends Service {
 	public void onDestroy() {
 
 		inService = false;
-
-		if (!server.isClosed()) {
-			try {
-				server.close();
-			} catch (IOException e) {
-				Log.e(TAG, "", e);
+		
+		for (WrapServer server : servers)
+			if (!server.isClosed()) {
+				try {
+					server.close();
+				} catch (IOException e) {
+					Log.e(TAG, "Server " + server.getPort() + "关闭错误", e);
+				}
 			}
-		}
 
 		nm.cancel(R.string.serviceTagUp);
 		Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
