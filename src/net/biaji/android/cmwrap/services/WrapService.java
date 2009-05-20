@@ -26,22 +26,18 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private int servicePort = 5228;
+	private int servicePort = 7443;
 
-	private ArrayList<WrapServer> servers;
+	private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false;
 	
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Service#onCreate()
-	 */
 	@Override
 	public void onCreate() {
+		
+		Log.d(TAG, "启用wrap服务");
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		WrapServer server = new WrapServer(servicePort);

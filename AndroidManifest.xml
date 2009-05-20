@@ -12,9 +12,11 @@
 			</intent-filter>
 		</activity>
 
-	</application>
+	<service android:name=".services.WrapService"></service>
+</application>
 
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
+<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="net.biaji.android.cmwrap"></instrumentation>
 </manifest> 

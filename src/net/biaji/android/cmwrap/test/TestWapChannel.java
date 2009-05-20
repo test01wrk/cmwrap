@@ -1,7 +1,7 @@
 package net.biaji.android.cmwrap.test;
 
-import net.biaji.android.cmwrap.services.WapChannel;
 import junit.framework.TestCase;
+import net.biaji.android.cmwrap.services.WapChannel;
 
 public class TestWapChannel extends TestCase {
 

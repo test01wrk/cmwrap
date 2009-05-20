@@ -15,7 +15,6 @@
 package net.biaji.android.cmwrap;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -27,19 +26,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Properties;
 
 import net.biaji.android.cmwrap.services.WrapService;
-
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -111,7 +103,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		Intent serviceIn = new Intent(this, WrapService.class);
 
 		if (inService) {
-			// stopService(serviceIn);
+			stopService(serviceIn);
 			Log.i(TAG, "禁用iptables转向...");
 			rootCMD(getString(R.string.CMDiptablesDisable));
 			Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
@@ -119,7 +111,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			inService = false;
 			setButton();
 		} else {
-			// startService(serviceIn);
+			startService(serviceIn);
 			Log.i(TAG, "启用iptables转向...");
 			rootCMD(getString(R.string.CMDipForwardEnable));
 			rootCMD(getString(R.string.CMDiptablesDisable));
