@@ -20,7 +20,7 @@ public class WrapServer extends Thread {
 		this.port = port;
 		try {
 			serSocket = new ServerSocket(port);
-			Log.d(TAG, "Server Socket at " + port + " Start Sucesses");
+			Log.d(TAG, "服务在端口" + port + "上启动成功");
 			inService = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Server初始化错误，端口号" + port, e);
@@ -49,9 +49,9 @@ public class WrapServer extends Thread {
 		try {
 
 			while (inService) {
-				Log.d(TAG, "waiting for client");
+				Log.d(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
-				Log.d(TAG, "And Get One");
+				Log.d(TAG, "获得客户端请求");
 				WapChannel channel = new WapChannel(socket);
 				channel.start();
 			}

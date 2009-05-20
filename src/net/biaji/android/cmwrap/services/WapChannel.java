@@ -10,6 +10,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import net.biaji.android.cmwrap.Utils;
+
 import android.R;
 import android.util.Log;
 
@@ -49,11 +51,10 @@ public class WapChannel extends Thread {
 		this.target = target;
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
-		buildProxy();
 	}
 
 	private void buildProxy() {
-		
+
 		Log.d(TAG, "建立通道");
 		DataInputStream din = null;
 		DataOutputStream dout = null;
@@ -72,14 +73,14 @@ public class WapChannel extends Thread {
 			while ((line = din.readLine()) != null) {
 				result += line;
 			}
-			//Log.d(TAG, connectStr);
-			//Log.d(TAG, new String(result.getBytes("UTF-8")));
+			// Log.d(TAG, connectStr);
+			// Log.d(TAG, new String(result.getBytes("UTF-8")));
 
-			if (result.contains("established")){
+			if (result.contains("established")) {
 				isConnected = true;
 				Log.d(TAG, "通道建立成功");
 			}
-			
+
 		} catch (UnknownHostException e) {
 			Log.e(TAG, "无法获取代理服务器的IP地址", e);
 		} catch (IOException e) {
@@ -89,12 +90,13 @@ public class WapChannel extends Thread {
 
 	@Override
 	public void run() {
+		buildProxy();
 		if (orgSocket != null && innerSocket != null && orgSocket.isConnected()
 				&& innerSocket.isConnected()) {
-			Pipe go = new Pipe(orgSocket, innerSocket, "↑");
-			go.start();
 			Pipe come = new Pipe(innerSocket, orgSocket, "↓");
 			come.start();
+			Pipe go = new Pipe(orgSocket, innerSocket, "↑");
+			go.start();
 		}
 	}
 
@@ -114,7 +116,7 @@ public class WapChannel extends Thread {
 
 		@Override
 		public void run() {
-
+			Log.d(TAG, direction + "线程启动");
 			int count = 0;
 			DataInputStream sin = null;
 			DataOutputStream dout = null;
@@ -126,12 +128,13 @@ public class WapChannel extends Thread {
 
 				while (true) {
 
-					byte[] buff = new byte[1024];
+					byte[] buff = new byte[in.getReceiveBufferSize()];
 
 					count = sin.read(buff);
 
 					if (count > 0) {
-						Log.d(TAG, direction + buff.length);
+						Log.d(TAG, "方向" + direction
+								+ Utils.bytesToHexString(buff, 0, count));
 						dout.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
