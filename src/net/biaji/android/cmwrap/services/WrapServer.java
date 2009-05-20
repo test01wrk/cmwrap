@@ -3,6 +3,7 @@ package net.biaji.android.cmwrap.services;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 
 import android.util.Log;
 
@@ -15,6 +16,8 @@ public class WrapServer extends Thread {
 	private final String TAG = "CMWRAP->Server";
 
 	private boolean inService = false;
+	
+	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
 	public WrapServer(int port) {
 		this.port = port;
@@ -54,11 +57,25 @@ public class WrapServer extends Thread {
 				Log.d(TAG, "获得客户端请求");
 				WapChannel channel = new WapChannel(socket);
 				channel.start();
+				channels.add(channel);
+				clean();
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "folk channelThread failed", e);
 		}
 
+	}
+	
+	private void clean(){
+		for(WapChannel channel : channels){
+			if(channel != null && !channel.isConnected()){
+				channel.destory();
+				channels.remove(channel);
+				Log.d(TAG,"清理链接");
+			}else if(channel == null){
+				channels.remove(channel);
+			}
+		}
 	}
 
 }
