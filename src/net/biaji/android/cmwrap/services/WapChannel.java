@@ -40,6 +40,10 @@ public class WapChannel extends Thread {
 		this(socket, "android.clients.google.com:443", proxyHost, proxyPort);
 	}
 
+	public WapChannel(Socket socket, String target) {
+		this(socket, target, "10.0.0.172", 80);
+	}
+
 	public WapChannel(Socket socket, String target, String proxyHost,
 			int proxyPort) {
 		this.orgSocket = socket;

@@ -40,8 +40,10 @@ public class WrapService extends Service {
 		for (Rule rule : Cmwrap.getRules()) {
 			if (rule.mode == Rule.MODE_SERV) {
 				WrapServer server = new WrapServer(rule.servPort);
-				servers.add(server);
+				server.setDest(rule.desHost + ":" + rule.desPort);
 				server.start();
+				servers.add(server);
+
 				Log.d(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
 			}
 		}
@@ -66,7 +68,7 @@ public class WrapService extends Service {
 				try {
 					server.close();
 				} catch (IOException e) {
-					Log.e(TAG, "Server " + server.getPort() + "关闭错误", e);
+					Log.e(TAG, "Server " + server.getServPort() + "关闭错误", e);
 				}
 			}
 

@@ -5,13 +5,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 
+import net.biaji.android.cmwrap.Cmwrap;
+
 import android.util.Log;
 
 public class WrapServer extends Thread {
 
 	private ServerSocket serSocket;
 
-	private int port;
+	private int servPort;
+
+	private String dest;
 
 	private final String TAG = "CMWRAP->Server";
 
@@ -20,7 +24,7 @@ public class WrapServer extends Thread {
 	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
 	public WrapServer(int port) {
-		this.port = port;
+		this.servPort = port;
 		try {
 			serSocket = new ServerSocket(port);
 			// Log.d(TAG, "服务在端口" + port + "上启动成功");
@@ -39,12 +43,21 @@ public class WrapServer extends Thread {
 		serSocket.close();
 	}
 
-	public int getPort() {
-		return port;
+	public int getServPort() {
+		return servPort;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setServPort(int port) {
+		this.servPort = port;
+	}
+
+	/**
+	 * 设置此服务的目的地址
+	 * 
+	 * @param dest
+	 */
+	public void setDest(String dest) {
+		this.dest = dest;
 	}
 
 	@Override
@@ -55,7 +68,7 @@ public class WrapServer extends Thread {
 				Log.d(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
 				Log.d(TAG, "获得客户端请求");
-				WapChannel channel = new WapChannel(socket);
+				WapChannel channel = new WapChannel(socket, dest, Cmwrap.proxyHost, Cmwrap.proxyPort);
 				channel.start();
 				channels.add(channel);
 				clean();

@@ -45,6 +45,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private static boolean inService = false;
 
+	public static String proxyHost;
+
+	public static int proxyPort;
+
 	private static ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private TextView logWindow;
@@ -201,6 +205,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		// if (inService)
 		// return;
+
+		if (rules.size() > 1)
+			return;
+		
+		
+		this.proxyHost = getResources().getString(R.string.proxyServer);
+		this.proxyPort = Integer.parseInt(getResources().getString(
+				R.string.proxyPort));
+
 		DataInputStream in = null;
 		try {
 			in = new DataInputStream(getResources()
@@ -246,16 +259,13 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private void forward() {
 
-		String proxyServer = getResources().getString(R.string.proxyServer);
-		String proxyPort = getResources().getString(R.string.proxyPort);
-
 		try {
 			for (Rule rule : rules) {
 				String cmd;
 				if (rule.mode == Rule.MODE_BASE)
 					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport "
 							+ rule.desPort + " -j DNAT --to-destination "
-							+ proxyServer + ":" + proxyPort;
+							+ proxyHost + ":" + proxyPort;
 				else
 					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp -d "
 							+ rule.desHost + " --dport " + rule.desPort
