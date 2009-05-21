@@ -14,7 +14,7 @@ public class WapChannel extends Thread {
 
 	private long starTime = System.currentTimeMillis();
 
-	private int 心跳 = 10;
+	//private int 心跳 = 10;
 
 	private boolean isConnected = false;
 
@@ -71,6 +71,7 @@ public class WapChannel extends Thread {
 			Log.d(TAG, connectStr + (System.currentTimeMillis() - starTime)
 					/ 1000);
 			String result = din.readLine();
+			din.readLine(); //多了个0D0A
 			// String line = "";
 			// while ((line = din.readLine()) != null) {
 			// result += line;
@@ -107,12 +108,13 @@ public class WapChannel extends Thread {
 
 				while (true) {
 
-					byte[] buff = new byte[1024 * 8];
+					byte[] buff = new byte[1024];
 					int count = 0;
 					try {
 						if ((count = oin.read(buff)) > 0) {
-							Log.d(TAG, "↑"
-									+ Utils.bytesToHexString(buff, 0, count));
+//							Log.d(TAG, "↑"
+//									+ Utils.bytesToHexString(buff, 0, count));
+							Log.d(TAG, "↑" + count);
 							dout.write(buff, 0, count);
 							dout.flush();
 						} else if (count < 0) {
@@ -123,9 +125,9 @@ public class WapChannel extends Thread {
 					Thread.sleep(1500);
 					try {
 						if ((count = din.read(buff)) > 0) {
-							// Log.d(TAG, "↓" + Utils.bytesToHexString(buff, 0,
-							// count));
-							Log.d(TAG, "↓" + buff.length);
+//							 Log.d(TAG, "↓"
+//									+ Utils.bytesToHexString(buff, 0, count));
+							Log.d(TAG, "↓" + count);
 							oout.write(buff, 0, count);
 						} else if (count < 0) {
 							break;

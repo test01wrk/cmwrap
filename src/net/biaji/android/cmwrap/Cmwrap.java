@@ -103,7 +103,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		super.onPause();
 		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
 		SharedPreferences.Editor editor = pref.edit();
-		editor.putBoolean("STATUS", this.inService);
+		editor.putBoolean("STATUS", inService);
 		editor.commit();
 	}
 
@@ -210,8 +210,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 			return;
 		
 		
-		this.proxyHost = getResources().getString(R.string.proxyServer);
-		this.proxyPort = Integer.parseInt(getResources().getString(
+		proxyHost = getResources().getString(R.string.proxyServer);
+		proxyPort = Integer.parseInt(getResources().getString(
 				R.string.proxyPort));
 
 		DataInputStream in = null;
