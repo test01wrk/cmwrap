@@ -16,6 +16,7 @@ package net.biaji.android.cmwrap;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
@@ -43,6 +45,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private static boolean inService = false;
 
+	private static ArrayList<Rule> rules = new ArrayList<Rule>();
+
 	private TextView logWindow;
 
 	private final String TAG = "CMWRAP->";
@@ -56,9 +60,11 @@ public class Cmwrap extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		
+
 		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
 		inService = pref.getBoolean("STATUS", false);
+
+		loadRules();
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
@@ -115,9 +121,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 			Log.i(TAG, "启用iptables转向...");
 			rootCMD(getString(R.string.CMDipForwardEnable));
 			rootCMD(getString(R.string.CMDiptablesDisable));
-			String cmd = getString(R.string.CMDiptablesEnable);
-			for (String subCmd : cmd.split("｜"))
-				rootCMD(subCmd.trim());
+
+			forward();
+
 			Toast.makeText(this, R.string.serviceTagUp, Toast.LENGTH_SHORT)
 					.show();
 			inService = true;
@@ -135,7 +141,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		}
 	}
 
-	private boolean isCmwap() {
+	private boolean isCmwap() { // TODO 改为读取方式
 		boolean result = false;
 		try {
 			NetworkInterface nf = NetworkInterface.getByName("rmnet0");
@@ -186,6 +192,82 @@ public class Cmwrap extends Activity implements OnClickListener {
 		if (hosts.length() > 200)
 			result = true;
 		return result;
+	}
+
+	/**
+	 * 载入转向规则
+	 */
+	private void loadRules() {
+
+		// if (inService)
+		// return;
+		DataInputStream in = null;
+		try {
+			in = new DataInputStream(getResources()
+					.openRawResource(R.raw.rules));
+			String line = "";
+			while ((line = in.readLine()) != null) {
+
+				Rule rule = new Rule();
+				// if (line != null)
+				// line = new String(line.trim().getBytes("UTF-8"));
+
+				String[] items = line.split("\\|");
+
+				rule.name = items[0];
+				if (items.length > 2) {
+					rule.mode = Rule.MODE_SERV;
+					rule.desHost = items[1];
+					rule.desPort = Integer.parseInt(items[2]);
+					rule.servPort = Integer.parseInt(items[3]);
+				} else if (items.length == 2) {
+					rule.mode = Rule.MODE_BASE;
+					rule.desPort = Integer.parseInt(items[1]);
+				}
+				Log.d(TAG, "载入" + rule.name + "规则");
+				rules.add(rule);
+
+			}
+			in.close();
+			in = null;
+		} catch (Exception e) {
+			Log.e(TAG, "载入规则文件失败：" + e.getLocalizedMessage());
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
+				in = null;
+			}
+		}
+
+	}
+
+	private void forward() {
+
+		String proxyServer = getResources().getString(R.string.proxyServer);
+		String proxyPort = getResources().getString(R.string.proxyPort);
+
+		try {
+			for (Rule rule : rules) {
+				String cmd;
+				if (rule.mode == Rule.MODE_BASE)
+					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport "
+							+ rule.desPort + " -j DNAT --to-destination "
+							+ proxyServer + ":" + proxyPort;
+				else
+					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp -d "
+							+ rule.desHost + " --dport " + rule.desPort
+							+ " -j DNAT --to-destination 127.0.0.1:"
+							+ rule.servPort;
+				rootCMD(cmd);
+
+			}
+
+		} catch (Exception e) {
+		}
+
 	}
 
 	/**
@@ -276,7 +358,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			fo.close();
 			bin.close();
-			rootCMD("chmod " + mod + "  "+ dest);
+			rootCMD("chmod " + mod + "  " + dest);
 			result = 0;
 
 		} catch (FileNotFoundException e) {
@@ -285,5 +367,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 			Log.e(TAG, "安装文件错误", e);
 		}
 		return result;
+	}
+
+	public static ArrayList<Rule> getRules() {
+		return rules;
 	}
 }

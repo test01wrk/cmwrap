@@ -1,14 +1,11 @@
 package net.biaji.android.cmwrap.services;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
+import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.R;
-import net.biaji.android.cmwrap.R.drawable;
-import net.biaji.android.cmwrap.R.string;
-
+import net.biaji.android.cmwrap.Rule;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,16 +30,22 @@ public class WrapService extends Service {
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false;
-	
+
 	@Override
 	public void onCreate() {
-		
+
 		Log.d(TAG, "启用wrap服务");
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-		WrapServer server = new WrapServer(servicePort);
-		servers.add(server);
-		server.start();
+		for (Rule rule : Cmwrap.getRules()) {
+			if (rule.mode == Rule.MODE_SERV) {
+				WrapServer server = new WrapServer(rule.servPort);
+				servers.add(server);
+				server.start();
+				Log.d(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
+			}
+		}
+
 		showNotify();
 
 		inService = true;
@@ -57,7 +60,7 @@ public class WrapService extends Service {
 	public void onDestroy() {
 
 		inService = false;
-		
+
 		for (WrapServer server : servers)
 			if (!server.isClosed()) {
 				try {

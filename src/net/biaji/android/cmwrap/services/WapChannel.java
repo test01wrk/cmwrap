@@ -1,19 +1,13 @@
 package net.biaji.android.cmwrap.services;
 
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import net.biaji.android.cmwrap.Utils;
-
-import android.R;
 import android.util.Log;
 
 public class WapChannel extends Thread {
@@ -69,17 +63,18 @@ public class WapChannel extends Thread {
 					+ " HTTP/1.1\r\nUser-agent: " + this.UA + "\r\n\r\n";
 
 			dout.writeBytes(connectStr);
+			dout.flush();
 			Log.d(TAG, connectStr + (System.currentTimeMillis() - starTime)
 					/ 1000);
-			String result = "";
-			String line = "";
-			while ((line = din.readLine()) != null) {
-				result += line;
-			}
+			String result = din.readLine();
+			// String line = "";
+			// while ((line = din.readLine()) != null) {
+			// result += line;
+			// }
 
 			Log.d(TAG, result + (System.currentTimeMillis() - starTime) / 1000);
 
-			if (result.contains("established")) {
+			if (result != null && result.contains("established")) {
 				isConnected = true;
 				Log.d(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
@@ -115,15 +110,18 @@ public class WapChannel extends Thread {
 							Log.d(TAG, "↑"
 									+ Utils.bytesToHexString(buff, 0, count));
 							dout.write(buff, 0, count);
+							dout.flush();
 						} else if (count < 0) {
 							break;
 						}
 					} catch (InterruptedIOException e) {
 					}
+					Thread.sleep(1500);
 					try {
 						if ((count = din.read(buff)) > 0) {
-							Log.d(TAG, "↓"
-									+ Utils.bytesToHexString(buff, 0, count));
+							// Log.d(TAG, "↓" + Utils.bytesToHexString(buff, 0,
+							// count));
+							Log.d(TAG, "↓" + buff.length);
 							oout.write(buff, 0, count);
 						} else if (count < 0) {
 							break;
@@ -138,7 +136,9 @@ public class WapChannel extends Thread {
 				// come.start();
 
 			} catch (IOException e) {
-				Log.e(TAG, "获取流失败", e);
+				Log.e(TAG, "获取流失败：" + e.getLocalizedMessage());
+			} catch (InterruptedException e) {
+				Log.e(TAG, "忙的一塌糊涂", e);
 			}
 		}
 	}
@@ -172,45 +172,45 @@ public class WapChannel extends Thread {
 			}
 		}
 	}
-
-	class Pipe extends Thread {
-		DataInputStream in = null;
-		DataOutputStream out = null;
-		String direction = "";
-
-		Pipe(DataInputStream in, DataOutputStream out, String direction) {
-			this.in = in;
-			this.out = out;
-			this.direction = direction;
-		}
-
-		@Override
-		public void run() {
-			Log.d(TAG, direction + "线程启动");
-			int count = 0;
-			try {
-
-				while (true) {
-
-					byte[] buff = new byte[1024 * 8];
-
-					count = in.read(buff);
-
-					if (count > 0) {
-						Log.d(TAG, "方向" + direction
-								+ Utils.bytesToHexString(buff, 0, count));
-						out.write(buff, 0, count);
-					} else if (count < 0) {
-						break;
-					}
-
-				}
-			} catch (SocketException e) {
-				Log.e(TAG, "该死的Socket不老实了也", e);
-			} catch (IOException e) {
-				Log.e(TAG, "管道通讯失败", e);
-			}
-		}
-	}
+	//
+	// class Pipe extends Thread {
+	// DataInputStream in = null;
+	// DataOutputStream out = null;
+	// String direction = "";
+	//
+	// Pipe(DataInputStream in, DataOutputStream out, String direction) {
+	// this.in = in;
+	// this.out = out;
+	// this.direction = direction;
+	// }
+	//
+	// @Override
+	// public void run() {
+	// Log.d(TAG, direction + "线程启动");
+	// int count = 0;
+	// try {
+	//
+	// while (true) {
+	//
+	// byte[] buff = new byte[1024 * 8];
+	//
+	// count = in.read(buff);
+	//
+	// if (count > 0) {
+	// Log.d(TAG, "方向" + direction
+	// + Utils.bytesToHexString(buff, 0, count));
+	// out.write(buff, 0, count);
+	// } else if (count < 0) {
+	// break;
+	// }
+	//
+	// }
+	// } catch (SocketException e) {
+	// Log.e(TAG, "该死的Socket不老实了也", e);
+	// } catch (IOException e) {
+	// Log.e(TAG, "管道通讯失败", e);
+	// }
+	// }
+	// }
 
 }

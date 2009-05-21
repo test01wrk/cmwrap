@@ -14,18 +14,14 @@ public class TestWapChannel extends TestCase {
 	private WapChannel target;
 
 	private Socket org;
-	
 
 	protected void setUp() throws Exception {
 
 	}
 
-
-
 	public void testWapChannelSocketStringInt() {
 		target = new WapChannel(null, host, port);
 		assert (target.isConnected());
 	}
-	
 
 }

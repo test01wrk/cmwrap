@@ -16,14 +16,14 @@ public class WrapServer extends Thread {
 	private final String TAG = "CMWRAP->Server";
 
 	private boolean inService = false;
-	
+
 	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
 	public WrapServer(int port) {
 		this.port = port;
 		try {
 			serSocket = new ServerSocket(port);
-			Log.d(TAG, "服务在端口" + port + "上启动成功");
+			// Log.d(TAG, "服务在端口" + port + "上启动成功");
 			inService = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Server初始化错误，端口号" + port, e);
@@ -65,14 +65,14 @@ public class WrapServer extends Thread {
 		}
 
 	}
-	
-	private void clean(){
-		for(WapChannel channel : channels){
-			if(channel != null && !channel.isConnected()){
+
+	private void clean() {
+		for (WapChannel channel : channels) {
+			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				channels.remove(channel);
-				Log.d(TAG,"清理链接");
-			}else if(channel == null){
+				Log.d(TAG, "清理链接");
+			} else if (channel == null) {
 				channels.remove(channel);
 			}
 		}
