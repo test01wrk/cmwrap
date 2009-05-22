@@ -1,4 +1,8 @@
 HTTP BASE|80
 OPERA MINI|1080
-android auth|android.clients.google.com|443|7443
+androidauth|android.clients.google.com|443|7443
+Google Service|www.google.com|443|7444
+Gmail Service|mail.google.com|443|7445
+Fetion Service|221.176.31.39|8080|7446
+Fetion Service2|nav.fetion.com.cn|443|7447
 Gtalk|mtalk.google.com|5228|5228
