@@ -23,18 +23,16 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private int servicePort = 7443;
-
 	private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
 	private final String TAG = "CMWRAP->Service";
 
-	private boolean inService = false;
+	private static boolean inService = false;
 
 	@Override
 	public void onCreate() {
 
-		Log.d(TAG, "启用wrap服务");
+		Log.v(TAG, "启用wrap服务");
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		for (Rule rule : Cmwrap.getRules()) {
@@ -44,7 +42,7 @@ public class WrapService extends Service {
 				server.start();
 				servers.add(server);
 
-				Log.d(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
+				Log.v(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
 			}
 		}
 

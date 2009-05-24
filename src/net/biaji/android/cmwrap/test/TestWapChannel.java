@@ -2,10 +2,10 @@ package net.biaji.android.cmwrap.test;
 
 import java.net.Socket;
 
-import junit.framework.TestCase;
 import net.biaji.android.cmwrap.services.WapChannel;
+import android.test.AndroidTestCase;
 
-public class TestWapChannel extends TestCase {
+public class TestWapChannel extends AndroidTestCase {
 
 	private String host = "58.213.152.15"; // 江苏省南京市 电信ADSL
 

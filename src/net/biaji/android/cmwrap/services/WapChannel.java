@@ -3,7 +3,9 @@ package net.biaji.android.cmwrap.services;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -60,6 +62,7 @@ public class WapChannel extends Thread {
 
 		try {
 			innerSocket = new Socket(proxyHost, proxyPort);
+			innerSocket.setKeepAlive(true);
 			din = new DataInputStream(innerSocket.getInputStream());
 			dout = new DataOutputStream(innerSocket.getOutputStream());
 
@@ -68,9 +71,11 @@ public class WapChannel extends Thread {
 
 			dout.writeBytes(connectStr);
 			dout.flush();
-			Log.d(TAG, connectStr);
+			Log.v(TAG, connectStr);
+
 			String result = din.readLine();
 			din.readLine(); // 多了个0D0A
+
 			// String line = "";
 			// while ((line = din.readLine()) != null) {
 			// result += line;
@@ -105,49 +110,18 @@ public class WapChannel extends Thread {
 				din = new DataInputStream(innerSocket.getInputStream());
 				dout = new DataOutputStream(innerSocket.getOutputStream());
 
-				while (true) {
-
-					byte[] buff = new byte[1024 * 8];
-					int count = 0;
-					try {
-						if ((count = oin.read(buff)) > 0) {
-							// Log.d(TAG, "↑"
-							// + Utils.bytesToHexString(buff, 0, count));
-							Log.d(TAG, "↑" + count);
-							dout.write(buff, 0, count);
-							dout.flush();
-						} else if (count < 0) {
-							break;
-						}
-					} catch (InterruptedIOException e) {
-						Log.e(TAG, "上行传输失败：" + e.getLocalizedMessage());
-					}
-					Thread.sleep(1500);
-					try {
-						if ((count = din.read(buff)) > 0) {
-							// Log.d(TAG, "↓"
-							// + Utils.bytesToHexString(buff, 0, count));
-							Log.d(TAG, "↓" + count);
-							oout.write(buff, 0, count);
-							oout.flush();
-						} else if (count < 0) {
-							break;
-						}
-					} catch (InterruptedIOException e) {
-						Log.e(TAG, "下行传输失败：" + e.getLocalizedMessage());
-					}
-				}
-
-				// Pipe go = new Pipe(oin, dout, "↑");
-				// Pipe come = new Pipe(din, oout, "↓");
-				// go.start();
-				// come.start();
+				Pipe go = new Pipe(oin, dout, "↑");
+				Pipe come = new Pipe(din, oout, "↓");
+				go.start();
+				come.start();
+				isConnected = false;
 
 			} catch (IOException e) {
 				Log.e(TAG, "获取流失败：" + e.getLocalizedMessage());
-			} catch (InterruptedException e) {
-				Log.e(TAG, "忙的一塌糊涂", e);
 			}
+			// } catch (InterruptedException e) {
+			// Log.e(TAG, "忙的一塌糊涂", e);
+			// }
 		}
 	}
 
@@ -180,45 +154,44 @@ public class WapChannel extends Thread {
 			}
 		}
 	}
-	//
-	// class Pipe extends Thread {
-	// DataInputStream in = null;
-	// DataOutputStream out = null;
-	// String direction = "";
-	//
-	// Pipe(DataInputStream in, DataOutputStream out, String direction) {
-	// this.in = in;
-	// this.out = out;
-	// this.direction = direction;
-	// }
-	//
-	// @Override
-	// public void run() {
-	// Log.d(TAG, direction + "线程启动");
-	// int count = 0;
-	// try {
-	//
-	// while (true) {
-	//
-	// byte[] buff = new byte[1024 * 8];
-	//
-	// count = in.read(buff);
-	//
-	// if (count > 0) {
-	// Log.d(TAG, "方向" + direction
-	// + Utils.bytesToHexString(buff, 0, count));
-	// out.write(buff, 0, count);
-	// } else if (count < 0) {
-	// break;
-	// }
-	//
-	// }
-	// } catch (SocketException e) {
-	// Log.e(TAG, "该死的Socket不老实了也", e);
-	// } catch (IOException e) {
-	// Log.e(TAG, "管道通讯失败", e);
-	// }
-	// }
-	// }
+
+	class Pipe extends Thread {
+		DataInputStream in = null;
+		DataOutputStream out = null;
+		String direction = "";
+
+		Pipe(DataInputStream in, DataOutputStream out, String direction) {
+			this.in = in;
+			this.out = out;
+			this.direction = direction;
+		}
+
+		@Override
+		public void run() {
+			Log.d(TAG, direction + "线程启动");
+			int count = 0;
+			try {
+
+				while (true) {
+
+					byte[] buff = new byte[1024];
+
+					count = in.read(buff);
+
+					if (count > 0) {
+						// Log.d(TAG, "方向" + direction
+						// + Utils.bytesToHexString(buff, 0, count));
+						Log.d(TAG, direction + "--" + count);
+						out.write(buff, 0, count);
+					} else if (count < 0) {
+						break;
+					}
+
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "管道通讯失败", e);
+			}
+		}
+	}
 
 }

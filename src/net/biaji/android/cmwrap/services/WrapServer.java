@@ -87,6 +87,7 @@ public class WrapServer extends Thread {
 				Log.d(TAG, "清理链接");
 			} else if (channel == null) {
 				channels.remove(channel);
+				Log.d(TAG, "清理无效链接");
 			}
 		}
 	}
