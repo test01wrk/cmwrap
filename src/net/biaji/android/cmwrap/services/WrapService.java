@@ -70,8 +70,6 @@ public class WrapService extends Service {
 			}
 
 		nm.cancel(R.string.serviceTagUp);
-		Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
-				.show();
 		Utils.writeLog("销毁wrap服务");
 	}
 
