@@ -3,20 +3,14 @@ package net.biaji.android.cmwrap.services;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import net.biaji.android.cmwrap.Utils;
 import android.util.Log;
 
 public class WapChannel extends Thread {
 
 	private long starTime = System.currentTimeMillis();
-
-	// private int 心跳 = 10;
 
 	private boolean isConnected = false;
 
@@ -34,16 +28,8 @@ public class WapChannel extends Thread {
 
 	private final String UA = "biAji's wap channel";
 
-	public WapChannel(Socket socket) {
-		this(socket, "10.0.0.172", 80);
-	}
-
 	public WapChannel(Socket socket, String proxyHost, int proxyPort) {
 		this(socket, "android.clients.google.com:443", proxyHost, proxyPort);
-	}
-
-	public WapChannel(Socket socket, String target) {
-		this(socket, target, "10.0.0.172", 80);
 	}
 
 	public WapChannel(Socket socket, String target, String proxyHost,
@@ -54,9 +40,12 @@ public class WapChannel extends Thread {
 		this.proxyPort = proxyPort;
 	}
 
+	/**
+	 * 建立经由HTTP代理服务器链接至目的服务器的隧道
+	 */
 	private void buildProxy() {
 
-		Log.d(TAG, "建立通道");
+		Log.v(TAG, "建立通道");
 		DataInputStream din = null;
 		DataOutputStream dout = null;
 
@@ -76,16 +65,11 @@ public class WapChannel extends Thread {
 			String result = din.readLine();
 			din.readLine(); // 多了个0D0A
 
-			// String line = "";
-			// while ((line = din.readLine()) != null) {
-			// result += line;
-			// }
-
 			Log.v(TAG, result);
 
 			if (result != null && result.contains("established")) {
 				isConnected = true;
-				Log.d(TAG, "通道建立成功， 耗时："
+				Log.v(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
 			}
 
@@ -114,14 +98,10 @@ public class WapChannel extends Thread {
 				Pipe come = new Pipe(din, oout, "↓");
 				go.start();
 				come.start();
-				isConnected = false;
 
 			} catch (IOException e) {
 				Log.e(TAG, "获取流失败：" + e.getLocalizedMessage());
 			}
-			// } catch (InterruptedException e) {
-			// Log.e(TAG, "忙的一塌糊涂", e);
-			// }
 		}
 	}
 
@@ -172,7 +152,7 @@ public class WapChannel extends Thread {
 			int count = 0;
 			try {
 
-				while (true) {
+				while (isConnected) {
 
 					byte[] buff = new byte[1024];
 
@@ -181,7 +161,7 @@ public class WapChannel extends Thread {
 					if (count > 0) {
 						// Log.d(TAG, "方向" + direction
 						// + Utils.bytesToHexString(buff, 0, count));
-						Log.d(TAG, direction + "--" + count);
+						Log.v(TAG, direction + "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
@@ -190,6 +170,7 @@ public class WapChannel extends Thread {
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "管道通讯失败", e);
+				isConnected = false;
 			}
 		}
 	}

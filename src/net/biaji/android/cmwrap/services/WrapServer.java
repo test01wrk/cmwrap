@@ -27,7 +27,6 @@ public class WrapServer extends Thread {
 		this.servPort = port;
 		try {
 			serSocket = new ServerSocket(port);
-			// Log.d(TAG, "服务在端口" + port + "上启动成功");
 			inService = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Server初始化错误，端口号" + port, e);
@@ -62,19 +61,23 @@ public class WrapServer extends Thread {
 
 	@Override
 	public void run() {
-		try {
 
-			while (inService) {
-				Log.d(TAG, "等待客户端请求……");
+		while (inService) {
+			try {
+				clean();
+				Log.v(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
-				Log.d(TAG, "获得客户端请求");
-				WapChannel channel = new WapChannel(socket, dest, Cmwrap.proxyHost, Cmwrap.proxyPort);
+				Log.v(TAG, "获得客户端请求");
+				WapChannel channel = new WapChannel(socket, dest,
+						Cmwrap.proxyHost, Cmwrap.proxyPort);
 				channel.start();
 				channels.add(channel);
-				clean();
+				Thread.sleep(100);
+			} catch (IOException e) {
+				Log.e(TAG, "伺服客户请求失败", e);
+			} catch (InterruptedException e) {
+				Log.e(TAG, "世上本无事", e);
 			}
-		} catch (IOException e) {
-			Log.e(TAG, "folk channelThread failed", e);
 		}
 
 	}
@@ -84,10 +87,10 @@ public class WrapServer extends Thread {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				channels.remove(channel);
-				Log.d(TAG, "清理链接");
+				Log.v(TAG, "清理链接");
 			} else if (channel == null) {
 				channels.remove(channel);
-				Log.d(TAG, "清理无效链接");
+				Log.v(TAG, "清理无效链接");
 			}
 		}
 	}

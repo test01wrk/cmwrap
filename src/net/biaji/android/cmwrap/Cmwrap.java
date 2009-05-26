@@ -80,18 +80,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 		if (isCmwap())
 			logWindow.append("cmwap detected\n");
 
-		if (hasHosts()) {
-			logWindow.append("hosts文件不须更新\n");
+		logWindow.append("hosts文件更新...\n");
+		int result = rootCMD(getString(R.string.CMDremount));
+		if (result != 0) {
+			logWindow.append(getString(R.string.ERR_NO_ROOT));
+			switcher.setEnabled(false);
 		} else {
-			logWindow.append("hosts文件更新...\n");
-			int result = rootCMD(getString(R.string.CMDremount));
-			if (result != 0) {
-				logWindow.append(getString(R.string.ERR_NO_ROOT));
-				switcher.setEnabled(false);
-			} else {
-				installFiles("/system/etc/hosts", R.raw.hosts, null);
-				logWindow.append("更新完毕。\n");
-			}
+			installFiles("/system/etc/hosts", R.raw.hosts, null);
+			logWindow.append("更新完毕。\n");
 		}
 
 		// appStatus();
@@ -185,18 +181,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		return firsTime;
 	}
 
-	/**
-	 * 判断hosts文件是否更新
-	 * 
-	 * @return
-	 */
-	private boolean hasHosts() {
-		boolean result = false;
-		File hosts = new File("/system/etc/hosts");
-		if (hosts.length() > 200)
-			result = true;
-		return result;
-	}
 
 	/**
 	 * 载入转向规则
@@ -208,8 +192,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		if (rules.size() > 1)
 			return;
-		
-		
+
 		proxyHost = getResources().getString(R.string.proxyServer);
 		proxyPort = Integer.parseInt(getResources().getString(
 				R.string.proxyPort));

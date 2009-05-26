@@ -1,7 +1,11 @@
 package net.biaji.android.cmwrap.services;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.R;
@@ -33,22 +37,19 @@ public class WrapService extends Service {
 	public void onCreate() {
 
 		Log.v(TAG, "启用wrap服务");
+		writeLog("创建wrap服务");
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-		for (Rule rule : Cmwrap.getRules()) {
-			if (rule.mode == Rule.MODE_SERV) {
-				WrapServer server = new WrapServer(rule.servPort);
-				server.setDest(rule.desHost + ":" + rule.desPort);
-				server.start();
-				servers.add(server);
-
-				Log.v(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
-			}
-		}
-
+		startSubDaemon();
 		showNotify();
 
 		inService = true;
+	}
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
+		writeLog("启动wrap服务");
+
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class WrapService extends Service {
 		nm.cancel(R.string.serviceTagUp);
 		Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
 				.show();
-
+		writeLog("销毁wrap服务");
 	}
 
 	private void showNotify() {
@@ -86,4 +87,53 @@ public class WrapService extends Service {
 		nm.notify(R.string.serviceTagUp, note);
 	}
 
+	/**
+	 * 启动侦听服务线程
+	 */
+	private void startSubDaemon() {
+
+		for (Rule rule : Cmwrap.getRules()) {
+
+			if (rule.mode == Rule.MODE_SERV) {
+				WrapServer server = new WrapServer(rule.servPort);
+				server.setDest(rule.desHost + ":" + rule.desPort);
+				server.start();
+				servers.add(server);
+				writeLog("启用" + rule.name + "服务于" + rule.servPort + "端口");
+				Log.v(TAG, "启用" + rule.name + "服务于" + rule.servPort + "端口");
+			}
+		}
+	}
+
+	/**
+	 * 在SD卡记录日志
+	 * 
+	 * @param log
+	 */
+	protected static void writeLog(String log) {
+		FileWriter objFileWriter = null;
+
+		try {
+			Calendar objCalendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
+			String strDate = sdf.format(objCalendar.getTime());
+
+			StringBuilder objStringBuilder = new StringBuilder();
+
+			objStringBuilder.append(strDate);
+			objStringBuilder.append(": ");
+			objStringBuilder.append(log);
+			objStringBuilder.append("\n");
+
+			objFileWriter = new FileWriter("/sdcard/log.txt", true);
+			objFileWriter.write(objStringBuilder.toString());
+			objFileWriter.flush();
+			objFileWriter.close();
+		} catch (Exception e) {
+			try {
+				objFileWriter.close();
+			} catch (Exception e2) {
+			}
+		}
+	}
 }
