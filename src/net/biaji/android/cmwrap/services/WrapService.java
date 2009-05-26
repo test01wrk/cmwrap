@@ -35,9 +35,9 @@ public class WrapService extends Service {
 	public void onCreate() {
 
 		Log.v(TAG, "启用wrap服务");
+		startSubDaemon();
 		Utils.writeLog("创建wrap服务");
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		startSubDaemon();
 		showNotify();
 
 		inService = true;
