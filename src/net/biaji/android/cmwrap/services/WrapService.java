@@ -24,6 +24,10 @@ public class WrapService extends Service {
 
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
+	private String proxyHost;
+
+	private int proxyPort;
+
 	private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
 	private final String TAG = "CMWRAP->Service";
@@ -32,11 +36,11 @@ public class WrapService extends Service {
 
 	@Override
 	public void onCreate() {
-		Log.v(TAG, "创建wrap服务");	
-		
+		Log.v(TAG, "创建wrap服务");
+
 		// TODO 以下是一个异常丑陋的解决方案
 		loadRules();
-		
+
 		startSubDaemon();
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotify();
@@ -88,7 +92,8 @@ public class WrapService extends Service {
 
 		for (Rule rule : rules) {
 			if (rule.mode == Rule.MODE_SERV) {
-				WrapServer server = new WrapServer(rule.name, rule.servPort);
+				WrapServer server = new WrapServer(rule.name, rule.servPort,
+						proxyHost, proxyPort);
 				server.setDest(rule.desHost + ":" + rule.desPort);
 				server.start();
 				servers.add(server);
@@ -103,6 +108,10 @@ public class WrapService extends Service {
 
 		if (rules.size() > 1)
 			return;
+
+		proxyHost = getResources().getString(R.string.proxyServer);
+		proxyPort = Integer.parseInt(getResources().getString(
+				R.string.proxyPort));
 
 		DataInputStream in = null;
 		try {

@@ -5,9 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 
-import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Utils;
-
 import android.util.Log;
 
 public class WrapServer extends Thread {
@@ -20,15 +18,21 @@ public class WrapServer extends Thread {
 
 	private String name;
 
+	private String proxyHost;
+
+	private int proxyPort;
+
 	private final String TAG = "CMWRAP->Server";
 
 	private boolean inService = false;
 
 	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
-	public WrapServer(String name, int port) {
+	public WrapServer(String name, int port, String proxyHost, int proxyPort) {
 		this.servPort = port;
 		this.name = name;
+		this.proxyHost = proxyHost;
+		this.proxyPort = proxyPort;
 		try {
 			serSocket = new ServerSocket(port);
 			inService = true;
@@ -75,8 +79,8 @@ public class WrapServer extends Thread {
 				Log.v(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
 				Log.v(TAG, "获得客户端请求");
-				WapChannel channel = new WapChannel(socket, dest,
-						Cmwrap.proxyHost, Cmwrap.proxyPort);
+				WapChannel channel = new WapChannel(socket, dest, proxyHost,
+						proxyPort);
 				channel.start();
 				channels.add(channel);
 				Thread.sleep(100);

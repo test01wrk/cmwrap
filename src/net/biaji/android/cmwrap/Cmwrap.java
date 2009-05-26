@@ -45,9 +45,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private static boolean inService = false;
 
-	public static String proxyHost;
+	private String proxyHost;
 
-	public static int proxyPort;
+	private int proxyPort;
 
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
@@ -208,8 +208,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		if (rules.size() > 1)
 			return;
-		
-		
+
 		proxyHost = getResources().getString(R.string.proxyServer);
 		proxyPort = Integer.parseInt(getResources().getString(
 				R.string.proxyPort));
