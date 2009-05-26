@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.HashSet;
 
 import net.biaji.android.cmwrap.Cmwrap;
+import net.biaji.android.cmwrap.Utils;
 
 import android.util.Log;
 
@@ -17,20 +18,26 @@ public class WrapServer extends Thread {
 
 	private String dest;
 
+	private String name;
+
 	private final String TAG = "CMWRAP->Server";
 
 	private boolean inService = false;
 
 	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
-	public WrapServer(int port) {
+	public WrapServer(String name, int port) {
 		this.servPort = port;
+		this.name = name;
 		try {
 			serSocket = new ServerSocket(port);
 			inService = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Server初始化错误，端口号" + port, e);
 		}
+		Utils.writeLog("启用" + name + "服务于" + servPort + "端口");
+		Log.v(TAG, "启用" + name + "服务于" + servPort + "端口");
+
 	}
 
 	public boolean isClosed() {
@@ -80,6 +87,14 @@ public class WrapServer extends Thread {
 			}
 		}
 
+		Utils.writeLog(name + "侦听服务停止");
+
+	}
+
+	@Override
+	public void destroy() {
+		Utils.writeLog(name + "侦听服务被系统销毁");
+		super.destroy();
 	}
 
 	private void clean() {
@@ -87,10 +102,10 @@ public class WrapServer extends Thread {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				channels.remove(channel);
-				Log.v(TAG, "清理链接");
+				Log.v(TAG, name + "清理链接");
 			} else if (channel == null) {
 				channels.remove(channel);
-				Log.v(TAG, "清理无效链接");
+				Log.v(TAG, name + "清理无效链接");
 			}
 		}
 	}

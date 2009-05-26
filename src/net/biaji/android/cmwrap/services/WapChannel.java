@@ -148,7 +148,7 @@ public class WapChannel extends Thread {
 
 		@Override
 		public void run() {
-			Log.d(TAG, direction + "线程启动");
+			Log.v(TAG, direction + "线程启动");
 			int count = 0;
 			try {
 
@@ -169,7 +169,7 @@ public class WapChannel extends Thread {
 
 				}
 			} catch (IOException e) {
-				Log.e(TAG, "管道通讯失败", e);
+				Log.e(TAG, direction + " 管道通讯失败", e);
 				isConnected = false;
 			}
 		}
