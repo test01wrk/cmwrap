@@ -52,6 +52,8 @@ public class WapChannel extends Thread {
 		try {
 			innerSocket = new Socket(proxyHost, proxyPort);
 			innerSocket.setKeepAlive(true);
+			innerSocket.setSoTimeout(120*1000);
+			
 			din = new DataInputStream(innerSocket.getInputStream());
 			dout = new DataOutputStream(innerSocket.getOutputStream());
 

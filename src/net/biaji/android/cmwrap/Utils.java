@@ -1,8 +1,15 @@
 package net.biaji.android.cmwrap;
 
+import java.io.DataInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+
+import net.biaji.android.cmwrap.R.raw;
+import android.content.ContextWrapper;
+import android.util.Log;
 
 public class Utils {
 
@@ -55,6 +62,56 @@ public class Utils {
 			} catch (Exception e2) {
 			}
 		}
+	}
+
+	/**
+	 * 载入转向规则
+	 */
+	public static ArrayList<Rule> loadRules(ContextWrapper context) {
+	
+		ArrayList<Rule> rules = new ArrayList<Rule>();
+	
+		DataInputStream in = null;
+		try {
+			in = new DataInputStream(context.getResources().openRawResource(
+					R.raw.rules));
+			String line = "";
+			while ((line = in.readLine()) != null) {
+	
+				Rule rule = new Rule();
+				// if (line != null)
+				// line = new String(line.trim().getBytes("UTF-8"));
+	
+				String[] items = line.split("\\|");
+	
+				rule.name = items[0];
+				if (items.length > 2) {
+					rule.mode = Rule.MODE_SERV;
+					rule.desHost = items[1];
+					rule.desPort = Integer.parseInt(items[2]);
+					rule.servPort = Integer.parseInt(items[3]);
+				} else if (items.length == 2) {
+					rule.mode = Rule.MODE_BASE;
+					rule.desPort = Integer.parseInt(items[1]);
+				}
+				Log.v("CMWRAP", "载入" + rule.name + "规则");
+				rules.add(rule);
+	
+			}
+			in.close();
+			in = null;
+		} catch (Exception e) {
+			Log.e("CMWRAP", "载入规则文件失败：" + e.getLocalizedMessage());
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
+				in = null;
+			}
+		}
+		return rules;
 	}
 
 }

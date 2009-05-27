@@ -16,7 +16,6 @@ package net.biaji.android.cmwrap;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,7 +67,11 @@ public class Cmwrap extends Activity implements OnClickListener {
 		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
 		inService = pref.getBoolean("STATUS", false);
 
-		loadRules();
+		proxyHost = getResources().getString(R.string.proxyServer);
+		proxyPort = Integer.parseInt(getResources().getString(
+				R.string.proxyPort));
+
+		rules = Utils.loadRules(this);
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
@@ -193,67 +196,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private boolean hasHosts() {
 		boolean result = false;
 		File hosts = new File("/system/etc/hosts");
-		if (hosts.length() > 200)
+		if (hosts.length() > 2000 && hosts.length() < 5000)
 			result = true;
 		return result;
-	}
-
-	/**
-	 * 载入转向规则
-	 */
-	private void loadRules() {
-
-		// if (inService)
-		// return;
-
-		if (rules.size() > 1)
-			return;
-
-		proxyHost = getResources().getString(R.string.proxyServer);
-		proxyPort = Integer.parseInt(getResources().getString(
-				R.string.proxyPort));
-
-		DataInputStream in = null;
-		try {
-			in = new DataInputStream(getResources()
-					.openRawResource(R.raw.rules));
-			String line = "";
-			while ((line = in.readLine()) != null) {
-
-				Rule rule = new Rule();
-				// if (line != null)
-				// line = new String(line.trim().getBytes("UTF-8"));
-
-				String[] items = line.split("\\|");
-
-				rule.name = items[0];
-				if (items.length > 2) {
-					rule.mode = Rule.MODE_SERV;
-					rule.desHost = items[1];
-					rule.desPort = Integer.parseInt(items[2]);
-					rule.servPort = Integer.parseInt(items[3]);
-				} else if (items.length == 2) {
-					rule.mode = Rule.MODE_BASE;
-					rule.desPort = Integer.parseInt(items[1]);
-				}
-				Log.d(TAG, "载入" + rule.name + "规则");
-				rules.add(rule);
-
-			}
-			in.close();
-			in = null;
-		} catch (Exception e) {
-			Log.e(TAG, "载入规则文件失败：" + e.getLocalizedMessage());
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-				in = null;
-			}
-		}
-
 	}
 
 	private void forward() {
