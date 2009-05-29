@@ -69,7 +69,7 @@ public class WapChannel extends Thread {
 
 			Log.v(TAG, result);
 
-			if (result != null && result.contains("established")) {
+			if (result != null && result.contains("200")) {
 				isConnected = true;
 				Log.v(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
