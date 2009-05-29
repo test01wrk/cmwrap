@@ -81,8 +81,13 @@ public class WrapServer extends Thread {
 				Log.v(TAG, "获得客户端请求");
 				WapChannel channel = new WapChannel(socket, dest, proxyHost,
 						proxyPort);
-				channel.start();
-				channels.add(channel);
+				if (channel.isConnected()) {
+					channel.start();
+					channels.add(channel);
+				}else{
+					channel.destory();
+				}
+
 				Thread.sleep(100);
 			} catch (IOException e) {
 				Log.e(TAG, "伺服客户请求失败", e);
