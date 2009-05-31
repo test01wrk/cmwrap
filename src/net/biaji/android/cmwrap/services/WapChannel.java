@@ -109,7 +109,7 @@ public class WapChannel extends Thread {
 
 	public boolean isConnected() {
 
-		if (System.currentTimeMillis() - starTime < 1000)
+		if (System.currentTimeMillis() - starTime < 2000)
 			return true;
 
 		if (this.innerSocket.isConnected() && this.orgSocket.isConnected()) {
