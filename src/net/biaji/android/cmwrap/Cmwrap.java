@@ -80,8 +80,13 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		switcher.setOnClickListener(this);
 
-		if (isCmwap())
-			logWindow.append("cmwap detected\n");
+		if (Utils.isCmwap(this))
+			logWindow.append("当前数据连接为cmwap\n");
+		else{
+			logWindow.append("当前数据连接不是cmwap\n");
+			switcher.setEnabled(false);
+		}
+			
 
 		if (hasHosts()) {
 			logWindow.append("hosts文件不须更新\n");
@@ -146,22 +151,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		} else {
 			switcher.setText(R.string.buttonEnable);
 		}
-	}
-
-	private boolean isCmwap() { // TODO 改为读取方式
-		boolean result = false;
-		try {
-			NetworkInterface nf = NetworkInterface.getByName("rmnet0");
-			if (nf != null
-					&& nf.getInetAddresses().nextElement().getHostAddress()
-							.toString().startsWith("10.")) {
-				result = true;
-			}
-		} catch (SocketException e) {
-			Log.e(TAG, "Can not get Network info");
-		}
-
-		return result;
 	}
 
 	/**

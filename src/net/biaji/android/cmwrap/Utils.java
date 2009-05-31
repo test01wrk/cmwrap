@@ -9,9 +9,13 @@ import java.util.Calendar;
 
 import net.biaji.android.cmwrap.R.raw;
 import android.content.ContextWrapper;
+import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 public class Utils {
+
+	private static String TAG = "CMWRAP->Utils";
 
 	public static String bytesToHexString(byte[] bytes) {
 		return bytesToHexString(bytes, 0, bytes.length);
@@ -39,19 +43,19 @@ public class Utils {
 	 */
 	public static void writeLog(String log) {
 		FileWriter objFileWriter = null;
-	
+
 		try {
 			Calendar objCalendar = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 			String strDate = sdf.format(objCalendar.getTime());
-	
+
 			StringBuilder objStringBuilder = new StringBuilder();
-	
+
 			objStringBuilder.append(strDate);
 			objStringBuilder.append(": ");
 			objStringBuilder.append(log);
 			objStringBuilder.append("\n");
-	
+
 			objFileWriter = new FileWriter("/sdcard/log.txt", true);
 			objFileWriter.write(objStringBuilder.toString());
 			objFileWriter.flush();
@@ -68,22 +72,22 @@ public class Utils {
 	 * 载入转向规则
 	 */
 	public static ArrayList<Rule> loadRules(ContextWrapper context) {
-	
+
 		ArrayList<Rule> rules = new ArrayList<Rule>();
-	
+
 		DataInputStream in = null;
 		try {
 			in = new DataInputStream(context.getResources().openRawResource(
 					R.raw.rules));
 			String line = "";
 			while ((line = in.readLine()) != null) {
-	
+
 				Rule rule = new Rule();
 				// if (line != null)
 				// line = new String(line.trim().getBytes("UTF-8"));
-	
+
 				String[] items = line.split("\\|");
-	
+
 				rule.name = items[0];
 				if (items.length > 2) {
 					rule.mode = Rule.MODE_SERV;
@@ -94,9 +98,9 @@ public class Utils {
 					rule.mode = Rule.MODE_BASE;
 					rule.desPort = Integer.parseInt(items[1]);
 				}
-				Log.v("CMWRAP", "载入" + rule.name + "规则");
+				Log.v(TAG, "载入" + rule.name + "规则");
 				rules.add(rule);
-	
+
 			}
 			in.close();
 			in = null;
@@ -112,6 +116,33 @@ public class Utils {
 			}
 		}
 		return rules;
+	}
+
+	/**
+	 * 判断当前网络连接是否为cmwap
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isCmwap(ContextWrapper context) {
+		boolean result = false;
+		Cursor mCursor = context.getContentResolver().query(
+				Uri.parse("content://telephony/carriers"),
+				new String[] { "name" }, "current=1", null, null);
+		if (mCursor != null) {
+			try {
+				if (mCursor.moveToFirst()) {
+					String name = mCursor.getString(0);
+					if (name != null && name.trim().equalsIgnoreCase("cmwap"))
+						result = true;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Can not get Network info");
+			} finally {
+				mCursor.close();
+			}
+		}
+		return result;
 	}
 
 }
