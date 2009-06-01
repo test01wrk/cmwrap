@@ -4,6 +4,3 @@ Android Auth|android.clients.google.com|443|7443
 Google Service|www.google.com|443|7444
 Gmail Service|mail.google.com|443|7445
 Gtalk|mtalk.google.com|5228|5228
-Fetion Auth|nav.fetion.com.cn|443|7446
-Fetion Tcp|221.176.31.42|8080|7447
-Fetion Tcp1|221.176.31.39|8080|7448

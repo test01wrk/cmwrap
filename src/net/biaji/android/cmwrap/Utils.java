@@ -1,8 +1,12 @@
 package net.biaji.android.cmwrap;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -142,6 +146,61 @@ public class Utils {
 				mCursor.close();
 			}
 		}
+		return result;
+	}
+
+	/**
+	 * 以root权限执行命令
+	 * 
+	 * @param 需要执行的指令
+	 * @return -1 执行失败； 0 执行正常
+	 */
+	public static int rootCMD(String cmd) {
+		int result = -1;
+		DataOutputStream os = null;
+		InputStream err = null, out = null;
+		try {
+			Process process = Runtime.getRuntime().exec("su");
+			err = process.getErrorStream();
+			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
+					1024 * 8);
+	
+			out = process.getInputStream();
+	
+			os = new DataOutputStream(process.getOutputStream());
+	
+			os.writeBytes(cmd + "\n");
+			os.flush();
+			os.writeBytes("exit\n");
+			os.flush();
+	
+			String resp;
+			while ((resp = bre.readLine()) != null) {
+				Log.d(TAG, resp);
+			}
+			result = process.waitFor();
+			if (result == 0)
+				Log.d(TAG, cmd + " exec success");
+			else {
+				Log.d(TAG, cmd + " exec with result" + result);
+			}
+			os.close();
+			process.destroy();
+		} catch (IOException e) {
+			Log.e(TAG, "Failed to exec command", e);
+		} catch (InterruptedException e) {
+			Log.e(TAG, "线程意外终止", e);
+		} finally {
+	
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+			}
+	
+		}
+	
 		return result;
 	}
 

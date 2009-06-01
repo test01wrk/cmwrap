@@ -15,15 +15,11 @@
 package net.biaji.android.cmwrap;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -52,7 +48,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private TextView logWindow;
 
-	private final String TAG = "CMWRAP->";
+	final String TAG = "CMWRAP->";
 
 	private final int VER = 1;
 
@@ -82,17 +78,16 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		if (Utils.isCmwap(this))
 			logWindow.append("当前数据连接为cmwap\n");
-		else{
+		else {
 			logWindow.append("当前数据连接不是cmwap\n");
 			switcher.setEnabled(false);
 		}
-			
 
 		if (hasHosts()) {
 			logWindow.append("hosts文件不须更新\n");
 		} else {
 			logWindow.append("hosts文件更新...\n");
-			int result = rootCMD(getString(R.string.CMDremount));
+			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
 				switcher.setEnabled(false);
@@ -123,7 +118,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		if (inService) {
 			stopService(serviceIn);
 			Log.i(TAG, "禁用iptables转向...");
-			rootCMD(getString(R.string.CMDiptablesDisable));
+			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 			Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
 					.show();
 			inService = false;
@@ -131,8 +126,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 		} else {
 			startService(serviceIn);
 			Log.i(TAG, "启用iptables转向...");
-			rootCMD(getString(R.string.CMDipForwardEnable));
-			rootCMD(getString(R.string.CMDiptablesDisable));
+			Utils.rootCMD(getString(R.string.CMDipForwardEnable));
+			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
 			forward();
 
@@ -204,68 +199,13 @@ public class Cmwrap extends Activity implements OnClickListener {
 							+ rule.desHost + " --dport " + rule.desPort
 							+ " -j DNAT --to-destination 127.0.0.1:"
 							+ rule.servPort;
-				rootCMD(cmd);
+				Utils.rootCMD(cmd);
 
 			}
 
 		} catch (Exception e) {
 		}
 
-	}
-
-	/**
-	 * 以root权限执行命令
-	 * 
-	 * @param 需要执行的指令
-	 * @return -1 执行失败； 0 执行正常
-	 */
-	private int rootCMD(String cmd) {
-		int result = -1;
-		DataOutputStream os = null;
-		InputStream err = null, out = null;
-		try {
-			Process process = Runtime.getRuntime().exec("su");
-			err = process.getErrorStream();
-			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
-					1024 * 8);
-
-			out = process.getInputStream();
-
-			os = new DataOutputStream(process.getOutputStream());
-
-			os.writeBytes(cmd + "\n");
-			os.flush();
-			os.writeBytes("exit\n");
-			os.flush();
-
-			String resp;
-			while ((resp = bre.readLine()) != null) {
-				Log.d(TAG, resp);
-			}
-			result = process.waitFor();
-			if (result == 0)
-				Log.d(TAG, cmd + " exec success");
-			else {
-				Log.d(TAG, cmd + " exec with result" + result);
-			}
-			os.close();
-			process.destroy();
-		} catch (IOException e) {
-			Log.e(TAG, "Failed to exec command", e);
-		} catch (InterruptedException e) {
-			Log.e(TAG, "线程意外终止", e);
-		} finally {
-
-			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (IOException e) {
-			}
-
-		}
-
-		return result;
 	}
 
 	/**
@@ -279,7 +219,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 	 *            文件属性
 	 * @return
 	 */
-	private int installFiles(String dest, int resId, String mod) {
+	public int installFiles(String dest, int resId, String mod) {
 		int result = -1;
 		BufferedInputStream bin = null;
 		FileOutputStream fo = null;
@@ -288,7 +228,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			if (mod == null)
 				mod = "644";
-			rootCMD("chmod 666 " + dest);
+			Utils.rootCMD("chmod 666 " + dest);
 			File destF = new File(dest);
 
 			fo = new FileOutputStream(destF);
@@ -301,7 +241,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			fo.close();
 			bin.close();
-			rootCMD("chmod " + mod + "  " + dest);
+			Utils.rootCMD("chmod " + mod + "  " + dest);
 			result = 0;
 
 		} catch (FileNotFoundException e) {
