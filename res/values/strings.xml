@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="hello">English</string>
-	<string name="app_name">cmwrap</string>
+	<string name="app_name">Cmwrap</string>
 	<string name="serviceTagUp">启用CMWAP穿越</string>
 	<string name="serviceTagDown">禁用CMWAP穿越</string>
 	<string name="buttonEnable">启 用</string>
@@ -16,4 +16,5 @@
 <string name="CMDremount">mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system</string>
 <string name="UserAgent">biAji's wap channel</string>
 <string name="Version">alpha-3</string>
+<string name="MENU_TEST">环境测试</string>
 </resources>
