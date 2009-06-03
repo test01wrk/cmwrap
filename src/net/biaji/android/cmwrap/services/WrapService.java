@@ -34,6 +34,23 @@ public class WrapService extends Service {
 
 	private static boolean inService = false;
 
+	/**
+	 * 非cmwap接入时，停止服务
+	 */
+	public final static int SERVER_LEVEL_STOP = 0;
+
+	/**
+	 * 此级别仅保留iptables转向
+	 */
+	public final static int SERVER_LEVEL_BASE = 1;
+
+	/**
+	 * 此级别加入需要HTTP隧道的应用。
+	 */
+	public final static int SERVER_LEVEL_APPS = 2;
+
+	private static int serverLevel = SERVER_LEVEL_BASE;
+
 	@Override
 	public void onCreate() {
 		Log.v(TAG, "创建wrap服务");
@@ -45,15 +62,16 @@ public class WrapService extends Service {
 		// TODO 以下是一个丑陋的解决方案
 		rules = Utils.loadRules(this);
 
-		startSubDaemon();
-		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		showNotify();
-		inService = true;
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
+
+		startSubDaemon();
+		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		showNotify();
+		inService = true;
 
 	}
 
@@ -81,11 +99,28 @@ public class WrapService extends Service {
 
 	private void showNotify() {
 		CharSequence notifyText = getText(R.string.serviceTagUp);
-		Notification note = new Notification(R.drawable.notify, notifyText,
-				System.currentTimeMillis());
+
+		int icon = 0;
+		switch (serverLevel) {
+		case SERVER_LEVEL_STOP:
+			icon = R.drawable.notifyinva;
+			break;
+
+		case SERVER_LEVEL_BASE:
+			icon = R.drawable.notify;
+			break;
+
+		case SERVER_LEVEL_APPS:
+			icon = R.drawable.notifybusy;
+			break;
+		}
+
+		Notification note = new Notification(icon, notifyText, System
+				.currentTimeMillis());
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, WrapService.class), 0);
-		note.setLatestEventInfo(this, "cmwrap", notifyText, reviewIntent);
+		note.setLatestEventInfo(this, getText(R.string.app_name), notifyText,
+				reviewIntent);
 		nm.notify(R.string.serviceTagUp, note);
 	}
 
