@@ -20,8 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 import net.biaji.android.cmwrap.services.WrapService;
@@ -34,9 +32,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class Cmwrap extends Activity implements OnClickListener {
 
@@ -50,9 +48,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private TextView logWindow;
 
-	final String TAG = "CMWRAP->";
-
-	private final int VER = 1;
+	private final String TAG = "CMWRAP->";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -73,21 +69,18 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
-		Button switcher = (Button) findViewById(R.id.Switch);
-		setButton();
-
+		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
 		switcher.setOnClickListener(this);
 
-		if (Utils.isCmwap(this))
-			logWindow.append("当前数据连接为cmwap\n");
-		else {
-			logWindow.append("当前数据连接不是cmwap\n");
-			switcher.setEnabled(false);
-		}
+		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
+		baseServiceSwitcher.setOnClickListener(this);
+		baseServiceSwitcher.setEnabled(false); // TODO
 
-		if (hasHosts()) {
+		//判断是否需要更新hosts文件
+		if (appStatus() == 1) {
 			logWindow.append("hosts文件不须更新\n");
 		} else {
+
 			logWindow.append("hosts文件更新...\n");
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
@@ -98,8 +91,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 				logWindow.append("更新完毕。\n");
 			}
 		}
-
-		// appStatus();
 
 	}
 
@@ -116,27 +107,26 @@ public class Cmwrap extends Activity implements OnClickListener {
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
 		Intent serviceIn = new Intent(this, WrapService.class);
+		
+		serviceIn.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_APPS);  //TODO 详分类别
+
+		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
 
 		if (inService) {
 			stopService(serviceIn);
-			Log.i(TAG, "禁用iptables转向...");
+			Log.i(TAG, "禁用服务");
 			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 			Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
 					.show();
 			inService = false;
-			setButton();
+			switcher.setChecked(inService);
 		} else {
+			Log.i(TAG, "启用服务");
 			startService(serviceIn);
-			Log.i(TAG, "启用iptables转向...");
-			Utils.rootCMD(getString(R.string.CMDipForwardEnable));
-			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-
-			forward();
-
 			Toast.makeText(this, R.string.serviceTagUp, Toast.LENGTH_SHORT)
 					.show();
 			inService = true;
-			setButton();
+			switcher.setChecked(inService);
 		}
 
 	}
@@ -156,15 +146,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void setButton() {
-		Button switcher = (Button) findViewById(R.id.Switch);
-		if (inService) {
-			switcher.setText(R.string.buttonDisable);
-		} else {
-			switcher.setText(R.string.buttonEnable);
-		}
-	}
-
 	/**
 	 * 判断程序安装状态
 	 * 
@@ -175,14 +156,19 @@ public class Cmwrap extends Activity implements OnClickListener {
 		// 判断状态
 		try {
 			FileInputStream in = openFileInput("Version");
+
 			int ver = in.read();
-			if (ver != 0 && ver < VER) {
+
+			if (ver == Integer.parseInt(getString(R.string.Version))) {
 				firsTime = 1;
-			} else
+			} else {
 				firsTime = 0;
+				tag();
+			}
 			in.close();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "No Version File, First installed");
+			tag();
 		} catch (IOException e) {
 			Log.e(TAG, "IOerror");
 		}
@@ -190,40 +176,24 @@ public class Cmwrap extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 判断hosts文件是否更新
-	 * 
-	 * @return
+	 * 更新版本号
 	 */
-	private boolean hasHosts() {
-		boolean result = false;
-		File hosts = new File("/system/etc/hosts");
-		if (hosts.length() > 2000 && hosts.length() < 5000)
-			result = true;
-		return result;
-	}
-
-	private void forward() {
-
+	private void tag() {
+		FileOutputStream out;
 		try {
-			for (Rule rule : rules) {
-				String cmd;
-				if (rule.mode == Rule.MODE_BASE)
-					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport "
-							+ rule.desPort + " -j DNAT --to-destination "
-							+ proxyHost + ":" + proxyPort;
-				else
-					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp -d "
-							+ rule.desHost + " --dport " + rule.desPort
-							+ " -j DNAT --to-destination 127.0.0.1:"
-							+ rule.servPort;
-				Utils.rootCMD(cmd);
+			out = openFileOutput("Version", MODE_PRIVATE);
 
-			}
-
-		} catch (Exception e) {
+			out.write(Integer.parseInt(getString(R.string.Version)));
+			out.close();
+		} catch (FileNotFoundException ex) {
+			Log.e(TAG, "No Version File, First installed");
+		} catch (NumberFormatException ex) {
+			Log.e(TAG, "版本号解析失败");
+		} catch (IOException ex) {
+			Log.e(TAG, "写入版本号失败");
 		}
-
 	}
+
 
 	/**
 	 * 安装文件

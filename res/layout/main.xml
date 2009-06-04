@@ -4,12 +4,17 @@
 	android:layout_height="fill_parent">
 
 
-	<Button android:id="@+id/Switch" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
-		
-	
-		
+	<ToggleButton android:id="@+id/Switch"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textOn="关闭" android:textOff="启用"></ToggleButton>
+
+	<ToggleButton android:id="@+id/BaseService"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textOn="关闭" android:textOff="启用"></ToggleButton>
+
 	<TextView android:id="@+id/logwindow" android:layout_width="wrap_content"
 		android:layout_height="fill_parent" android:editable="false"
 		android:scrollbars="vertical" />
+
+
 </LinearLayout>

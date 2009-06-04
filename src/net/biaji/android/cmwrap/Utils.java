@@ -132,7 +132,7 @@ public class Utils {
 		boolean result = false;
 		Cursor mCursor = context.getContentResolver().query(
 				Uri.parse("content://telephony/carriers"),
-				new String[] { "name" }, "current=1", null, null);
+				new String[] { "apn" }, "current=1", null, null);
 		if (mCursor != null) {
 			try {
 				if (mCursor.moveToFirst()) {
