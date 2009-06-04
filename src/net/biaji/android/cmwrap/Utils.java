@@ -124,7 +124,7 @@ public class Utils {
 
 	/**
 	 * 判断当前网络连接是否为cmwap
-	 * 
+	 * TODO  把wifi去掉
 	 * @param context
 	 * @return
 	 */

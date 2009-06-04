@@ -38,17 +38,15 @@ import android.widget.ToggleButton;
 
 public class Cmwrap extends Activity implements OnClickListener {
 
-	private static boolean inService = false;
-
 	private String proxyHost;
 
 	private int proxyPort;
 
-	private ArrayList<Rule> rules = new ArrayList<Rule>();
-
 	private TextView logWindow;
 
 	private final String TAG = "CMWRAP->";
+
+	private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -58,25 +56,13 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		setContentView(R.layout.main);
 
-		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
-		inService = pref.getBoolean("STATUS", false);
-
 		proxyHost = getResources().getString(R.string.proxyServer);
 		proxyPort = Integer.parseInt(getResources().getString(
 				R.string.proxyPort));
 
-		rules = Utils.loadRules(this);
-
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
-		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
-		switcher.setOnClickListener(this);
-
-		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
-		baseServiceSwitcher.setOnClickListener(this);
-		baseServiceSwitcher.setEnabled(false); // TODO
-
-		//判断是否需要更新hosts文件
+		// 判断是否需要更新hosts文件
 		if (appStatus() == 1) {
 			logWindow.append("hosts文件不须更新\n");
 		} else {
@@ -85,7 +71,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
-				switcher.setEnabled(false);
 			} else {
 				installFiles("/system/etc/hosts", R.raw.hosts, null);
 				logWindow.append("更新完毕。\n");
@@ -95,38 +80,41 @@ public class Cmwrap extends Activity implements OnClickListener {
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
+	protected void onStart() {
+		super.onStart();
+
 		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putBoolean("STATUS", inService);
-		editor.commit();
+		serviceLevel = pref
+				.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+
+		Log.d(TAG, "服务级别为：" + serviceLevel);
+
+		redrawButton();
+
 	}
 
 	public void onClick(View v) {
-		logWindow = (TextView) findViewById(R.id.logwindow);
 
 		Intent serviceIn = new Intent(this, WrapService.class);
-		
-		serviceIn.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_APPS);  //TODO 详分类别
 
-		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
+		serviceIn.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_APPS); // TODO
+		// 详分类别
 
-		if (inService) {
+		if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
 			stopService(serviceIn);
 			Log.i(TAG, "禁用服务");
 			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 			Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
 					.show();
-			inService = false;
-			switcher.setChecked(inService);
+			serviceLevel = WrapService.SERVER_LEVEL_NULL;
+			redrawButton();
 		} else {
 			Log.i(TAG, "启用服务");
 			startService(serviceIn);
 			Toast.makeText(this, R.string.serviceTagUp, Toast.LENGTH_SHORT)
 					.show();
-			inService = true;
-			switcher.setChecked(inService);
+			redrawButton();
+
 		}
 
 	}
@@ -194,7 +182,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		}
 	}
 
-
 	/**
 	 * 安装文件
 	 * 
@@ -237,5 +224,30 @@ public class Cmwrap extends Activity implements OnClickListener {
 			Log.e(TAG, "安装文件错误", e);
 		}
 		return result;
+	}
+
+	private void redrawButton() {
+
+		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
+		switcher.setOnClickListener(this);
+
+		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
+		baseServiceSwitcher.setOnClickListener(this);
+
+		switch (serviceLevel) {
+		case WrapService.SERVER_LEVEL_NULL:
+			baseServiceSwitcher.setEnabled(false);
+			break;
+
+		case WrapService.SERVER_LEVEL_BASE:
+			switcher.setChecked(true);
+			break;
+
+		case WrapService.SERVER_LEVEL_APPS:
+		case WrapService.SERVER_LEVEL_MORE_APPS:
+			switcher.setChecked(true);
+			baseServiceSwitcher.setChecked(true);
+			break;
+		}
 	}
 }

@@ -24,6 +24,8 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
+	private SharedPreferences pref;
+
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String proxyHost;
@@ -50,7 +52,7 @@ public class WrapService extends Service {
 	public final static int SERVER_LEVEL_BASE = 1;
 
 	/**
-	 * 此级别加入需要HTTP隧道的应用。
+	 * 此级别加入需要HTTP隧道的基本G1应用（Gmail，Gtalk，普通认证）。
 	 */
 	public final static int SERVER_LEVEL_APPS = 2;
 
@@ -59,18 +61,40 @@ public class WrapService extends Service {
 	 */
 	public final static int SERVER_LEVEL_MORE_APPS = 3;
 
-	private static int serverLevel = SERVER_LEVEL_BASE;
+	private int serverLevel = SERVER_LEVEL_BASE;
 
 	@Override
 	public void onCreate() {
 		Log.v(TAG, "创建wrap服务");
 
+		// 由资源文件加载指定代理服务器
 		proxyHost = getResources().getString(R.string.proxyServer);
 		proxyPort = Integer.parseInt(getResources().getString(
 				R.string.proxyPort));
 
-		// TODO 以下是一个丑陋的解决方案
+		// 载入所有规则
 		rules = Utils.loadRules(this);
+
+		// 初始化通知管理器
+		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
+
+		pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
+
+		int level = pref.getInt("SERVERLEVEL", SERVER_LEVEL_NULL);
+
+		if (level != SERVER_LEVEL_NULL) {
+			serverLevel = level;
+
+			if (Utils.isCmwap(this)) {
+				Utils.rootCMD(getString(R.string.CMDipForwardEnable));
+				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+				forward();
+				startSubDaemon();
+				showNotify();
+			}
+		}
 
 	}
 
@@ -78,39 +102,25 @@ public class WrapService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 
-		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 
-		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
-
-		// 如果启动此服务时未指定服务级别，则使用原始级别
-		// 如不存在原始级别，默认启动到级别1
-		if (level == SERVER_LEVEL_NULL)
-			level = pref.getInt("SERVERLEVEL", SERVER_LEVEL_NULL);
-		
-		if (level != SERVER_LEVEL_NULL)
+		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
-
-		if (Utils.isCmwap(this)) {
-			Log.v(TAG, "目前为cmwap接入");
-			Utils.rootCMD(getString(R.string.CMDipForwardEnable));
-			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-			forward();
 			refreshSubDaemon();
-			showNotify();
-		} else {
+		}
+
+		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
+		if (!Utils.isCmwap(this)) {
 			Log.v(TAG, "目前不是cmwap接入，暂停服务");
 			stopSubDaemon();
 			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 			serverLevel = SERVER_LEVEL_STOP;
-			showNotify();
+
 		}
 
-		// 记录当前状态
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putInt("SERVERLEVEL", serverLevel);
-		editor.commit();
+		showNotify();
+		// 保存服务状态，以备被杀
+		saveServiceLevel();
 
 	}
 
@@ -122,10 +132,13 @@ public class WrapService extends Service {
 	@Override
 	public void onDestroy() {
 		stopSubDaemon();
+		serverLevel = SERVER_LEVEL_NULL;
+		saveServiceLevel();
 		nm.cancel(R.string.serviceTagUp);
 	}
 
 	private void showNotify() {
+
 		CharSequence notifyText = getText(R.string.serviceTagUp);
 
 		int icon = 0;
@@ -215,5 +228,14 @@ public class WrapService extends Service {
 		} catch (Exception e) {
 		}
 
+	}
+
+	/**
+	 * 记录当前服务状态
+	 */
+	private void saveServiceLevel() {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putInt("SERVERLEVEL", serverLevel);
+		editor.commit();
 	}
 }

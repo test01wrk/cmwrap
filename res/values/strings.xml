@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="hello">English</string>
+	
 	<string name="app_name">Cmwrap</string>
 	<string name="serviceTagUp">启用CMWAP穿越</string>
 	<string name="serviceTagDown">禁用CMWAP穿越</string>

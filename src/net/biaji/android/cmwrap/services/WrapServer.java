@@ -50,7 +50,7 @@ public class WrapServer extends Thread {
 
 	public void close() throws IOException {
 		inService = false;
-		serSocket.close();
+		serSocket.close(); //TODO 优雅点
 	}
 
 	public int getServPort() {
@@ -84,18 +84,23 @@ public class WrapServer extends Thread {
 				if (channel.isConnected()) {
 					channel.start();
 					channels.add(channel);
-				}else{
+				} else {
 					channel.destory();
 				}
 
 				Thread.sleep(100);
 			} catch (IOException e) {
-				Log.e(TAG, "伺服客户请求失败", e);
+				Log.e(TAG, "伺服客户请求失败" + e.getMessage());
 			} catch (InterruptedException e) {
-				Log.e(TAG, "世上本无事", e);
+				Log.e(TAG, "世上本无事" + e.getMessage());
 			}
 		}
 
+		try {
+			serSocket.close();
+		} catch (IOException e) {
+			Log.e(TAG, name + "关闭服务端口失败：" + e.getMessage());
+		}
 		Utils.writeLog(name + "侦听服务停止");
 
 	}
