@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import net.biaji.android.cmwrap.R.raw;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -124,12 +127,19 @@ public class Utils {
 
 	/**
 	 * 判断当前网络连接是否为cmwap
-	 * TODO  把wifi去掉
+	 * 
 	 * @param context
 	 * @return
 	 */
 	public static boolean isCmwap(ContextWrapper context) {
 		boolean result = false;
+
+		ConnectivityManager manager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		if (manager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI)
+			return false;
+
 		Cursor mCursor = context.getContentResolver().query(
 				Uri.parse("content://telephony/carriers"),
 				new String[] { "apn" }, "current=1", null, null);
@@ -164,16 +174,16 @@ public class Utils {
 			err = process.getErrorStream();
 			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
 					1024 * 8);
-	
+
 			out = process.getInputStream();
-	
+
 			os = new DataOutputStream(process.getOutputStream());
-	
+
 			os.writeBytes(cmd + "\n");
 			os.flush();
 			os.writeBytes("exit\n");
 			os.flush();
-	
+
 			String resp;
 			while ((resp = bre.readLine()) != null) {
 				Log.d(TAG, resp);
@@ -191,16 +201,16 @@ public class Utils {
 		} catch (InterruptedException e) {
 			Log.e(TAG, "线程意外终止", e);
 		} finally {
-	
+
 			try {
 				if (os != null) {
 					os.close();
 				}
 			} catch (IOException e) {
 			}
-	
+
 		}
-	
+
 		return result;
 	}
 

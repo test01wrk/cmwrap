@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
@@ -38,10 +37,6 @@ import android.widget.ToggleButton;
 
 public class Cmwrap extends Activity implements OnClickListener {
 
-	private String proxyHost;
-
-	private int proxyPort;
-
 	private TextView logWindow;
 
 	private final String TAG = "CMWRAP->";
@@ -55,10 +50,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-
-		proxyHost = getResources().getString(R.string.proxyServer);
-		proxyPort = Integer.parseInt(getResources().getString(
-				R.string.proxyPort));
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
@@ -97,26 +88,42 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		Intent serviceIn = new Intent(this, WrapService.class);
 
-		serviceIn.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_APPS); // TODO
-		// 详分类别
+		int message = R.string.serviceTagUp;
 
-		if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
-			stopService(serviceIn);
-			Log.i(TAG, "禁用服务");
-			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-			Toast.makeText(this, R.string.serviceTagDown, Toast.LENGTH_SHORT)
-					.show();
-			serviceLevel = WrapService.SERVER_LEVEL_NULL;
-			redrawButton();
-		} else {
-			Log.i(TAG, "启用服务");
-			startService(serviceIn);
-			Toast.makeText(this, R.string.serviceTagUp, Toast.LENGTH_SHORT)
-					.show();
-			redrawButton();
+		switch (v.getId()) {
 
+		case R.id.Switch:
+
+			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
+				stopService(serviceIn);
+				Log.i(TAG, "禁用服务");
+				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+				Toast.makeText(this, R.string.serviceTagDown,
+						Toast.LENGTH_SHORT).show();
+				serviceLevel = WrapService.SERVER_LEVEL_NULL;
+				redrawButton();
+				return;
+			} else {
+				serviceLevel = WrapService.SERVER_LEVEL_BASE;
+			}
+			break;
+
+		case R.id.BaseService:
+			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
+				serviceLevel = WrapService.SERVER_LEVEL_APPS;
+				message = R.string.serviceTagApp;
+			} else {
+				serviceLevel = WrapService.SERVER_LEVEL_BASE;
+			}
+
+			break;
 		}
 
+		serviceIn.putExtra("SERVERLEVEL", serviceLevel);
+		Log.i(TAG, "启用服务");
+		startService(serviceIn);
+		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+		redrawButton();
 	}
 
 	@Override
@@ -235,18 +242,22 @@ public class Cmwrap extends Activity implements OnClickListener {
 		baseServiceSwitcher.setOnClickListener(this);
 
 		switch (serviceLevel) {
-		case WrapService.SERVER_LEVEL_NULL:
-			baseServiceSwitcher.setEnabled(false);
-			break;
 
 		case WrapService.SERVER_LEVEL_BASE:
 			switcher.setChecked(true);
+			baseServiceSwitcher.setEnabled(true);
+			baseServiceSwitcher.setChecked(false);
 			break;
 
 		case WrapService.SERVER_LEVEL_APPS:
 		case WrapService.SERVER_LEVEL_MORE_APPS:
 			switcher.setChecked(true);
+			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(true);
+			break;
+
+		case WrapService.SERVER_LEVEL_NULL:
+			baseServiceSwitcher.setEnabled(false);
 			break;
 		}
 	}

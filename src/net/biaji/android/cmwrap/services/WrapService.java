@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.FrameLayout;
 
 /**
  * @author biaji
@@ -88,9 +87,6 @@ public class WrapService extends Service {
 			serverLevel = level;
 
 			if (Utils.isCmwap(this)) {
-				Utils.rootCMD(getString(R.string.CMDipForwardEnable));
-				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-				forward();
 				startSubDaemon();
 				showNotify();
 			}
@@ -113,9 +109,7 @@ public class WrapService extends Service {
 		if (!Utils.isCmwap(this)) {
 			Log.v(TAG, "目前不是cmwap接入，暂停服务");
 			stopSubDaemon();
-			Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 			serverLevel = SERVER_LEVEL_STOP;
-
 		}
 
 		showNotify();
@@ -178,6 +172,8 @@ public class WrapService extends Service {
 	 */
 	private void startSubDaemon() {
 
+		forward();
+
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
 				if (rule.mode == Rule.MODE_SERV) {
@@ -192,6 +188,7 @@ public class WrapService extends Service {
 	}
 
 	private void stopSubDaemon() {
+
 		for (WrapServer server : servers)
 			if (!server.isClosed()) {
 				try {
@@ -200,6 +197,8 @@ public class WrapService extends Service {
 					Log.e(TAG, "Server " + server.getServPort() + "关闭错误", e);
 				}
 			}
+
+		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 	}
 
 	private void refreshSubDaemon() {
@@ -208,6 +207,9 @@ public class WrapService extends Service {
 	}
 
 	private void forward() {
+
+		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
+		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
 		try {
 			for (Rule rule : rules) {
