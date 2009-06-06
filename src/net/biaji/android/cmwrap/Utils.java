@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import net.biaji.android.cmwrap.R.raw;
+import net.biaji.android.cmwrap.services.WrapService;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -131,13 +134,16 @@ public class Utils {
 	 * @param context
 	 * @return
 	 */
-	public static boolean isCmwap(ContextWrapper context) {
+	public static boolean isCmwap(Context context) {
 		boolean result = false;
 
 		ConnectivityManager manager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		if (manager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI)
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+		
+		if (networkInfo != null
+				&& networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
 			return false;
 
 		Cursor mCursor = context.getContentResolver().query(
@@ -214,4 +220,23 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * 记录当前服务状态
+	 */
+	public static void saveServiceLevel(Context context, int level) {
+		SharedPreferences pref = context.getSharedPreferences("cmwrap",
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putInt("SERVERLEVEL", level);
+		editor.commit();
+	}
+
+	/**
+	 * 
+	 */
+	public static int getServiceLevel(Context context) {
+		SharedPreferences pref = context.getSharedPreferences("cmwrap",
+				Context.MODE_PRIVATE);
+		return pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+	}
 }

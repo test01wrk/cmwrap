@@ -1,8 +1,10 @@
 package net.biaji.android.cmwrap.services;
 
+import net.biaji.android.cmwrap.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 /**
@@ -19,6 +21,8 @@ public class NetworkDetector extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.v(TAG, "捕获事件：" + intent.getAction());
 
+		Intent intentS = new Intent(context, WrapService.class);
+
 		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 			try {
 				Thread.sleep(1000 * 60); // 等其它应用程序先抢一分钟
@@ -26,7 +30,22 @@ public class NetworkDetector extends BroadcastReceiver {
 				Log.e(TAG, "谦逊失败");
 			}
 		}
-		context.startService(new Intent(context, WrapService.class));
+
+		int level = Utils.getServiceLevel(context); 
+
+		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
+		if (!Utils.isCmwap(context)) {
+			intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
+			Log.v(TAG, "目前不是cmwap接入，暂停服务");
+		} else {
+			if (level != WrapService.SERVER_LEVEL_NULL && level != WrapService.SERVER_LEVEL_STOP) {
+				intentS.putExtra("SERVERLEVEL", level);
+			} else {
+				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_BASE);
+			}
+		}
+
+		context.startService(intentS);
 	}
 
 }

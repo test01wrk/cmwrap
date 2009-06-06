@@ -29,7 +29,7 @@
 38.118.85.51            direct.weatherbug.com
 38.118.85.55            config.mobile.wxbug.com mapplets.weatherbug.com tiles.weatherbug.com
 209.249.20.150          pub.weatherbug.com
-128.121.146.228         twitter.com
+168.143.162.100			twitter.com  www.twitter.com
 64.4.9.254              messenger.hotmail.com
 209.85.173.192          supl.google.com
 66.147.240.162          update.wordmate.net     dictdownload.wordmate.net wordmate.net
@@ -44,3 +44,5 @@
 72.14.203.102			csi.gstatic.com			csi.l.google.com
 209.85.145.160			m.google.cn
 38.102.136.111			api.wunderground.com
+75.101.161.95			api.textonphone.com
+194.126.240.19			goog.shazamid.com

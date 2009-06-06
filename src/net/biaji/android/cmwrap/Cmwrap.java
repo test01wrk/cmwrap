@@ -74,9 +74,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 	protected void onStart() {
 		super.onStart();
 
-		SharedPreferences pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
-		serviceLevel = pref
-				.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+		if (Utils.isCmwap(this))
+			serviceLevel = Utils.getServiceLevel(this);
+		else
+			serviceLevel = WrapService.SERVER_LEVEL_NO_NETWORK;
 
 		Log.d(TAG, "服务级别为：" + serviceLevel);
 
@@ -259,6 +260,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case WrapService.SERVER_LEVEL_NULL:
 			baseServiceSwitcher.setEnabled(false);
 			break;
+
+		default:
+			baseServiceSwitcher.setEnabled(false);
+			switcher.setEnabled(false);
 		}
 	}
 }

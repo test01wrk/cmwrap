@@ -23,8 +23,6 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private SharedPreferences pref;
-
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String proxyHost;
@@ -34,6 +32,8 @@ public class WrapService extends Service {
 	private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
 	private final String TAG = "CMWRAP->Service";
+
+	public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
 	 * 服务状态未设定
@@ -79,13 +79,10 @@ public class WrapService extends Service {
 
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
-		pref = getSharedPreferences("cmwrap", MODE_PRIVATE);
-
-		int level = pref.getInt("SERVERLEVEL", SERVER_LEVEL_NULL);
+		int level = Utils.getServiceLevel(this);
 
 		if (level != SERVER_LEVEL_NULL) {
 			serverLevel = level;
-
 			if (Utils.isCmwap(this)) {
 				startSubDaemon();
 				showNotify();
@@ -99,22 +96,15 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-
+		Log.v(TAG, "Level Chang from " + serverLevel + "to Intent:" + level);
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
 		}
 
-		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
-		if (!Utils.isCmwap(this)) {
-			Log.v(TAG, "目前不是cmwap接入，暂停服务");
-			stopSubDaemon();
-			serverLevel = SERVER_LEVEL_STOP;
-		}
-
 		showNotify();
 		// 保存服务状态，以备被杀
-		saveServiceLevel();
+		Utils.saveServiceLevel(this, serverLevel);
 
 	}
 
@@ -127,7 +117,7 @@ public class WrapService extends Service {
 	public void onDestroy() {
 		stopSubDaemon();
 		serverLevel = SERVER_LEVEL_NULL;
-		saveServiceLevel();
+		Utils.saveServiceLevel(this, serverLevel);
 		nm.cancel(R.string.serviceTagUp);
 	}
 
@@ -171,6 +161,9 @@ public class WrapService extends Service {
 	 * 启动侦听服务线程
 	 */
 	private void startSubDaemon() {
+
+		if (serverLevel <= SERVER_LEVEL_STOP)
+			return;
 
 		forward();
 
@@ -230,14 +223,5 @@ public class WrapService extends Service {
 		} catch (Exception e) {
 		}
 
-	}
-
-	/**
-	 * 记录当前服务状态
-	 */
-	private void saveServiceLevel() {
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putInt("SERVERLEVEL", serverLevel);
-		editor.commit();
 	}
 }

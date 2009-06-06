@@ -6,17 +6,17 @@
 	<string name="serviceTagDown">禁用CMWAP穿越</string>
 	
 	
-	<string name="serviceTagApp">启用CMWAP穿越+基础G1服务</string><string name="serviceTagSuper">启用所有服务</string><string name="proxyServer">10.0.0.172</string>
+	<string name="serviceTagApp">启用CMWAP穿越+基础Google服务</string><string name="serviceTagSuper">启用所有服务</string><string name="proxyServer">10.0.0.172</string>
 	<string name="proxyPort">80</string>
 	<string name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward</string>
 <string name="CMDipForwardDisable">echo 0 &gt;  /proc/sys/net/ipv4/ip_forward</string>
 <string name="CMDiptablesEnable">iptables -t nat -A OUTPUT -o rmnet0 -p tcp -d android.clients.google.com --dport 443 -j DNAT --to-destination 127.0.0.1:7443｜iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.172:80｜iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport 1080 -j DNAT --to-destination 10.0.0.172:80</string>
 <string name="CMDiptablesDisable">iptables -t nat -F</string>
-<string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n</string>
-<string name="CMDremount">mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system</string>
+<string name="CMDremount">mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system</string><string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n</string>
+
 <string name="UserAgent">biAji's wap channel</string>
-<string name="Version">44</string>
-<string name="MENU_TEST">环境测试</string>
+
+<string name="MENU_TEST">环境测试</string><string name="Version">50</string>
 <string name="VersionName">alpha-3</string>
 <string name="Dev">1</string>
 
