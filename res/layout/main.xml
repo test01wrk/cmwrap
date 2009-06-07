@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 
+	<TableRow android:padding="2pt">
+		<ToggleButton android:id="@+id/Switch"
+			android:layout_height="wrap_content" android:textOn="关闭"
+			android:textOff="启用" 
+			android:maxWidth="15pt"></ToggleButton>
 
-	<ToggleButton android:id="@+id/Switch"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textOn="关闭" android:textOff="启用"></ToggleButton>
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:inputType="none"
+			android:text="@string/serviceBaseComment" />
+	</TableRow>
 
-	<ToggleButton android:id="@+id/BaseService"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textOn="关闭" android:textOff="启用"></ToggleButton>
+	<TableRow android:padding="2pt">
+		<ToggleButton android:id="@+id/BaseService"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:textOn="关闭" android:textOff="启用"></ToggleButton>
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:inputType="none"
+			android:text="@string/serviceAppComment" />
+	</TableRow>
+	
+	<View android:layout_height="2dip" android:background="#FF909090" />
 
-	<TextView android:id="@+id/logwindow" android:layout_width="wrap_content"
-		android:layout_height="fill_parent" android:editable="false"
-		android:scrollbars="vertical" />
+	<TableRow android:padding="2pt">
+		<TextView android:id="@+id/logwindow" android:layout_width="fill_parent"
+			android:layout_height="fill_parent" android:editable="false"
+			android:scrollbars="vertical" />
+	</TableRow>
 
-
-</LinearLayout>
+</TableLayout>
