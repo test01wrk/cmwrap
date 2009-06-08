@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+	android:layout_height="fill_parent" android:stretchColumns="1">
 
-	<TableRow android:padding="2pt">
+	<TableRow android:padding="2pt" android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
 		<ToggleButton android:id="@+id/Switch"
-			android:layout_height="wrap_content" android:textOn="关闭"
-			android:textOff="启用" 
-			android:maxWidth="15pt"></ToggleButton>
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:textOn="关闭" android:textOff="启用" />
 
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:inputType="none"
-			android:text="@string/serviceBaseComment" />
+			android:layout_column="1" android:layout_height="wrap_content"
+			android:inputType="none" android:text="@string/serviceBaseComment" android:drawablePadding="1px" />
 	</TableRow>
 
 	<TableRow android:padding="2pt">
 		<ToggleButton android:id="@+id/BaseService"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:textOn="关闭" android:textOff="启用"></ToggleButton>
+			android:textOn="关闭" android:textOff="启用" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:inputType="none"
-			android:text="@string/serviceAppComment" />
+			android:layout_column="1" android:text="@string/serviceAppComment" />
 	</TableRow>
-	
+
 	<View android:layout_height="2dip" android:background="#FF909090" />
 
-	<TableRow android:padding="2pt">
-		<TextView android:id="@+id/logwindow" android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:editable="false"
-			android:scrollbars="vertical" />
-	</TableRow>
+	<TextView android:id="@+id/logwindow" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:editable="false"
+		android:scrollbars="vertical" android:textColor="#FF00FF00" />
+
 
 </TableLayout>

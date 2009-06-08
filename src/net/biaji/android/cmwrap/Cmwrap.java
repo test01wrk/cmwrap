@@ -24,7 +24,6 @@ import java.io.IOException;
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
