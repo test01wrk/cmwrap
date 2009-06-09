@@ -3,10 +3,10 @@
 	<string name="app_name">Cmwrap</string>
 	<string name="serviceTagUp">启用CMWAP穿越</string>
 	<string name="serviceTagDown">禁用CMWAP穿越</string>
-	<string name="serviceBaseComment">切换基本运行状态，此运行状态下，耗电量与未打开时几乎没有差别
+	<string name="serviceBaseComment">切换基本运行状态\n此运行状态下，耗电量与未打开时几乎\n没有差别
 	</string>
 	<string name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
-	<string name="serviceAppComment">切换基本服务状态，此状态下，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
+	<string name="serviceAppComment">切换基本服务状态\n此状态将启用Gmail、Gtalk等基本\nGoogle服务，由于Gmail等应用程序同步\n需要，耗电量稍微多于基本运行状态
 	</string>
 	<string name="serviceTagSuper">启用所有服务</string>
 	<string name="proxyServer">10.0.0.172</string>
@@ -28,7 +28,7 @@
 	</string>
 	<string name="UserAgent">biAji's wap channel</string>
 	<string name="MENU_TEST">环境测试</string>
-	<string name="Version">54</string>
+	<string name="Version">55</string>
 	<string name="VersionName">alpha-4</string>
 	<string name="LogLevel">5</string>
 </resources>
