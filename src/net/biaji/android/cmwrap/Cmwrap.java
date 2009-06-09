@@ -258,6 +258,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		case WrapService.SERVER_LEVEL_NULL:
 			baseServiceSwitcher.setEnabled(false);
+			baseServiceSwitcher.setChecked(false);
 			break;
 
 		default:

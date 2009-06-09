@@ -4,7 +4,6 @@ import net.biaji.android.cmwrap.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 /**
@@ -31,14 +30,15 @@ public class NetworkDetector extends BroadcastReceiver {
 			}
 		}
 
-		int level = Utils.getServiceLevel(context); 
+		int level = Utils.getServiceLevel(context);
 
 		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
 		if (!Utils.isCmwap(context)) {
 			intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
 			Log.v(TAG, "目前不是cmwap接入，暂停服务");
 		} else {
-			if (level != WrapService.SERVER_LEVEL_NULL && level != WrapService.SERVER_LEVEL_STOP) {
+			if (level != WrapService.SERVER_LEVEL_NULL
+					&& level != WrapService.SERVER_LEVEL_STOP) {
 				intentS.putExtra("SERVERLEVEL", level);
 			} else {
 				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_BASE);

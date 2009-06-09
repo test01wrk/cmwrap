@@ -96,7 +96,7 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-		Log.v(TAG, "Level Chang from " + serverLevel + "to Intent:" + level);
+		Log.v(TAG, "Level Chang from " + serverLevel + " to Intent:" + level);
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
@@ -165,7 +165,7 @@ public class WrapService extends Service {
 		if (serverLevel <= SERVER_LEVEL_STOP)
 			return;
 
-		forward();
+			forward();
 
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
