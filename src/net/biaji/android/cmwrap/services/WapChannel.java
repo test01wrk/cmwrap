@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import android.util.Log;
+import net.biaji.android.cmwrap.Logger;
+
 
 public class WapChannel extends Thread {
 
@@ -45,7 +46,7 @@ public class WapChannel extends Thread {
 	 */
 	private void buildProxy() {
 
-		Log.v(TAG, "建立通道");
+		Logger.v(TAG, "建立通道");
 		DataInputStream din = null;
 		DataOutputStream dout = null;
 
@@ -62,23 +63,23 @@ public class WapChannel extends Thread {
 
 			dout.writeBytes(connectStr);
 			dout.flush();
-			Log.v(TAG, connectStr);
+			Logger.v(TAG, connectStr);
 
 			String result = din.readLine();
 			din.readLine(); // 多了个0D0A
 
-			Log.v(TAG, result);
+			Logger.v(TAG, result);
 
 			if (result != null && result.contains("200")) {
 				isConnected = true;
-				Log.v(TAG, "通道建立成功， 耗时："
+				Logger.v(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
 			}
 
 		} catch (UnknownHostException e) {
-			Log.e(TAG, "无法获取代理服务器的IP地址", e);
+			Logger.e(TAG, "无法获取代理服务器的IP地址", e);
 		} catch (IOException e) {
-			Log.e(TAG, "建立隧道失败", e);
+			Logger.e(TAG, "建立隧道失败", e);
 		}
 	}
 
@@ -102,7 +103,7 @@ public class WapChannel extends Thread {
 				come.start();
 
 			} catch (IOException e) {
-				Log.e(TAG, "获取流失败：" + e.getLocalizedMessage());
+				Logger.e(TAG, "获取流失败：" + e.getLocalizedMessage());
 			}
 		}
 	}
@@ -128,7 +129,7 @@ public class WapChannel extends Thread {
 			if (!socket.isClosed())
 				socket.close();
 		} catch (IOException e) {
-			Log.e(TAG, "销毁失败");
+			Logger.e(TAG, "销毁失败");
 		} finally {
 			try {
 				socket.close();
@@ -150,7 +151,7 @@ public class WapChannel extends Thread {
 
 		@Override
 		public void run() {
-			Log.v(TAG, direction + "线程启动");
+			Logger.v(TAG, direction + "线程启动");
 			int count = 0;
 			try {
 
@@ -163,7 +164,7 @@ public class WapChannel extends Thread {
 					if (count > 0) {
 						// Log.d(TAG, "方向" + direction
 						// + Utils.bytesToHexString(buff, 0, count));
-						Log.v(TAG, direction + "--" + count);
+						Logger.v(TAG, direction + "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
@@ -171,7 +172,7 @@ public class WapChannel extends Thread {
 
 				}
 			} catch (IOException e) {
-				Log.e(TAG, direction + " 管道通讯失败", e);
+				Logger.e(TAG, direction + " 管道通讯失败", e);
 				isConnected = false;
 			}
 		}

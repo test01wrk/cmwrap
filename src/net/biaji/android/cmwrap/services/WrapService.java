@@ -3,6 +3,7 @@ package net.biaji.android.cmwrap.services;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.Rule;
 import net.biaji.android.cmwrap.Utils;
@@ -11,9 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.util.Log;
 
 /**
  * @author biaji
@@ -64,7 +63,7 @@ public class WrapService extends Service {
 
 	@Override
 	public void onCreate() {
-		Log.v(TAG, "创建wrap服务");
+		Logger.v(TAG, "创建wrap服务");
 
 		// 由资源文件加载指定代理服务器
 		proxyHost = getResources().getString(R.string.proxyServer);
@@ -96,7 +95,9 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-		Log.v(TAG, "Level Chang from " + serverLevel + " to Intent:" + level);
+		Logger
+				.v(TAG, "Level Chang from " + serverLevel + " to Intent:"
+						+ level);
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
@@ -165,7 +166,7 @@ public class WrapService extends Service {
 		if (serverLevel <= SERVER_LEVEL_STOP)
 			return;
 
-			forward();
+		forward();
 
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
@@ -187,7 +188,7 @@ public class WrapService extends Service {
 				try {
 					server.close();
 				} catch (IOException e) {
-					Log.e(TAG, "Server " + server.getServPort() + "关闭错误", e);
+					Logger.e(TAG, "Server " + server.getServPort() + "关闭错误", e);
 				}
 			}
 

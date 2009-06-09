@@ -11,17 +11,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import net.biaji.android.cmwrap.R.raw;
 import net.biaji.android.cmwrap.services.WrapService;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.util.Log;
 
 public class Utils {
 
@@ -108,14 +105,14 @@ public class Utils {
 					rule.mode = Rule.MODE_BASE;
 					rule.desPort = Integer.parseInt(items[1]);
 				}
-				Log.v(TAG, "载入" + rule.name + "规则");
+				Logger.v(TAG, "载入" + rule.name + "规则");
 				rules.add(rule);
 
 			}
 			in.close();
 			in = null;
 		} catch (Exception e) {
-			Log.e("CMWRAP", "载入规则文件失败：" + e.getLocalizedMessage());
+			Logger.e("CMWRAP", "载入规则文件失败：" + e.getLocalizedMessage());
 		} finally {
 			if (in != null) {
 				try {
@@ -157,7 +154,7 @@ public class Utils {
 						result = true;
 				}
 			} catch (Exception e) {
-				Log.e(TAG, "Can not get Network info");
+				Logger.e(TAG, "Can not get Network info");
 			} finally {
 				mCursor.close();
 			}
@@ -192,20 +189,20 @@ public class Utils {
 
 			String resp;
 			while ((resp = bre.readLine()) != null) {
-				Log.d(TAG, resp);
+				Logger.d(TAG, resp);
 			}
 			result = process.waitFor();
 			if (result == 0)
-				Log.d(TAG, cmd + " exec success");
+				Logger.d(TAG, cmd + " exec success");
 			else {
-				Log.d(TAG, cmd + " exec with result" + result);
+				Logger.d(TAG, cmd + " exec with result" + result);
 			}
 			os.close();
 			process.destroy();
 		} catch (IOException e) {
-			Log.e(TAG, "Failed to exec command", e);
+			Logger.e(TAG, "Failed to exec command", e);
 		} catch (InterruptedException e) {
-			Log.e(TAG, "线程意外终止", e);
+			Logger.e(TAG, "线程意外终止", e);
 		} finally {
 
 			try {

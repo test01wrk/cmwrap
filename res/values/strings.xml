@@ -28,7 +28,7 @@
 	</string>
 	<string name="UserAgent">biAji's wap channel</string>
 	<string name="MENU_TEST">环境测试</string>
-	<string name="Version">51</string>
+	<string name="Version">54</string>
 	<string name="VersionName">alpha-4</string>
-	<string name="Dev">1</string>
+	<string name="LogLevel">5</string>
 </resources>

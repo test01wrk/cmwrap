@@ -25,7 +25,6 @@ import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,7 +77,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		else
 			serviceLevel = WrapService.SERVER_LEVEL_NO_NETWORK;
 
-		Log.d(TAG, "服务级别为：" + serviceLevel);
+		Logger.d(TAG, "服务级别为：" + serviceLevel);
 
 		redrawButton();
 
@@ -96,7 +95,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
 				stopService(serviceIn);
-				Log.i(TAG, "禁用服务");
+				Logger.i(TAG, "禁用服务");
 				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 				Toast.makeText(this, R.string.serviceTagDown,
 						Toast.LENGTH_SHORT).show();
@@ -120,7 +119,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		}
 
 		serviceIn.putExtra("SERVERLEVEL", serviceLevel);
-		Log.i(TAG, "启用服务");
+		Logger.i(TAG, "启用服务");
 		startService(serviceIn);
 		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 		redrawButton();
@@ -162,10 +161,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, "No Version File, First installed");
+			Logger.e(TAG, "No Version File, First installed");
 			tag();
 		} catch (IOException e) {
-			Log.e(TAG, "IOerror");
+			Logger.e(TAG, "IOerror");
 		}
 		return firsTime;
 	}
@@ -181,11 +180,11 @@ public class Cmwrap extends Activity implements OnClickListener {
 			out.write(Integer.parseInt(getString(R.string.Version)));
 			out.close();
 		} catch (FileNotFoundException ex) {
-			Log.e(TAG, "No Version File, First installed");
+			Logger.e(TAG, "No Version File, First installed");
 		} catch (NumberFormatException ex) {
-			Log.e(TAG, "版本号解析失败");
+			Logger.e(TAG, "版本号解析失败");
 		} catch (IOException ex) {
-			Log.e(TAG, "写入版本号失败");
+			Logger.e(TAG, "写入版本号失败");
 		}
 	}
 
@@ -226,9 +225,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 			result = 0;
 
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, "未发现目的路径", e);
+			Logger.e(TAG, "未发现目的路径", e);
 		} catch (IOException e) {
-			Log.e(TAG, "安装文件错误", e);
+			Logger.e(TAG, "安装文件错误", e);
 		}
 		return result;
 	}

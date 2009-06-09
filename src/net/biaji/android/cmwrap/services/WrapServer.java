@@ -5,8 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 
+import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.Utils;
-import android.util.Log;
 
 public class WrapServer extends Thread {
 
@@ -37,10 +37,10 @@ public class WrapServer extends Thread {
 			serSocket = new ServerSocket(port);
 			inService = true;
 		} catch (IOException e) {
-			Log.e(TAG, "Server初始化错误，端口号" + port, e);
+			Logger.e(TAG, "Server初始化错误，端口号" + port, e);
 		}
 		Utils.writeLog("启用" + name + "服务于" + servPort + "端口");
-		Log.v(TAG, "启用" + name + "服务于" + servPort + "端口");
+		Logger.v(TAG, "启用" + name + "服务于" + servPort + "端口");
 
 	}
 
@@ -50,7 +50,7 @@ public class WrapServer extends Thread {
 
 	public void close() throws IOException {
 		inService = false;
-		serSocket.close(); //TODO 优雅点
+		serSocket.close(); // TODO 优雅点
 	}
 
 	public int getServPort() {
@@ -76,9 +76,9 @@ public class WrapServer extends Thread {
 		while (inService) {
 			try {
 				clean();
-				Log.v(TAG, "等待客户端请求……");
+				Logger.v(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
-				Log.v(TAG, "获得客户端请求");
+				Logger.v(TAG, "获得客户端请求");
 				WapChannel channel = new WapChannel(socket, dest, proxyHost,
 						proxyPort);
 				if (channel.isConnected()) {
@@ -90,16 +90,16 @@ public class WrapServer extends Thread {
 
 				Thread.sleep(100);
 			} catch (IOException e) {
-				Log.e(TAG, "伺服客户请求失败" + e.getMessage());
+				Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
 			} catch (InterruptedException e) {
-				Log.e(TAG, "世上本无事" + e.getMessage());
+				Logger.e(TAG, "世上本无事" + e.getMessage());
 			}
 		}
 
 		try {
 			serSocket.close();
 		} catch (IOException e) {
-			Log.e(TAG, name + "关闭服务端口失败：" + e.getMessage());
+			Logger.e(TAG, name + "关闭服务端口失败：" + e.getMessage());
 		}
 		Utils.writeLog(name + "侦听服务停止");
 
@@ -116,10 +116,10 @@ public class WrapServer extends Thread {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				channels.remove(channel);
-				Log.v(TAG, name + "清理链接");
+				Logger.v(TAG, name + "清理链接");
 			} else if (channel == null) {
 				channels.remove(channel);
-				Log.v(TAG, name + "清理无效链接");
+				Logger.v(TAG, name + "清理无效链接");
 			}
 		}
 	}
