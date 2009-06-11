@@ -138,9 +138,9 @@ public class Utils {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-		
-		if (networkInfo != null
-				&& networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+
+		if (networkInfo == null
+				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
 			return false;
 
 		Cursor mCursor = context.getContentResolver().query(

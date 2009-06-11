@@ -32,7 +32,7 @@ public class WrapService extends Service {
 
 	private final String TAG = "CMWRAP->Service";
 
-	public final static int SERVER_LEVEL_NO_NETWORK = -100;
+	//public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
 	 * 服务状态未设定
@@ -85,6 +85,8 @@ public class WrapService extends Service {
 			if (Utils.isCmwap(this)) {
 				startSubDaemon();
 				showNotify();
+			} else {
+				serverLevel = SERVER_LEVEL_STOP;
 			}
 		}
 
@@ -105,7 +107,8 @@ public class WrapService extends Service {
 
 		showNotify();
 		// 保存服务状态，以备被杀
-		Utils.saveServiceLevel(this, serverLevel);
+		if (serverLevel != SERVER_LEVEL_STOP)
+			Utils.saveServiceLevel(this, serverLevel);
 
 	}
 

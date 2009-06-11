@@ -75,7 +75,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		if (Utils.isCmwap(this))
 			serviceLevel = Utils.getServiceLevel(this);
 		else
-			serviceLevel = WrapService.SERVER_LEVEL_NO_NETWORK;
+			serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
 		Logger.d(TAG, "服务级别为：" + serviceLevel);
 
