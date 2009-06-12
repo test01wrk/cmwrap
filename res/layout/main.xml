@@ -3,26 +3,39 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:stretchColumns="1">
 
-	<TableRow android:padding="2pt" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:gravity="center_vertical" >
+	<TableRow android:layout_margin="2pt" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:gravity="center_vertical">
 		<ToggleButton android:id="@+id/Switch"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:textOn="关闭" android:textOff="启用" />
-
-		<TextView android:layout_width="wrap_content"
-			android:layout_column="1" android:layout_height="wrap_content"
-			android:inputType="none" android:text="@string/serviceBaseComment"
-			android:layout_marginRight="10px" />
+		<TableLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_column="1">
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/serviceBaseTitle"
+				android:textSize="18sp" android:textStyle="bold" android:textColor="#FFF" />
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:inputType="none"
+				android:text="@string/serviceBaseComment" android:paddingRight="70sp" />
+		</TableLayout>
 	</TableRow>
 
-	<TableRow android:padding="2pt" android:layout_width="wrap_content"
+	<TableRow android:layout_margin="2pt" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:gravity="center_vertical">
 		<ToggleButton android:id="@+id/BaseService"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:textOn="关闭" android:textOff="启用" />
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:inputType="none"
-			android:layout_column="1" android:text="@string/serviceAppComment" />
+
+		<TableLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_column="1">
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/serviceAppTitle"
+				android:textSize="18sp" android:textStyle="bold" android:textColor="#FFF" />
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:inputType="none"
+				android:layout_column="1" android:text="@string/serviceAppComment"
+				android:paddingRight="70sp" />
+		</TableLayout>
+
 	</TableRow>
 
 	<View android:layout_height="2dip" android:background="#FF909090" />
