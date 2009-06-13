@@ -7,7 +7,7 @@
 		android:layout_height="wrap_content" android:gravity="center_vertical">
 		<ToggleButton android:id="@+id/Switch"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:textOn="关闭" android:textOff="启用" />
+			android:textOn="关闭" android:textOff="启用" android:layout_marginRight="10dp" />
 		<TableLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_column="1">
 			<TextView android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
 		android:layout_height="wrap_content" android:gravity="center_vertical">
 		<ToggleButton android:id="@+id/BaseService"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:textOn="关闭" android:textOff="启用" />
+			android:textOn="关闭" android:textOff="启用" android:layout_marginRight="10dp" />
 
 		<TableLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_column="1">
