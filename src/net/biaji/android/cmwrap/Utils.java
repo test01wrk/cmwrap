@@ -220,7 +220,7 @@ public class Utils {
 	/**
 	 * 记录当前服务状态
 	 */
-	public static void saveServiceLevel(Context context, int level) {
+	public static synchronized void saveServiceLevel(Context context, int level) {
 		SharedPreferences pref = context.getSharedPreferences("cmwrap",
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = pref.edit();
