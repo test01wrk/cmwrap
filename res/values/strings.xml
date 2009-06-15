@@ -32,8 +32,8 @@
 	<string name="MENU_TEST">环境测试</string>
 	<string name="MENU_SETTING">设置</string>
 	<string name="MENU_ABOUT">关于</string>
-	<string name="Version">55</string>
-	<string name="VersionName">alpha-4</string>
+	<string name="Version">68</string>
+	<string name="VersionName">alpha-5</string>
 	<string name="LogLevel">5</string>
 	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
 	</string>
