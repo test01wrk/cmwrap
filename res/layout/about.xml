@@ -1,30 +1,25 @@
 <LinearLayout android:id="@+id/LinearLayout01"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android">
-	<ImageView android:id="@+id/ImageView01"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:src="@drawable/icon" android:layout_marginRight="10dp" />
-
 	<TableLayout android:id="@+id/TableLayout01"
-		android:layout_width="wrap_content" android:layout_height="wrap_content">
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_margin="5sp">
 		<TableRow android:layout_width="wrap_content"
 			android:layout_height="wrap_content">
 			<TextView android:text="版本" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-				android:textStyle="bold" android:textColor="#FFF"
-				android:layout_marginRight="10dp" />
+				android:layout_height="wrap_content" android:textStyle="bold"
+				android:textColor="#FFF" android:layout_marginRight="10dp" />
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/VersionName" />
 		</TableRow>
 		<TableRow android:layout_width="wrap_content"
 			android:layout_height="wrap_content">
 			<TextView android:text="主页" android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textStyle="bold" android:textColor="#FFF"
-				android:layout_marginRight="10dp" />
+				android:layout_height="wrap_content" android:textStyle="bold"
+				android:textColor="#FFF" android:layout_marginRight="10dp" />
 			<TextView android:layout_width="wrap_content"
 				android:autoLink="web" android:layout_height="wrap_content"
-				android:text="@string/HOMEPAGE" />
+				android:text="@string/HOMEPAGE"  />
 		</TableRow>
 	</TableLayout>
 	<TableRow android:id="@+id/TableRow03" android:layout_width="wrap_content"

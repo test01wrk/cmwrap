@@ -23,9 +23,12 @@ import java.io.IOException;
 
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -106,6 +109,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				Toast.makeText(this, R.string.serviceTagDown,
 						Toast.LENGTH_SHORT).show();
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
+				Utils.saveServiceLevel(this, serviceLevel);
 				redrawButton();
 				return;
 			} else {
@@ -136,9 +140,19 @@ public class Cmwrap extends Activity implements OnClickListener {
 		Dialog dialog = null;
 		switch (id) {
 		case DIALOG_ABOUT_ID:
-			dialog = new Dialog(this);
-			dialog.setContentView(R.layout.about);
-			dialog.setTitle(getString(R.string.MENU_ABOUT));
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setView(
+					LayoutInflater.from(this).inflate(R.layout.about, null))
+					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
+					.setPositiveButton("喔",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+
+			dialog = builder.create();
 			break;
 
 		}
