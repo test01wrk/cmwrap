@@ -25,6 +25,7 @@ import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,6 +48,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private final String TAG = "CMWRAP->";
 
 	private final int DIALOG_ABOUT_ID = 0;
+
+	private final int DIALOG_TEST_ID = 1;
+
+	private ProgressDialog diagDialog; // 这个定义让我感觉很诡异，我就没别的办法获取这个对象了么
 
 	/**
 	 * 安装文件
@@ -137,7 +142,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		Dialog dialog = null;
 		switch (id) {
 		case DIALOG_ABOUT_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -152,11 +156,18 @@ public class Cmwrap extends Activity implements OnClickListener {
 								}
 							});
 
-			dialog = builder.create();
-			break;
-
+			AlertDialog dialog = builder.create();
+			return dialog;
+		case DIALOG_TEST_ID:
+			diagDialog = new ProgressDialog(this);
+			diagDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			diagDialog.setMessage("测试中……");
+			TestManager manager = new TestManager();
+			manager.start();
+			return diagDialog;
+		default:
+			return null;
 		}
-		return dialog;
 	}
 
 	/** Called when the activity is first created. */
@@ -199,7 +210,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		switch (item.getItemId()) {
 		case R.id.TEST:
-
+			showDialog(DIALOG_TEST_ID);
 			return true;
 		case R.id.SETTING:
 
@@ -306,6 +317,20 @@ public class Cmwrap extends Activity implements OnClickListener {
 		Logger.d(TAG, "服务级别为：" + serviceLevel);
 
 		redrawButton();
+
+	}
+
+	private class TestManager extends Thread {
+
+		@Override
+		public void run() {
+			int result = Utils.rootCMD("iptables");
+			diagDialog.setProgress(20);
+			if (result != 0)
+				logWindow.append(getString(R.string.ERR_NO_ROOT));
+			diagDialog.dismiss();
+
+		}
 
 	}
 

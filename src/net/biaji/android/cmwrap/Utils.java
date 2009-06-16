@@ -24,6 +24,12 @@ public class Utils {
 
 	private static String TAG = "CMWRAP->Utils";
 
+	public static String errMsg = "";
+
+	public static String getErr() {
+		return errMsg;
+	}
+
 	public static String bytesToHexString(byte[] bytes) {
 		return bytesToHexString(bytes, 0, bytes.length);
 	}
@@ -190,6 +196,7 @@ public class Utils {
 			String resp;
 			while ((resp = bre.readLine()) != null) {
 				Logger.d(TAG, resp);
+				errMsg = resp;
 			}
 			result = process.waitFor();
 			if (result == 0)
