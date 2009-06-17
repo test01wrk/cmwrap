@@ -340,7 +340,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
 		Logger.d(TAG, "服务级别为：" + serviceLevel);
-
+		logWindow.setText("");
 		redrawButton();
 
 	}
@@ -360,7 +360,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			int result = Utils.rootCMD("iptables -L -t nat");
 			bundle.putString("TESTNAME", getString(R.string.TEST_ROOT));
-			if (result == 1) { // 没有root权限
+			if (result == 1 || result == -1) { // 没有root权限
 				bundle.putString("ERRMSG", getString(R.string.ERR_NO_ROOT));
 				bundle.putInt("PROGRESS", 100);
 				msg.setData(bundle);
@@ -368,6 +368,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				return;
 			}
 			bundle.putInt("PROGRESS", 20);
+			bundle.putString("MESSAGE", getString(R.string.TEST_IPTABLES));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
 			testSleep(1000);
@@ -383,7 +384,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				return;
 			}
 			bundle.putInt("PROGRESS", 40);
-			bundle.putString("MESSAGE", "测试当前连接方式……");
+			bundle.putString("MESSAGE", getString(R.string.TEST_CMWAP));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
 			testSleep(1000);
@@ -396,7 +397,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				bundle.putInt("PROGRESS", 100);
 			}
 			bundle.putInt("PROGRESS", 60);
-			bundle.putString("MESSAGE", "测试HTTP代理可用性……");
+			bundle.putString("MESSAGE", getString(R.string.TEST_HTTPS));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
 			testSleep(1000);
@@ -414,6 +415,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			}
 			channel.destory();
 			bundle.putInt("PROGRESS", 80);
+			bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
 
