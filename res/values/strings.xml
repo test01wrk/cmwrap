@@ -26,16 +26,24 @@
 	<string name="CMDiptablesDisable">iptables -t nat -F</string>
 	<string name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3 /system</string>
-	<string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n
-	</string>
+	
 	<string name="UserAgent">biAji's wap channel</string>
 	<string name="MENU_TEST">环境测试</string>
 	<string name="MENU_SETTING">设置</string>
-	<string name="MENU_ABOUT">关于</string>
-	<string name="Version">68</string>
+	<string name="MENU_ABOUT">关于</string><string name="TEST_ROOT">测试是否具有root权限</string><string name="TEST_IPTABLES">测试是否有iptables支持</string><string name="TEST_CMWAP">测试当前是否CMWAP连接</string><string name="TEST_HTTPS">测试是否支持HTTPS代理</string><string name="TEST_OTHER">测试是否支持HTTPS以外的协议代理</string><string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n</string>
+	<string name="ERR_NO_IPTABLES">无法在现用ROM中找到iptables支持，此程序功能无法实现，请卸载。\n</string><string name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。</string><string name="ERR_UNSUPPORT_HTTPS">当前cmwap代理不支持HTTPS代理，无法使用Gmail等功能\n</string><string name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n</string><string name="Version">68</string>
 	<string name="VersionName">alpha-5</string>
 	<string name="LogLevel">5</string>
 	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
 	</string>
+
+
+
+
+
+
+
+
+
 
 </resources>

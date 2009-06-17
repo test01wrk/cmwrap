@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 
 import net.biaji.android.cmwrap.Logger;
 
-
 public class WapChannel extends Thread {
 
 	private long starTime = System.currentTimeMillis();
@@ -29,16 +28,38 @@ public class WapChannel extends Thread {
 
 	private final String UA = "biAji's wap channel";
 
+	/**
+	 * 
+	 * @param socket
+	 *            本地服务侦听接受的Socket
+	 * @param proxyHost
+	 *            代理服务器主机地址
+	 * @param proxyPort
+	 *            代理服务器端口
+	 */
 	public WapChannel(Socket socket, String proxyHost, int proxyPort) {
 		this(socket, "android.clients.google.com:443", proxyHost, proxyPort);
 	}
 
+	/**
+	 * 
+	 * @param socket
+	 *            本地服务侦听接受的Socket
+	 * @param target
+	 *            将要连接的目标地址，格式为 主机地址:端口号
+	 * @param proxyHost
+	 *            代理服务器主机地址
+	 * @param proxyPort
+	 *            代理服务器端口
+	 */
 	public WapChannel(Socket socket, String target, String proxyHost,
 			int proxyPort) {
 		this.orgSocket = socket;
 		this.target = target;
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
+
+		buildProxy();
 	}
 
 	/**
@@ -53,8 +74,8 @@ public class WapChannel extends Thread {
 		try {
 			innerSocket = new Socket(proxyHost, proxyPort);
 			innerSocket.setKeepAlive(true);
-			innerSocket.setSoTimeout(120*1000);
-			
+			innerSocket.setSoTimeout(120 * 1000);
+
 			din = new DataInputStream(innerSocket.getInputStream());
 			dout = new DataOutputStream(innerSocket.getOutputStream());
 
@@ -85,7 +106,6 @@ public class WapChannel extends Thread {
 
 	@Override
 	public void run() {
-		buildProxy();
 		if (orgSocket != null && innerSocket != null && orgSocket.isConnected()
 				&& innerSocket.isConnected()) {
 			DataInputStream oin, din;
@@ -113,15 +133,21 @@ public class WapChannel extends Thread {
 		if (System.currentTimeMillis() - starTime < 2000)
 			return true;
 
-		if (this.innerSocket.isConnected() && this.orgSocket.isConnected()) {
+		if (this.orgSocket == null && this.innerSocket.isConnected())
+			return true;
+
+		if (this.orgSocket != null && this.innerSocket.isConnected()
+				&& this.orgSocket.isConnected()) {
 			isConnected = true;
 		}
 		return isConnected;
 	}
 
 	public void destory() {
-		clean(orgSocket);
-		clean(innerSocket);
+		if (orgSocket != null)
+			clean(orgSocket);
+		if (innerSocket != null)
+			clean(innerSocket);
 	}
 
 	private void clean(Socket socket) {

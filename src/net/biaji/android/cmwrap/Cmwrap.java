@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import net.biaji.android.cmwrap.services.WapChannel;
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,6 +30,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +55,28 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private final int DIALOG_TEST_ID = 1;
 
 	private ProgressDialog diagDialog; // 这个定义让我感觉很诡异，我就没别的办法获取这个对象了么
+
+	final Handler handler = new Handler() {
+		public void handleMessage(Message msg) {
+			int progress = msg.getData().getInt("PROGRESS");
+
+			if (progress >= 100) {
+				dismissDialog(DIALOG_TEST_ID);
+			} else {
+				diagDialog.setProgress(progress);
+			}
+			String testName = msg.getData().getString("TESTNAME");
+			String diaMsg = msg.getData().getString("MESSAGE");
+			String errMsg = msg.getData().getString("ERRMSG");
+			Logger.d(TAG, "testName: " + testName);
+			diagDialog.setMessage(diaMsg);
+			if (errMsg != null) {
+				logWindow.append(errMsg);
+			} else {
+				logWindow.append(testName + "       测试通过\n");
+			}
+		}
+	};
 
 	/**
 	 * 安装文件
@@ -162,7 +187,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			diagDialog = new ProgressDialog(this);
 			diagDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			diagDialog.setMessage("测试中……");
-			TestManager manager = new TestManager();
+			TestManager manager = new TestManager(handler);
 			manager.start();
 			return diagDialog;
 		default:
@@ -322,16 +347,102 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private class TestManager extends Thread {
 
+		Handler handler = null;
+
+		TestManager(Handler handler) {
+			this.handler = handler;
+		}
+
 		@Override
 		public void run() {
-			int result = Utils.rootCMD("iptables");
-			diagDialog.setProgress(20);
-			if (result != 0)
-				logWindow.append(getString(R.string.ERR_NO_ROOT));
-			diagDialog.dismiss();
+			Message msg = handler.obtainMessage();
+			Bundle bundle = new Bundle();
+
+			int result = Utils.rootCMD("iptables -L -t nat");
+			bundle.putString("TESTNAME", getString(R.string.TEST_ROOT));
+			if (result == 1) { // 没有root权限
+				bundle.putString("ERRMSG", getString(R.string.ERR_NO_ROOT));
+				bundle.putInt("PROGRESS", 100);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+				return;
+			}
+			bundle.putInt("PROGRESS", 20);
+			msg.setData(bundle);
+			handler.sendMessage(msg);
+			testSleep(1000);
+
+			// 测试iptables是否存在
+			msg = handler.obtainMessage();
+			bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
+			if (result == 127) { // 没有iptables TODO: 安装iptables以及后续检查
+				bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
+				bundle.putInt("PROGRESS", 100);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+				return;
+			}
+			bundle.putInt("PROGRESS", 40);
+			bundle.putString("MESSAGE", "测试当前连接方式……");
+			msg.setData(bundle);
+			handler.sendMessage(msg);
+			testSleep(1000);
+
+			// 测试连接方式是否为cmwap
+			msg = handler.obtainMessage();
+			bundle.putString("TESTNAME", getString(R.string.TEST_CMWAP));
+			if (serviceLevel == WrapService.SERVER_LEVEL_STOP) {
+				bundle.putString("ERRMSG", getString(R.string.ERR_NOT_CMWAP));
+				bundle.putInt("PROGRESS", 100);
+			}
+			bundle.putInt("PROGRESS", 60);
+			bundle.putString("MESSAGE", "测试HTTP代理可用性……");
+			msg.setData(bundle);
+			handler.sendMessage(msg);
+			testSleep(1000);
+
+			// 测试https
+			msg = handler.obtainMessage();
+			bundle.putString("TESTNAME", getString(R.string.TEST_HTTPS));
+			WapChannel channel = new WapChannel(null, "10.0.0.172", 80);
+			testSleep(5000);
+			if (channel.isConnected()) {
+				bundle.putString("MESSAGE", "测试Gtalk可用性……");
+			} else {
+				bundle.putString("ERRMSG",
+						getString(R.string.ERR_UNSUPPORT_HTTPS));
+			}
+			channel.destory();
+			bundle.putInt("PROGRESS", 80);
+			msg.setData(bundle);
+			handler.sendMessage(msg);
+
+			// 测试Gtalk
+
+			msg = handler.obtainMessage();
+			bundle.putString("TESTNAME", getString(R.string.TEST_OTHER));
+			channel = new WapChannel(null, "mtalk.google.com:5228",
+					"10.0.0.172", 80);
+			testSleep(5000);
+			if (channel.isConnected()) {
+				bundle.putString("MESSAGE", "测试Gtalk可用性……");
+			} else {
+				bundle.putString("ERRMSG",
+						getString(R.string.ERR_UNSUPPORT_OTHERS));
+			}
+			channel.destory();
+			bundle.putInt("PROGRESS", 100);
+			msg.setData(bundle);
+			handler.sendMessage(msg);
 
 		}
 
+		private void testSleep(long time) {
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 }

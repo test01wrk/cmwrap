@@ -32,7 +32,7 @@ public class WrapService extends Service {
 
 	private final String TAG = "CMWRAP->Service";
 
-	//public final static int SERVER_LEVEL_NO_NETWORK = -100;
+	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
 	 * 服务状态未设定
@@ -78,10 +78,10 @@ public class WrapService extends Service {
 
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
-		int level = Utils.getServiceLevel(this);
+		serverLevel = Utils.getServiceLevel(this);
 
-		if (level != SERVER_LEVEL_NULL) {
-			serverLevel = level;
+		if (serverLevel != SERVER_LEVEL_NULL) {
+
 			if (Utils.isCmwap(this)) {
 				startSubDaemon();
 				showNotify();
@@ -97,9 +97,8 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-		Logger
-				.v(TAG, "Level Chang from " + serverLevel + " to Intent:"
-						+ level);
+		Logger.v(TAG, "Level Change from " + serverLevel + " to Intent:"
+				+ level);
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
