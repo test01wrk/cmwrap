@@ -57,6 +57,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private ProgressDialog diagDialog; // 这个定义让我感觉很诡异，我就没别的办法获取这个对象了么
 
 	final Handler handler = new Handler() {
+		@Override
 		public void handleMessage(Message msg) {
 			int progress = msg.getData().getInt("PROGRESS");
 
