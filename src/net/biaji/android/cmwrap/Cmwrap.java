@@ -408,7 +408,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			WapChannel channel = new WapChannel(null, "10.0.0.172", 80);
 			testSleep(5000);
 			if (channel.isConnected()) {
-				bundle.putString("MESSAGE", "测试Gtalk可用性……");
+				bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
 			} else {
 				bundle.putString("ERRMSG",
 						getString(R.string.ERR_UNSUPPORT_HTTPS));
