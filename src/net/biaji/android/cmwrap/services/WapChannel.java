@@ -136,7 +136,8 @@ public class WapChannel extends Thread {
 		if (this.orgSocket == null && this.innerSocket.isConnected())
 			return true;
 
-		if (this.orgSocket != null && this.innerSocket.isConnected()
+		if (this.orgSocket != null && this.innerSocket != null
+				&& this.innerSocket.isConnected()
 				&& this.orgSocket.isConnected()) {
 			isConnected = true;
 		}
