@@ -199,7 +199,7 @@ public class WapChannel extends Thread {
 
 				}
 			} catch (IOException e) {
-				Logger.e(TAG, direction + " 管道通讯失败", e);
+				Logger.e(TAG, direction + " 管道通讯失败");
 				isConnected = false;
 			}
 		}
