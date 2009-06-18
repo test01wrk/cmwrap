@@ -31,7 +31,8 @@
 	<string name="UserAgent">biAji's wap channel</string>
 	<string name="MENU_TEST">环境测试</string>
 	<string name="MENU_SETTING">设置</string>
-	<string name="MENU_ABOUT">关于</string><string name="TEST_ROOT">测试是否具有root权限</string>
+	<string name="MENU_ABOUT">关于Cmwrap</string>
+	<string name="TEST_ROOT">测试是否具有root权限</string>
 	<string name="TEST_IPTABLES">测试是否有iptables支持</string>
 	<string name="TEST_CMWAP">测试当前是否CMWAP连接</string>
 	<string name="TEST_HTTPS">测试是否支持HTTPS代理</string>
