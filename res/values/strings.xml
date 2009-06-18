@@ -4,11 +4,12 @@
 	<string name="serviceTagUp">启用CMWAP穿越</string>
 	<string name="serviceTagDown">禁用CMWAP穿越</string>
 	<string name="serviceBaseTitle">切换基本运行状态</string>
-	<string name="serviceBaseComment">此运行状态下，耗电量与未打开时几乎没有差别</string>
+	<string name="serviceBaseComment">此状态下可使用浏览器、Google
+		Map等HTTP协议的应用，耗电量与未打开时几乎没有差别</string>
 	<string name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
 	<string name="serviceAppTitle">切换基本服务状态</string>
 	<string name="serviceAppComment">
-		此状态将启用Gmail、Gtalk等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
+		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
 	</string>
 	<string name="serviceTagSuper">启用所有服务</string>
 	<string name="proxyServer">10.0.0.172</string>
