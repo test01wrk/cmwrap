@@ -4,10 +4,12 @@
 66.249.89.99        www.google.com
 66.249.89.101        android.clients.google.com
 66.249.89.104		maps.google.com
-72.14.203.102			csi.gstatic.com			csi.l.google.com
+72.14.203.102			csi.gstatic.com			csi.google.com
 209.85.145.160			m.google.cn
 72.14.203.83            mail.google.com
 209.85.145.160          www.google.cn
+74.125.19.100				docs.google.com	writely.google.com	spreadsheets.google.com
+
 63.216.60.76        static.rememberthemilk.com
 207.242.93.89        andrd.accu-weather.com    htc.accuweather.com
 32.114.14.111           sirocco.accuweather.com
@@ -44,6 +46,11 @@
 199.7.48.190            crl.thawte.com          crl.verisign.net
 119.146.223.179			www.domobile.com
 119.146.223.142			www.hisz.net
-38.102.136.111			api.wunderground.com
-75.101.161.95			api.textonphone.com
-194.126.240.19			goog.shazamid.com
+38.102.136.111				api.wunderground.com
+75.101.161.95				api.textonphone.com
+194.126.240.19				goog.shazamid.com
+87.230.22.28				phodroid.com
+174.36.58.233				twitpic.com
+209.17.74.13				twitgoo.com
+208.94.0.43					yfrog.com
+209.85.237.25				smtp.google.com

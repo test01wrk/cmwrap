@@ -42,11 +42,10 @@
 	<string name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。</string>
 	<string name="ERR_UNSUPPORT_HTTPS">当前cmwap代理不支持HTTPS代理，无法使用Gmail等功能\n</string>
 	<string name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n</string>
-	<string name="Version">68</string>
-	<string name="VersionName">alpha-5</string>
+	<string name="Version">78</string>
+	<string name="VersionName">alpha5</string>
 	<string name="LogLevel">5</string>
-	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
-	</string>
+	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/</string>
 
 
 
