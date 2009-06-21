@@ -63,7 +63,7 @@ public class WrapService extends Service {
 
 	@Override
 	public void onCreate() {
-		Logger.v(TAG, "创建wrap服务");
+		Logger.d(TAG, "创建wrap服务");
 
 		// 由资源文件加载指定代理服务器
 		proxyHost = getResources().getString(R.string.proxyServer);
@@ -97,7 +97,7 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-		Logger.v(TAG, "Level Change from " + serverLevel + " to Intent:"
+		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;

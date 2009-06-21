@@ -39,8 +39,7 @@ public class WrapServer extends Thread {
 		} catch (IOException e) {
 			Logger.e(TAG, "Server初始化错误，端口号" + port, e);
 		}
-		Utils.writeLog("启用" + name + "服务于" + servPort + "端口");
-		Logger.v(TAG, "启用" + name + "服务于" + servPort + "端口");
+		Logger.d(TAG, "启用" + name + "服务于" + servPort + "端口");
 
 	}
 
@@ -101,17 +100,18 @@ public class WrapServer extends Thread {
 		} catch (IOException e) {
 			Logger.e(TAG, name + "关闭服务端口失败：" + e.getMessage());
 		}
-		Utils.writeLog(name + "侦听服务停止");
+		Logger.v(TAG, name + "侦听服务停止");
 
 	}
 
 	@Override
 	public void destroy() {
-		Utils.writeLog(name + "侦听服务被系统销毁");
+		Logger.v(TAG, name + "侦听服务被系统销毁");
 		super.destroy();
 	}
 
 	private void clean() {
+		
 		for (WapChannel channel : channels) {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
@@ -122,6 +122,8 @@ public class WrapServer extends Thread {
 				Logger.v(TAG, name + "清理无效链接");
 			}
 		}
+		
+		Logger.d(TAG, channels.size() + " channel 未清理");
 	}
 
 }

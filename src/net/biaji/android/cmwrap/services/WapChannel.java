@@ -1,12 +1,17 @@
 package net.biaji.android.cmwrap.services;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.Utils;
 
 public class WapChannel extends Thread {
 
@@ -68,32 +73,44 @@ public class WapChannel extends Thread {
 	private void buildProxy() {
 
 		Logger.v(TAG, "建立通道");
-		DataInputStream din = null;
-		DataOutputStream dout = null;
+		BufferedReader din = null;
+		BufferedWriter dout = null;
 
 		try {
 			innerSocket = new Socket(proxyHost, proxyPort);
 			innerSocket.setKeepAlive(true);
 			innerSocket.setSoTimeout(120 * 1000);
 
-			din = new DataInputStream(innerSocket.getInputStream());
-			dout = new DataOutputStream(innerSocket.getOutputStream());
+			din = new BufferedReader(new InputStreamReader(innerSocket
+					.getInputStream()));
+			dout = new BufferedWriter(new OutputStreamWriter(innerSocket
+					.getOutputStream()));
 
 			String connectStr = "CONNECT " + target
-					+ " HTTP/1.1\r\nUser-agent: " + this.UA + "\r\n\r\n";
+					+ " HTTP/1.0\r\nUser-agent: " + this.UA + "\r\n\r\n";
 
-			dout.writeBytes(connectStr);
+			dout.write(connectStr);
 			dout.flush();
-			Logger.v(TAG, connectStr);
+			Logger.d(TAG, connectStr);
 
 			String result = din.readLine();
+			// String line = "";
+			// while ((line = din.readLine()) != null) {
+			// if (line.trim().equals(""))
+			// break;
+			// Logger.v(TAG, line);
+			// }
+			if (result != null && result.contains("ZTE")) {
+				Logger.v(TAG, "ZTE WAP GATEWAY");
+				din.readLine();
+				din.readLine();
+			}
 			din.readLine(); // 多了个0D0A
 
-			Logger.v(TAG, result);
-
 			if (result != null && result.contains("200")) {
+				Logger.d(TAG, result);
 				isConnected = true;
-				Logger.v(TAG, "通道建立成功， 耗时："
+				Logger.i(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
 			}
 
@@ -130,17 +147,29 @@ public class WapChannel extends Thread {
 
 	public boolean isConnected() {
 
-		if (System.currentTimeMillis() - starTime < 2000)
+		if (System.currentTimeMillis() - starTime < 2000) {
+			Logger.v(TAG, "建立时间少于2秒");
 			return true;
-
-		if (this.orgSocket == null && this.innerSocket.isConnected())
-			return true;
-
-		if (this.orgSocket != null && this.innerSocket != null
-				&& this.innerSocket.isConnected()
-				&& this.orgSocket.isConnected()) {
-			isConnected = true;
 		}
+
+		if (this.orgSocket == null && this.innerSocket.isConnected()
+				&& isConnected) {
+			Logger.v(TAG, "");
+			return true;
+		}
+
+		if (this.innerSocket == null) {
+			Logger.v(TAG, "代理不可及");
+			isConnected = false;
+		}
+
+		// if (this.orgSocket != null && this.innerSocket != null
+		// && this.innerSocket.isConnected()
+		// && this.orgSocket.isConnected()) {
+		// isConnected = true;
+		// }
+		Logger.v(TAG, "目前状态:" + isConnected);
+
 		return isConnected;
 	}
 
@@ -189,8 +218,8 @@ public class WapChannel extends Thread {
 					count = in.read(buff);
 
 					if (count > 0) {
-						// Log.d(TAG, "方向" + direction
-						// + Utils.bytesToHexString(buff, 0, count));
+						Logger.v(TAG, "方向" + direction
+								+ Utils.bytesToHexString(buff, 0, count));
 						Logger.v(TAG, direction + "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
@@ -199,7 +228,7 @@ public class WapChannel extends Thread {
 
 				}
 			} catch (IOException e) {
-				Logger.e(TAG, direction + " 管道通讯失败");
+				Logger.e(TAG, direction + " 管道通讯失败：" + e.getLocalizedMessage());
 				isConnected = false;
 			}
 		}
