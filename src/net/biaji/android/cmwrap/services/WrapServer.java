@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.Utils;
@@ -111,18 +112,19 @@ public class WrapServer extends Thread {
 	}
 
 	private void clean() {
-		
-		for (WapChannel channel : channels) {
+
+		for (Iterator<WapChannel> it = channels.iterator(); it.hasNext();) {
+			WapChannel channel = it.next();
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
-				channels.remove(channel);
+				it.remove();
 				Logger.v(TAG, name + "清理链接");
 			} else if (channel == null) {
-				channels.remove(channel);
+				it.remove();
 				Logger.v(TAG, name + "清理无效链接");
 			}
 		}
-		
+
 		Logger.d(TAG, channels.size() + " channel 未清理");
 	}
 

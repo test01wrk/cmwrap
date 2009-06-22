@@ -154,7 +154,7 @@ public class WapChannel extends Thread {
 
 		if (this.orgSocket == null && this.innerSocket.isConnected()
 				&& isConnected) {
-			Logger.v(TAG, "");
+			Logger.v(TAG, "测试用条件");
 			return true;
 		}
 
@@ -162,13 +162,8 @@ public class WapChannel extends Thread {
 			Logger.v(TAG, "代理不可及");
 			isConnected = false;
 		}
-
-		// if (this.orgSocket != null && this.innerSocket != null
-		// && this.innerSocket.isConnected()
-		// && this.orgSocket.isConnected()) {
-		// isConnected = true;
-		// }
-		Logger.v(TAG, "目前状态:" + isConnected);
+		
+		Logger.d(TAG, "目前状态:" + isConnected);
 
 		return isConnected;
 	}
