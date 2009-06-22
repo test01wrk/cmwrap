@@ -238,7 +238,7 @@ public class Utils {
 	/**
 	 * 
 	 */
-	public static int getServiceLevel(Context context) {
+	public static synchronized int getServiceLevel(Context context) {
 		SharedPreferences pref = context.getSharedPreferences("cmwrap",
 				Context.MODE_PRIVATE);
 		return pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);

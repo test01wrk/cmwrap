@@ -118,10 +118,10 @@ public class WrapServer extends Thread {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				it.remove();
-				Logger.v(TAG, name + "清理链接");
+				Logger.d(TAG, name + "清理链接");
 			} else if (channel == null) {
 				it.remove();
-				Logger.v(TAG, name + "清理无效链接");
+				Logger.d(TAG, name + "清理无效链接");
 			}
 		}
 
