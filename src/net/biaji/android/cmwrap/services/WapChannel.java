@@ -94,18 +94,18 @@ public class WapChannel extends Thread {
 			Logger.d(TAG, connectStr);
 
 			String result = din.readLine();
-			// String line = "";
-			// while ((line = din.readLine()) != null) {
-			// if (line.trim().equals(""))
-			// break;
-			// Logger.v(TAG, line);
-			// }
-			if (result != null && result.contains("ZTE")) {
-				Logger.v(TAG, "ZTE WAP GATEWAY");
-				din.readLine();
-				din.readLine();
+			String line = "";
+			while ((line = din.readLine()) != null) {
+				if (line.trim().equals(""))
+					break;
+				Logger.d(TAG, line);
 			}
-			din.readLine(); // 多了个0D0A
+			// if (result != null && result.contains("ZTE")) {
+			// Logger.v(TAG, "ZTE WAP GATEWAY");
+			// din.readLine();
+			// din.readLine();
+			// }
+			// din.readLine(); // 多了个0D0A
 
 			if (result != null && result.contains("200")) {
 				Logger.d(TAG, result);
@@ -162,7 +162,7 @@ public class WapChannel extends Thread {
 			Logger.v(TAG, "代理不可及");
 			isConnected = false;
 		}
-		
+
 		Logger.d(TAG, "目前状态:" + isConnected);
 
 		return isConnected;
