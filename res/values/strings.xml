@@ -39,7 +39,7 @@
 	<string name="TEST_OTHER">测试是否支持HTTPS以外的协议代理</string>
 	<string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n</string>
 	<string name="ERR_NO_IPTABLES">无法在现用ROM中找到iptables支持，此程序功能无法实现，请卸载。\n</string>
-	<string name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。</string>
+	<string name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。\n</string>
 	<string name="ERR_UNSUPPORT_HTTPS">当前cmwap代理不支持HTTPS代理，无法使用Gmail等功能\n</string>
 	<string name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n</string>
 	<string name="Version">78</string>

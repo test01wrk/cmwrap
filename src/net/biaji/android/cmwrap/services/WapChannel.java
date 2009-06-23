@@ -115,9 +115,9 @@ public class WapChannel extends Thread {
 			}
 
 		} catch (UnknownHostException e) {
-			Logger.e(TAG, "无法获取代理服务器的IP地址", e);
+			Logger.e(TAG, "无法解析代理服务器地址：" + e.getLocalizedMessage());
 		} catch (IOException e) {
-			Logger.e(TAG, "建立隧道失败", e);
+			Logger.e(TAG, "建立隧道失败：" + e.getLocalizedMessage());
 		}
 	}
 
@@ -152,8 +152,8 @@ public class WapChannel extends Thread {
 			return true;
 		}
 
-		if (this.orgSocket == null && this.innerSocket.isConnected()
-				&& isConnected) {
+		if (this.orgSocket == null && this.innerSocket != null
+				&& this.innerSocket.isConnected() && isConnected) {
 			Logger.v(TAG, "测试用条件");
 			return true;
 		}
