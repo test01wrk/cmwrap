@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.Utils;
 
 public class WrapServer extends Thread {
 
@@ -118,14 +117,16 @@ public class WrapServer extends Thread {
 			if (channel != null && !channel.isConnected()) {
 				channel.destory();
 				it.remove();
+				channels.remove(channel);
 				Logger.d(TAG, name + "清理链接");
 			} else if (channel == null) {
 				it.remove();
+				channels.remove(channel);
 				Logger.d(TAG, name + "清理无效链接");
 			}
 		}
 
-		Logger.d(TAG, channels.size() + " channel 未清理");
+		Logger.d(TAG, name + channels.size() + " channel 未清理");
 	}
 
 }
