@@ -239,9 +239,12 @@ public class Utils {
 	 * 
 	 */
 	public static synchronized int getServiceLevel(Context context) {
+		int result = WrapService.SERVER_LEVEL_NULL;
 		Logger.d(TAG, "读取记录");
 		SharedPreferences pref = context.getSharedPreferences("cmwrap",
 				Context.MODE_PRIVATE);
-		return pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+		result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+		Logger.d(TAG, "读取结束");
+		return result;
 	}
 }
