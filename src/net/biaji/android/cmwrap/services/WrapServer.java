@@ -126,7 +126,7 @@ public class WrapServer extends Thread {
 			}
 		}
 
-		Logger.d(TAG, name + channels.size() + " channel 未清理");
+		Logger.d(TAG, name + " " + channels.size() + " channel 未清理");
 	}
 
 }

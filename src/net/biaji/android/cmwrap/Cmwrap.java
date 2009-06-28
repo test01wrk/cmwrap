@@ -26,6 +26,7 @@ import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.LauncherActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -239,7 +240,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			showDialog(DIALOG_TEST_ID);
 			return true;
 		case R.id.SETTING:
-
+			startActivityForResult(new Intent(this, Config.class), 0);
 			return true;
 		case R.id.ABOUT:
 			showDialog(DIALOG_ABOUT_ID);

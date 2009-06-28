@@ -2,7 +2,7 @@
 	<item android:title="@string/MENU_TEST" android:icon="@drawable/menu_exam"
 		android:id="@+id/TEST" />
 	<item android:title="@string/MENU_SETTING" android:icon="@drawable/menu_setting"
-		android:id="@+id/SETTING" android:enabled="false" />
+		android:id="@+id/SETTING"  />
 	<item android:title="@string/MENU_ABOUT" android:icon="@drawable/menu_about"
 		android:id="@+id/ABOUT" />
 </menu>
