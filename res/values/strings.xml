@@ -20,7 +20,9 @@
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接不同自动改变状态</string>
 	<string name="PREF_CATEGORY_PROXY">代理服务器设置</string>
 	<string name="PREF_TITLE_PROXY_HOST">代理服务器地址</string>
-	<string name="PREF_SUMMARY_PROXY_HOST">设置计划使用的HTTP代理服务器地址</string>
+	<string name="PREF_SUMMARY_PROXY_HOST">设置计划使用的HTTP代理服务器地址，默认10.0.0.172</string>
+	<string name="PREF_TITLE_PROXY_PORT">代理服务器端口</string>
+	<string name="PREF_SUMMARY_PROXY_PORT">设置计划使用的HTTP代理服务器端口，默认80</string>
 	<!-- 设置界面文本结束 -->
 	<string name="proxyServer">10.0.0.172</string>
 	<string name="proxyPort">80</string>
