@@ -344,7 +344,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		Logger.d(TAG, "服务级别为：" + serviceLevel);
 		logWindow.setText("");
 		redrawButton();
-
 	}
 
 	private class TestManager extends Thread {

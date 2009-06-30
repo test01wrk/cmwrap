@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 
 public class Utils {
 
@@ -223,13 +224,13 @@ public class Utils {
 
 		return result;
 	}
-
+	
 	/**
 	 * 记录当前服务状态
 	 */
-	public static synchronized void saveServiceLevel(Context context, int level) {
-		SharedPreferences pref = context.getSharedPreferences("cmwrap",
-				Context.MODE_PRIVATE);
+	public  static synchronized void saveServiceLevel(Context context, int level) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("SERVERLEVEL", level);
 		editor.commit();
@@ -240,11 +241,11 @@ public class Utils {
 	 */
 	public static synchronized int getServiceLevel(Context context) {
 		int result = WrapService.SERVER_LEVEL_NULL;
-		Logger.d(TAG, "读取记录");
-		SharedPreferences pref = context.getSharedPreferences("cmwrap",
-				Context.MODE_PRIVATE);
+		Logger.v(TAG, "读取记录");
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
-		Logger.d(TAG, "读取结束");
+		Logger.v(TAG, "读取结束");
 		return result;
 	}
 }

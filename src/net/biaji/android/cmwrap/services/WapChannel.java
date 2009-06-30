@@ -91,14 +91,14 @@ public class WapChannel extends Thread {
 
 			dout.write(connectStr);
 			dout.flush();
-			Logger.d(TAG, connectStr);
+			Logger.v(TAG, connectStr);
 
 			String result = din.readLine();
 			String line = "";
 			while ((line = din.readLine()) != null) {
 				if (line.trim().equals(""))
 					break;
-				Logger.d(TAG, line);
+				Logger.v(TAG, line);
 			}
 			// if (result != null && result.contains("ZTE")) {
 			// Logger.v(TAG, "ZTE WAP GATEWAY");
@@ -108,7 +108,7 @@ public class WapChannel extends Thread {
 			// din.readLine(); // 多了个0D0A
 
 			if (result != null && result.contains("200")) {
-				Logger.d(TAG, result);
+				Logger.v(TAG, result);
 				isConnected = true;
 				Logger.i(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
