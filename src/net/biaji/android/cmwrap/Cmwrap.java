@@ -25,14 +25,18 @@ import net.biaji.android.cmwrap.services.WapChannel;
 import net.biaji.android.cmwrap.services.WrapService;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.Dialog;
 import android.app.LauncherActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +52,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private TextView logWindow;
 
 	private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
+	
+	private String proxyHost;
+	
+	private int proxyPort;
 
 	private final String TAG = "CMWRAP->";
 
@@ -238,6 +246,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 		switch (item.getItemId()) {
 		case R.id.TEST:
 			logWindow.setText("");
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+			proxyHost = pref.getString("PROXYHOST", "10.0.0.172");
+			proxyPort = pref.getInt("PROXYPORT", 80);
 			showDialog(DIALOG_TEST_ID);
 			return true;
 		case R.id.SETTING:
@@ -350,9 +361,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private class TestManager extends Thread {
 
 		Handler handler = null;
-
+		
 		TestManager(Handler handler) {
 			this.handler = handler;
+			
 		}
 
 		@Override
@@ -407,7 +419,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// 测试https
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_HTTPS));
-			WapChannel channel = new WapChannel(null, "10.0.0.172", 80);
+			WapChannel channel = new WapChannel(null, proxyHost, proxyPort);
 			testSleep(5000);
 			if (!channel.isConnected()) {
 				bundle.putString("ERRMSG",
@@ -420,11 +432,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 			handler.sendMessage(msg);
 
 			// 测试Gtalk
-
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_OTHER));
 			channel = new WapChannel(null, "mtalk.google.com:5228",
-					"10.0.0.172", 80);
+					proxyHost, proxyPort);
 			testSleep(5000);
 			if (!channel.isConnected()) {
 				bundle.putString("ERRMSG",

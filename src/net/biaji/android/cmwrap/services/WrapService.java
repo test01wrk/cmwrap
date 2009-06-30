@@ -12,7 +12,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 
 /**
  * @author biaji
@@ -61,14 +63,22 @@ public class WrapService extends Service {
 
 	private int serverLevel = SERVER_LEVEL_BASE;
 
+	private SharedPreferences pref = PreferenceManager
+			.getDefaultSharedPreferences(this);
+
 	@Override
 	public void onCreate() {
 		Logger.d(TAG, "创建wrap服务");
 
-		// 由资源文件加载指定代理服务器
-		proxyHost = getResources().getString(R.string.proxyServer);
-		proxyPort = Integer.parseInt(getResources().getString(
-				R.string.proxyPort));
+		// // 由资源文件加载指定代理服务器
+		// proxyHost = getResources().getString(R.string.proxyServer);
+		// proxyPort = Integer.parseInt(getResources().getString(
+		// R.string.proxyPort));
+
+		proxyHost = pref.getString("PROXYHOST", getResources().getString(
+				R.string.proxyServer));
+		proxyPort = pref.getInt("PROXYPORT", Integer.parseInt(getResources()
+				.getString(R.string.proxyPort)));
 
 		// 载入所有规则
 		rules = Utils.loadRules(this);
@@ -207,15 +217,22 @@ public class WrapService extends Service {
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
+		String inface = " ";
+		boolean onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
+
+		if (onlyCmwap)
+			inface = " -o rmnet0 ";
+
 		try {
 			for (Rule rule : rules) {
 				String cmd;
 				if (rule.mode == Rule.MODE_BASE)
-					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport "
-							+ rule.desPort + " -j DNAT --to-destination "
-							+ proxyHost + ":" + proxyPort;
+					cmd = "iptables -t nat -A OUTPUT " + inface
+							+ " -p tcp --dport " + rule.desPort
+							+ " -j DNAT --to-destination " + proxyHost + ":"
+							+ proxyPort;
 				else
-					cmd = "iptables -t nat -A OUTPUT -o rmnet0 -p tcp -d "
+					cmd = "iptables -t nat -A OUTPUT " + inface + " -p tcp -d "
 							+ rule.desHost + " --dport " + rule.desPort
 							+ " -j DNAT --to-destination 127.0.0.1:"
 							+ rule.servPort;

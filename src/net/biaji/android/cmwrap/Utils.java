@@ -139,6 +139,16 @@ public class Utils {
 	 * @return
 	 */
 	public static boolean isCmwap(Context context) {
+
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		boolean onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
+		
+		if(!onlyCmwap) return true;
+		
+		
+		//-------------------
+		
 		boolean result = false;
 
 		ConnectivityManager manager = (ConnectivityManager) context
@@ -224,11 +234,11 @@ public class Utils {
 
 		return result;
 	}
-	
+
 	/**
 	 * 记录当前服务状态
 	 */
-	public  static synchronized void saveServiceLevel(Context context, int level) {
+	public static synchronized void saveServiceLevel(Context context, int level) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();
