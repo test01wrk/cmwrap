@@ -63,8 +63,7 @@ public class WrapService extends Service {
 
 	private int serverLevel = SERVER_LEVEL_BASE;
 
-	private SharedPreferences pref = PreferenceManager
-			.getDefaultSharedPreferences(this);
+	private SharedPreferences pref;
 
 	@Override
 	public void onCreate() {
@@ -74,10 +73,10 @@ public class WrapService extends Service {
 		// proxyHost = getResources().getString(R.string.proxyServer);
 		// proxyPort = Integer.parseInt(getResources().getString(
 		// R.string.proxyPort));
-
+		pref = PreferenceManager.getDefaultSharedPreferences(this);
 		proxyHost = pref.getString("PROXYHOST", getResources().getString(
 				R.string.proxyServer));
-		proxyPort = pref.getInt("PROXYPORT", Integer.parseInt(getResources()
+		proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getResources()
 				.getString(R.string.proxyPort)));
 
 		// 载入所有规则
