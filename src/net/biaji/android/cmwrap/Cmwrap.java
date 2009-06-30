@@ -237,6 +237,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		switch (item.getItemId()) {
 		case R.id.TEST:
+			logWindow.setText("");
 			showDialog(DIALOG_TEST_ID);
 			return true;
 		case R.id.SETTING:
@@ -342,7 +343,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
 		Logger.d(TAG, "服务级别为：" + serviceLevel);
-		logWindow.setText("");
+
 		redrawButton();
 	}
 
