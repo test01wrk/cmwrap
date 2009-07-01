@@ -25,61 +25,83 @@ public class NetworkDetector extends BroadcastReceiver {
 
 	private static int inArray = 0;
 
+	private String action = "";
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
-		Logger.v(TAG, "捕获事件：" + intent.getAction());
+		action = intent.getAction();
+
+		Logger.v(TAG, "捕获事件：" + action);
 
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
 
-		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
 
 			// 禁用自动启动
 			if (!autoBoot)
 				return;
 
-		} else if (intent.getAction().equals(
-				"android.net.conn.CONNECTIVITY_CHANGE")) {
+		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
 			// 禁用自动状态切换
 			if (!autoChange)
 				return;
 		}
 
-		inArray++;
-		
-		try {
-			Thread.sleep(INTERVAL); // 等其它应用程序先抢一会儿
-		} catch (InterruptedException e) {
-			Logger.e(TAG, "谦逊失败");
-		}
-		
-		if(inArray > 1){
-			inArray--;
-			return;
-		}
-		
-		
-		int level = Utils.getServiceLevel(context);
-		Intent intentS = new Intent(context, WrapService.class);
+		new initor(context).start();
 
-		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
-		if (!Utils.isCmwap(context)) {
-			intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
-			Logger.v(TAG, "目前不是cmwap接入，暂停服务");
-		} else {
-			if (level != WrapService.SERVER_LEVEL_NULL
-					&& level != WrapService.SERVER_LEVEL_STOP) {
-				intentS.putExtra("SERVERLEVEL", level);
-			} else {
+	}
+
+	class initor extends Thread {
+
+		Context context;
+
+		initor(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		public void run() {
+
+			inArray++;
+			
+			Logger.d(TAG, inArray+ "");
+
+			try {
+				Thread.sleep(INTERVAL); 
+			} catch (InterruptedException e) {
+				Logger.e(TAG, "休息，休息一会儿～～ 失败了");
+			}
+
+			if (inArray > 1) {
+				inArray--;
+				Logger.d(TAG, "撤销当前改变：" + action);
 				return;
 			}
+
+			int level = Utils.getServiceLevel(context);
+			Intent intentS = new Intent(context, WrapService.class);
+
+			// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
+			if (!Utils.isCmwap(context)) {
+				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
+				Logger.v(TAG, "目前不是cmwap接入，暂停服务");
+			} else {
+				if (level != WrapService.SERVER_LEVEL_NULL
+						&& level != WrapService.SERVER_LEVEL_STOP) {
+					intentS.putExtra("SERVERLEVEL", level);
+				} else {
+					return;
+				}
+			}
+			
+			context.startService(intentS);
+
+			inArray = 0;
 		}
 
-		context.startService(intentS);
-		
-		inArray = 0;
 	}
 }
