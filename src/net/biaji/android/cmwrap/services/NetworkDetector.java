@@ -18,15 +18,22 @@ public class NetworkDetector extends BroadcastReceiver {
 
 	private final String TAG = "CMWRAP->NetworkDetector";
 
+	/**
+	 * 时间间隔，短于此间隔的变化不予实施
+	 */
+	private final long INTERVAL = 1000 * 60 * 2;
+
+	private static int inArray = 0;
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Logger.d(TAG, "捕获事件：" + intent.getAction());
+
+		Logger.v(TAG, "捕获事件：" + intent.getAction());
 
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
-
 
 		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 
@@ -34,11 +41,6 @@ public class NetworkDetector extends BroadcastReceiver {
 			if (!autoBoot)
 				return;
 
-			try {
-				Thread.sleep(1000 * 60); // 等其它应用程序先抢一分钟
-			} catch (InterruptedException e) {
-				Logger.e(TAG, "谦逊失败");
-			}
 		} else if (intent.getAction().equals(
 				"android.net.conn.CONNECTIVITY_CHANGE")) {
 			// 禁用自动状态切换
@@ -46,9 +48,23 @@ public class NetworkDetector extends BroadcastReceiver {
 				return;
 		}
 
+		inArray++;
+		
+		try {
+			Thread.sleep(INTERVAL); // 等其它应用程序先抢一会儿
+		} catch (InterruptedException e) {
+			Logger.e(TAG, "谦逊失败");
+		}
+		
+		if(inArray > 1){
+			inArray--;
+			return;
+		}
+		
+		
 		int level = Utils.getServiceLevel(context);
 		Intent intentS = new Intent(context, WrapService.class);
-		
+
 		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
 		if (!Utils.isCmwap(context)) {
 			intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
@@ -63,5 +79,7 @@ public class NetworkDetector extends BroadcastReceiver {
 		}
 
 		context.startService(intentS);
+		
+		inArray = 0;
 	}
 }
