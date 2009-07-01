@@ -21,7 +21,7 @@ public class NetworkDetector extends BroadcastReceiver {
 	/**
 	 * 时间间隔，短于此间隔的变化不予实施
 	 */
-	private final long INTERVAL = 1000 * 60 * 2;
+	private final long INTERVAL = 1000 * 30;
 
 	private static int inArray = 0;
 
@@ -32,7 +32,7 @@ public class NetworkDetector extends BroadcastReceiver {
 
 		action = intent.getAction();
 
-		Logger.v(TAG, "捕获事件：" + action);
+		Logger.d(TAG, "捕获事件：" + action);
 
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
