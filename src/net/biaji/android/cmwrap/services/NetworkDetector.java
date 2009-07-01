@@ -55,7 +55,7 @@ public class NetworkDetector extends BroadcastReceiver {
 
 	}
 
-	class initor extends Thread {
+	private class initor extends Thread {
 
 		Context context;
 
