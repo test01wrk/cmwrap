@@ -27,7 +27,6 @@ public class NetworkDetector extends BroadcastReceiver {
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
 
-		Intent intentS = new Intent(context, WrapService.class);
 
 		if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 
@@ -40,15 +39,16 @@ public class NetworkDetector extends BroadcastReceiver {
 			} catch (InterruptedException e) {
 				Logger.e(TAG, "谦逊失败");
 			}
+		} else if (intent.getAction().equals(
+				"android.net.conn.CONNECTIVITY_CHANGE")) {
+			// 禁用自动状态切换
+			if (!autoChange)
+				return;
 		}
 
-		//禁用自动状态切换
-		if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")
-				&& !autoChange)
-			return;
-
 		int level = Utils.getServiceLevel(context);
-
+		Intent intentS = new Intent(context, WrapService.class);
+		
 		// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
 		if (!Utils.isCmwap(context)) {
 			intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
@@ -58,11 +58,10 @@ public class NetworkDetector extends BroadcastReceiver {
 					&& level != WrapService.SERVER_LEVEL_STOP) {
 				intentS.putExtra("SERVERLEVEL", level);
 			} else {
-				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_BASE);
+				return;
 			}
 		}
 
 		context.startService(intentS);
 	}
-
 }

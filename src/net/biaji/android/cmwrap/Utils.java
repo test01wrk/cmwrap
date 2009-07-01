@@ -140,25 +140,24 @@ public class Utils {
 	 */
 	public static boolean isCmwap(Context context) {
 
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-		
+		// 根据配置情况决定是否检查当前数据连接
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		boolean onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
-		
-		if(!onlyCmwap) return true;
-		
-		
-		//-------------------
-		
-		boolean result = false;
+		if (!onlyCmwap)
+			return true;
+
+		// -------------------
 
 		ConnectivityManager manager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
-
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
 			return false;
+		
+
+		boolean result = false;
 
 		Cursor mCursor = context.getContentResolver().query(
 				Uri.parse("content://telephony/carriers"),
