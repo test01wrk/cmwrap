@@ -1,23 +1,23 @@
 127.0.0.1            localhost
-64.73.32.135            north-america.pool.ntp.org
-64.233.169.188        mtalk.google.com
-66.249.89.99        www.google.com
-66.249.89.101        android.clients.google.com
-66.249.89.104		maps.google.com
+64.73.32.135			north-america.pool.ntp.org
+64.233.169.188			mtalk.google.com
+66.249.89.99			www.google.com
+66.249.89.101			android.clients.google.com
+66.249.89.104			maps.google.com
 72.14.203.102			csi.gstatic.com			csi.google.com
 209.85.145.160			m.google.cn
 72.14.203.83            mail.google.com
 209.85.145.160          www.google.cn
-74.125.19.100				docs.google.com	writely.google.com	spreadsheets.google.com
-203.208.39.104				www.youtube.com youtube.com
-203.208.33.100				gdata.youtube.com
-203.208.39.99 				upload.youtube.com insight.youtube.com
-203.208.39.160				help.youtube.com
-63.216.60.76				static.rememberthemilk.com
-207.242.93.89				andrd.accu-weather.com    htc.accuweather.com
+74.125.19.100			docs.google.com	writely.google.com	spreadsheets.google.com
+203.208.39.104			www.youtube.com youtube.com
+203.208.33.100			gdata.youtube.com
+203.208.39.99			upload.youtube.com insight.youtube.com
+203.208.39.160			help.youtube.com
+63.216.60.76			static.rememberthemilk.com
+207.242.93.89			andrd.accu-weather.com    htc.accuweather.com
 32.114.14.111           sirocco.accuweather.com
-74.125.153.95				ajax.googleapis.com
-72.9.41.2					lyrics.tunewiki.com
+74.125.153.95			ajax.googleapis.com
+72.9.41.2				lyrics.tunewiki.com
 74.86.175.154           api.rememberthemilk.com
 195.189.143.147         www.operamini.com
 64.255.180.253          server4.operamini.com  global-4-lvs-usa.opera-mini.net
@@ -41,6 +41,7 @@
 209.249.20.150          pub.weatherbug.com
 212.27.63.112			koxx3.free.fr
 168.143.162.100			twitter.com  www.twitter.com
+203.150.228.104         nest.onedd.net        
 64.4.9.254              messenger.hotmail.com
 209.85.173.192          supl.google.com
 66.147.240.162          update.wordmate.net     dictdownload.wordmate.net wordmate.net
@@ -49,12 +50,12 @@
 199.7.59.72             ocsp.thawte.com         OCSP.IAD3.verisign.com
 199.7.48.190            crl.thawte.com          crl.verisign.net
 124.172.110.19			www.domobile.com	www.hisz.net
-38.102.136.111				api.wunderground.com
-75.101.161.95				api.textonphone.com
-194.126.240.19				goog.shazamid.com
-87.230.22.28				phodroid.com
-174.36.58.233				twitpic.com
-209.17.74.13				twitgoo.com
-208.94.0.43					yfrog.com
+38.102.136.111			api.wunderground.com
+75.101.161.95			api.textonphone.com
+194.126.240.19			goog.shazamid.com
+87.230.22.28			phodroid.com
+174.36.58.233			twitpic.com
+209.17.74.13			twitgoo.com
+208.94.0.43				yfrog.com
 207.171.185.197			s3.amazonaws.com
-209.85.237.25				smtp.google.com
+209.85.237.25			smtp.google.com
