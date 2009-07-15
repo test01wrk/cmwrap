@@ -39,6 +39,7 @@
 38.118.85.51            direct.weatherbug.com
 38.118.85.55            config.mobile.wxbug.com mapplets.weatherbug.com tiles.weatherbug.com
 209.249.20.150          pub.weatherbug.com
+212.27.63.112			koxx3.free.fr
 168.143.162.100			twitter.com  www.twitter.com
 64.4.9.254              messenger.hotmail.com
 209.85.173.192          supl.google.com
@@ -47,8 +48,7 @@
 221.130.45.201          nav.fetion.com.cn
 199.7.59.72             ocsp.thawte.com         OCSP.IAD3.verisign.com
 199.7.48.190            crl.thawte.com          crl.verisign.net
-119.146.223.179			www.domobile.com
-119.146.223.142			www.hisz.net
+124.172.110.19			www.domobile.com	www.hisz.net
 38.102.136.111				api.wunderground.com
 75.101.161.95				api.textonphone.com
 194.126.240.19				goog.shazamid.com
