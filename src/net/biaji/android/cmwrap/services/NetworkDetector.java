@@ -38,12 +38,14 @@ public class NetworkDetector extends BroadcastReceiver {
 				.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
-
+		
 		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
 
 			// 禁用自动启动
-			if (!autoBoot)
+			if (!autoBoot){
+				Logger.d(TAG, "AUTOBOOT：" + autoBoot);
 				return;
+			}
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
 			// 禁用自动状态切换

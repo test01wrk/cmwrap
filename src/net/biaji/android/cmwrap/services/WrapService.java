@@ -34,6 +34,8 @@ public class WrapService extends Service {
 
 	private final String TAG = "CMWRAP->Service";
 
+	private boolean inService = false;
+
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
@@ -69,10 +71,6 @@ public class WrapService extends Service {
 	public void onCreate() {
 		Logger.d(TAG, "创建wrap服务");
 
-		// // 由资源文件加载指定代理服务器
-		// proxyHost = getResources().getString(R.string.proxyServer);
-		// proxyPort = Integer.parseInt(getResources().getString(
-		// R.string.proxyPort));
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
 		proxyHost = pref.getString("PROXYHOST", getResources().getString(
 				R.string.proxyServer));
@@ -85,6 +83,9 @@ public class WrapService extends Service {
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+		// 启用iptables转向
+		forward();
+
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
 		serverLevel = Utils.getServiceLevel(this);
@@ -93,6 +94,7 @@ public class WrapService extends Service {
 
 			if (Utils.isCmwap(this)) {
 				startSubDaemon();
+				inService = true;
 				showNotify();
 			} else {
 				serverLevel = SERVER_LEVEL_STOP;
@@ -128,6 +130,7 @@ public class WrapService extends Service {
 	@Override
 	public void onDestroy() {
 		stopSubDaemon();
+		cleanForward();
 		serverLevel = SERVER_LEVEL_NULL;
 		Utils.saveServiceLevel(this, serverLevel);
 		nm.cancel(R.string.serviceTagUp);
@@ -177,8 +180,6 @@ public class WrapService extends Service {
 		if (serverLevel <= SERVER_LEVEL_STOP)
 			return;
 
-		forward();
-
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
 				if (rule.mode == Rule.MODE_SERV) {
@@ -203,7 +204,6 @@ public class WrapService extends Service {
 				}
 			}
 
-		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 	}
 
 	private void refreshSubDaemon() {
@@ -222,8 +222,8 @@ public class WrapService extends Service {
 		if (onlyCmwap)
 			inface = " -o rmnet0 ";
 
-		try {
-			for (Rule rule : rules) {
+		for (Rule rule : rules) {
+			try {
 				String cmd;
 				if (rule.mode == Rule.MODE_BASE)
 					cmd = "iptables -t nat -A OUTPUT " + inface
@@ -237,10 +237,15 @@ public class WrapService extends Service {
 							+ rule.servPort;
 				Utils.rootCMD(cmd);
 
+			} catch (Exception e) {
+				Logger.e(TAG, e.getLocalizedMessage());
 			}
-
-		} catch (Exception e) {
 		}
 
 	}
+
+	private void cleanForward() {
+		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+	}
+
 }

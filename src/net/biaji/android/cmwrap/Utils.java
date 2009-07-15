@@ -155,7 +155,6 @@ public class Utils {
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
 			return false;
-		
 
 		boolean result = false;
 
@@ -184,7 +183,7 @@ public class Utils {
 	 * @param 需要执行的指令
 	 * @return -1 执行失败； 0 执行正常
 	 */
-	public static int rootCMD(String cmd) {
+	public static synchronized int rootCMD(String cmd) {
 		int result = -1;
 		DataOutputStream os = null;
 		InputStream err = null, out = null;
@@ -221,7 +220,6 @@ public class Utils {
 		} catch (InterruptedException e) {
 			Logger.e(TAG, "线程意外终止", e);
 		} finally {
-
 			try {
 				if (os != null) {
 					os.close();
@@ -237,7 +235,7 @@ public class Utils {
 	/**
 	 * 记录当前服务状态
 	 */
-	public static synchronized void saveServiceLevel(Context context, int level) {
+	public static void saveServiceLevel(Context context, int level) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();
@@ -248,7 +246,7 @@ public class Utils {
 	/**
 	 * 
 	 */
-	public static synchronized int getServiceLevel(Context context) {
+	public static int getServiceLevel(Context context) {
 		int result = WrapService.SERVER_LEVEL_NULL;
 		Logger.v(TAG, "读取记录");
 		SharedPreferences pref = PreferenceManager

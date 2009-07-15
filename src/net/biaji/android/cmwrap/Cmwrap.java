@@ -142,7 +142,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
 				stopService(serviceIn);
 				Logger.i(TAG, "禁用服务");
-				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+				//Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 				Toast.makeText(this, R.string.serviceTagDown,
 						Toast.LENGTH_SHORT).show();
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
