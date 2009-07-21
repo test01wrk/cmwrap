@@ -49,9 +49,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private TextView logWindow;
 
 	private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
-	
+
 	private String proxyHost;
-	
+
 	private int proxyPort;
 
 	private final String TAG = "CMWRAP->";
@@ -142,7 +142,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
 				stopService(serviceIn);
 				Logger.i(TAG, "禁用服务");
-				//Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+				// Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 				Toast.makeText(this, R.string.serviceTagDown,
 						Toast.LENGTH_SHORT).show();
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
@@ -243,9 +243,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 		switch (item.getItemId()) {
 		case R.id.TEST:
 			logWindow.setText("");
-			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(this);
 			proxyHost = pref.getString("PROXYHOST", "10.0.0.172");
-			proxyPort = pref.getInt("PROXYPORT", 80);
+			proxyPort = Integer.parseInt(pref.getString("PROXYPORT", "80"));
 			showDialog(DIALOG_TEST_ID);
 			return true;
 		case R.id.SETTING:
@@ -358,10 +359,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 	private class TestManager extends Thread {
 
 		Handler handler = null;
-		
+
 		TestManager(Handler handler) {
 			this.handler = handler;
-			
+
 		}
 
 		@Override
@@ -431,8 +432,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// 测试Gtalk
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_OTHER));
-			channel = new WapChannel(null, "mtalk.google.com:5228",
-					proxyHost, proxyPort);
+			channel = new WapChannel(null, "mtalk.google.com:5228", proxyHost,
+					proxyPort);
 			testSleep(5000);
 			if (!channel.isConnected()) {
 				bundle.putString("ERRMSG",
