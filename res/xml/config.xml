@@ -2,15 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/PREF_CATEGORY_BASE">
 		<CheckBoxPreference android:summary="@string/PREF_SUMMARY_AUTO_BOOT"
-			android:title="@string/PREF_TITLE_AUTO_BOOT" android:key="AUTOBOOT" android:defaultValue="false"></CheckBoxPreference>
+			android:title="@string/PREF_TITLE_AUTO_BOOT" android:key="AUTOBOOT"
+			android:defaultValue="false" />
+		<CheckBoxPreference android:key="ONLYCMWAP"
+			android:defaultValue="true" android:summary="@string/PREF_SUMMARY_ONLY_CMWAP"
+			android:title="@string/PREF_TITLE_ONLY_CMWAP" />
 		<CheckBoxPreference android:summary="@string/PREF_SUMMARY_AUTO_CHANGE"
-			android:title="@string/PREF_TITLE_AUTO_CHANGE" android:key="AUTOCHANGE" android:defaultValue="true"></CheckBoxPreference>
-	<CheckBoxPreference android:key="ONLYCMWAP" android:defaultValue="true" android:summary="@string/PREF_SUMMARY_ONLY_CMWAP" android:title="@string/PREF_TITLE_ONLY_CMWAP"></CheckBoxPreference>
-</PreferenceCategory>
+			android:title="@string/PREF_TITLE_AUTO_CHANGE" android:key="AUTOCHANGE"
+			android:defaultValue="true" android:dependency="ONLYCMWAP" />
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/PREF_CATEGORY_PROXY">
 		<EditTextPreference android:summary="@string/PREF_SUMMARY_PROXY_HOST"
-			android:title="@string/PREF_TITLE_PROXY_HOST" android:key="PROXYHOST" android:defaultValue="10.0.0.172"/>
-			<EditTextPreference android:summary="@string/PREF_SUMMARY_PROXY_PORT"
-			android:title="@string/PREF_TITLE_PROXY_PORT" android:key="PROXYPORT" android:defaultValue="80"/>
+			android:title="@string/PREF_TITLE_PROXY_HOST" android:key="PROXYHOST"
+			android:defaultValue="10.0.0.172" />
+		<EditTextPreference android:summary="@string/PREF_SUMMARY_PROXY_PORT"
+			android:title="@string/PREF_TITLE_PROXY_PORT" android:key="PROXYPORT"
+			android:defaultValue="80" />
 	</PreferenceCategory>
 </PreferenceScreen>

@@ -1,8 +1,11 @@
 127.0.0.1            localhost
 64.73.32.135			north-america.pool.ntp.org
+#google 
+209.85.237.25			smtp.google.com
 64.233.169.188			mtalk.google.com
 66.249.89.99			www.google.com
-66.249.89.101			android.clients.google.com
+74.125.19.100			android.clients.google.com android.l.google.com
+#66.249.89.101			android.clients.google.com android.l.google.com
 66.249.89.104			maps.google.com
 72.14.203.102			csi.gstatic.com			csi.google.com
 209.85.145.160			m.google.cn
@@ -13,6 +16,7 @@
 203.208.33.100			gdata.youtube.com
 203.208.39.99			upload.youtube.com insight.youtube.com
 203.208.39.160			help.youtube.com
+
 63.216.60.76			static.rememberthemilk.com
 207.242.93.89			andrd.accu-weather.com    htc.accuweather.com
 32.114.14.111           sirocco.accuweather.com
@@ -58,4 +62,3 @@
 209.17.74.13			twitgoo.com
 208.94.0.43				yfrog.com
 207.171.185.197			s3.amazonaws.com
-209.85.237.25			smtp.google.com
