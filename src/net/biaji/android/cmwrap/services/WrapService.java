@@ -100,7 +100,6 @@ public class WrapService extends Service {
 				serverLevel = SERVER_LEVEL_STOP;
 			}
 		}
-
 	}
 
 	@Override
@@ -133,6 +132,7 @@ public class WrapService extends Service {
 		cleanForward();
 		serverLevel = SERVER_LEVEL_NULL;
 		Utils.saveServiceLevel(this, serverLevel);
+		Utils.putIptable(this, false);
 		nm.cancel(R.string.serviceTagUp);
 	}
 
@@ -213,6 +213,10 @@ public class WrapService extends Service {
 
 	private void forward() {
 
+		//如果iptables处于已执行状态，则啥都不干
+		if(!Utils.isIptable(this))
+			return;
+		
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 

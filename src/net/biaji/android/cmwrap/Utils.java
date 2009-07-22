@@ -20,6 +20,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.test.IsolatedContext;
 
 public class Utils {
 
@@ -141,10 +142,7 @@ public class Utils {
 	public static boolean isCmwap(Context context) {
 
 		// 根据配置情况决定是否检查当前数据连接
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		boolean onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
-		if (!onlyCmwap)
+		if (!isCmwapOnly(context))
 			return true;
 
 		// -------------------
@@ -174,6 +172,20 @@ public class Utils {
 				mCursor.close();
 			}
 		}
+		return result;
+	}
+
+	/**
+	 * 判断目前设置是否仅对cmwap进行代理处理
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isCmwapOnly(Context context) {
+		boolean result = true;
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		result = pref.getBoolean("ONLYCMWAP", true);
 		return result;
 	}
 
@@ -244,7 +256,7 @@ public class Utils {
 	}
 
 	/**
-	 * 
+	 * 获取当前服务状态
 	 */
 	public static int getServiceLevel(Context context) {
 		int result = WrapService.SERVER_LEVEL_NULL;
@@ -254,5 +266,35 @@ public class Utils {
 		result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
 		Logger.v(TAG, "读取结束");
 		return result;
+	}
+
+	/**
+	 * 获取iptables运行状态
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isIptable(Context context) {
+		boolean result = false;
+		Logger.v(TAG, "读取iptables");
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		result = pref.getBoolean("IPTABLES", false);
+		Logger.v(TAG, "读取结束");
+		return result;
+	}
+
+	/**
+	 * 保存iptables运行状态
+	 * 
+	 * @param context
+	 * @param iptables
+	 */
+	public static void putIptable(Context context, boolean iptables) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean("IPTABLES", iptables);
+		editor.commit();
 	}
 }

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Cmwrap</string>
-	<string name="serviceTagUp">启用CMWAP穿越</string>
-	<string name="serviceTagDown">禁用CMWAP穿越</string>
-	<string name="serviceBaseTitle">切换基本运行状态</string>
+	<string name="serviceTagUp">Enable HTTP Proxy</string>
+	<string name="serviceTagDown">Disable HTTP Proxy</string>
+	<string name="serviceBaseTitle">Switch to Base Mode</string>
 	<string name="serviceBaseComment">此状态下可使用浏览器、Google
 		Map等HTTP协议的应用，耗电量与未打开时几乎没有差别</string>
 	<string name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
-	<string name="serviceAppTitle">切换基本服务状态</string>
+	<string name="serviceAppTitle">Switch to Service Mode</string>
 	<string name="serviceAppComment">
 		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
 	</string>
 	<string name="serviceTagSuper">启用所有服务</string>
 	<!-- 设置界面文本 -->
-	<string name="PREF_CATEGORY_BASE">基础设置</string>
-	<string name="PREF_TITLE_AUTO_BOOT">自动开启</string>
+	<string name="PREF_CATEGORY_BASE">Basic Settings</string>
+	<string name="PREF_TITLE_AUTO_BOOT">Auto Enable</string>
 	<string name="PREF_SUMMARY_AUTO_BOOT">是否在启动时自动启动服务</string>
-	<string name="PREF_TITLE_AUTO_CHANGE">智能切换</string>
+	<string name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
 	<string name="PREF_TITLE_ONLY_CMWAP">代理仅作用于CMWAP</string>
 	<string name="PREF_SUMMARY_ONLY_CMWAP">仅对中国移动cmwap数据进行代理</string>
@@ -45,9 +45,9 @@
 		/dev/block/mtdblock3 /system</string>
 
 	<string name="UserAgent">biAji's wap channel</string>
-	<string name="MENU_TEST">环境测试</string>
-	<string name="MENU_SETTING">设置</string>
-	<string name="MENU_ABOUT">关于Cmwrap</string>
+	<string name="MENU_TEST">Environment Test</string>
+	<string name="MENU_SETTING">Settings</string>
+	<string name="MENU_ABOUT">About</string>
 	<string name="TEST_ROOT">测试是否具有root权限</string>
 	<string name="TEST_IPTABLES">测试是否有iptables支持</string>
 	<string name="TEST_CMWAP">测试当前是否CMWAP连接</string>
