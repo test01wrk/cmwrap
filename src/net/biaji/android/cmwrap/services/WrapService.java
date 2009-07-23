@@ -245,6 +245,8 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
+		
+		Utils.putIptable(this, true);
 
 	}
 
