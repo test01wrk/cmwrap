@@ -30,6 +30,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -273,7 +276,12 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			int ver = in.read();
 
-			if (ver == Integer.parseInt(getString(R.string.Version))) {
+			PackageManager pm = getPackageManager();
+			PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+
+			int newVer = pi.versionCode;
+
+			if (ver == newVer) {
 				firsTime = 1;
 			} else {
 				firsTime = 0;
@@ -285,6 +293,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 			tag();
 		} catch (IOException e) {
 			Logger.e(TAG, "IOerror");
+		} catch (NameNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage());
 		}
 		return firsTime;
 	}
@@ -331,14 +341,16 @@ public class Cmwrap extends Activity implements OnClickListener {
 		try {
 			out = openFileOutput("Version", MODE_PRIVATE);
 
-			out.write(Integer.parseInt(getString(R.string.Version)));
+			out
+					.write(getPackageManager().getPackageInfo(getPackageName(),
+							0).versionCode);
 			out.close();
 		} catch (FileNotFoundException ex) {
 			Logger.e(TAG, "No Version File, First installed");
-		} catch (NumberFormatException ex) {
-			Logger.e(TAG, "版本号解析失败");
 		} catch (IOException ex) {
 			Logger.e(TAG, "写入版本号失败");
+		} catch (NameNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage());
 		}
 	}
 
