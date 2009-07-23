@@ -47,7 +47,7 @@ public class NetworkDetector extends BroadcastReceiver {
 				return;
 			}
 			//自动启动时，初始化iptables状态
-			Utils.putIptable(context, false);
+			Utils.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
 			// 禁用自动状态切换

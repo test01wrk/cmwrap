@@ -109,6 +109,7 @@ public class WrapService extends Service {
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
+		
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
@@ -132,7 +133,6 @@ public class WrapService extends Service {
 		cleanForward();
 		serverLevel = SERVER_LEVEL_NULL;
 		Utils.saveServiceLevel(this, serverLevel);
-		Utils.putIptable(this, false);
 		nm.cancel(R.string.serviceTagUp);
 	}
 
@@ -214,7 +214,7 @@ public class WrapService extends Service {
 	private void forward() {
 
 		//如果iptables处于已执行状态，则啥都不干
-		if(!Utils.isIptable(this))
+		if(Utils.isIptablesEnabled(this))
 			return;
 		
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
@@ -246,7 +246,7 @@ public class WrapService extends Service {
 			}
 		}
 		
-		Utils.putIptable(this, true);
+		Utils.setIptableStatus(this, true);
 
 	}
 

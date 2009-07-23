@@ -273,7 +273,7 @@ public class Utils {
 	 * @param context
 	 * @return
 	 */
-	public static boolean isIptable(Context context) {
+	public static boolean isIptablesEnabled(Context context) {
 		boolean result = false;
 		Logger.v(TAG, "读取iptables");
 		SharedPreferences pref = PreferenceManager
@@ -289,7 +289,7 @@ public class Utils {
 	 * @param context
 	 * @param iptables
 	 */
-	public static void putIptable(Context context, boolean iptables) {
+	public static void setIptableStatus(Context context, boolean iptables) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();

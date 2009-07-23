@@ -150,6 +150,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 						Toast.LENGTH_SHORT).show();
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
 				Utils.saveServiceLevel(this, serviceLevel);
+				Utils.setIptableStatus(this, false);
 				redrawButton();
 				return;
 			} else {
