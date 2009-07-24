@@ -219,6 +219,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 		// 判断是否需要更新hosts文件
 		if (appStatus() == 1) {
 			logWindow.append("hosts文件不须更新\n");
+		} else if (appStatus() == -1) {
+			logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。");
 		} else {
 
 			logWindow.append("hosts文件更新...\n");
@@ -273,30 +275,51 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int firsTime = -1;
 		// 判断状态
 		try {
-			FileInputStream in = openFileInput("Version");
-
-			int ver = in.read();
-
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			int ver = pref.getInt("VERSION", -1);
 			PackageManager pm = getPackageManager();
-			PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+			PackageInfo pi;
 
+			pi = pm.getPackageInfo(getPackageName(), 0);
 			int newVer = pi.versionCode;
 
 			if (ver == newVer) {
 				firsTime = 1;
 			} else {
 				firsTime = 0;
-				tag();
+				tag(newVer);
 			}
-			in.close();
-		} catch (FileNotFoundException e) {
-			Logger.e(TAG, "No Version File, First installed");
-			tag();
-		} catch (IOException e) {
-			Logger.e(TAG, "IOerror");
+
 		} catch (NameNotFoundException e) {
 			Logger.e(TAG, e.getLocalizedMessage());
 		}
+
+		// try {
+		// FileInputStream in = openFileInput("Version");
+		//
+		// int ver = in.read();
+		//
+		// PackageManager pm = getPackageManager();
+		// PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+		//
+		// int newVer = pi.versionCode;
+		//
+		// if (ver == newVer) {
+		// firsTime = 1;
+		// } else {
+		// firsTime = 0;
+		// tag();
+		// }
+		// in.close();
+		// } catch (FileNotFoundException e) {
+		// Logger.e(TAG, "No Version File, First installed");
+		// tag();
+		// } catch (IOException e) {
+		// Logger.e(TAG, "IOerror");
+		// } catch (NameNotFoundException e) {
+		// Logger.e(TAG, e.getLocalizedMessage());
+		// }
 		return firsTime;
 	}
 
@@ -337,22 +360,27 @@ public class Cmwrap extends Activity implements OnClickListener {
 	/**
 	 * 更新版本号
 	 */
-	private void tag() {
-		FileOutputStream out;
-		try {
-			out = openFileOutput("Version", MODE_PRIVATE);
-
-			out
-					.write(getPackageManager().getPackageInfo(getPackageName(),
-							0).versionCode);
-			out.close();
-		} catch (FileNotFoundException ex) {
-			Logger.e(TAG, "No Version File, First installed");
-		} catch (IOException ex) {
-			Logger.e(TAG, "写入版本号失败");
-		} catch (NameNotFoundException e) {
-			Logger.e(TAG, e.getLocalizedMessage());
-		}
+	private void tag(int newVer) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putInt("VERSION", newVer);
+		editor.commit();
+		// FileOutputStream out;
+		// try {
+		// out = openFileOutput("Version", MODE_PRIVATE);
+		//
+		// out
+		// .write(getPackageManager().getPackageInfo(getPackageName(),
+		// 0).versionCode);
+		// out.close();
+		// } catch (FileNotFoundException ex) {
+		// Logger.e(TAG, "No Version File, First installed");
+		// } catch (IOException ex) {
+		// Logger.e(TAG, "写入版本号失败");
+		// } catch (NameNotFoundException e) {
+		// Logger.e(TAG, e.getLocalizedMessage());
+		// }
 	}
 
 	@Override

@@ -43,8 +43,9 @@
 	<string name="CMDiptablesDisable">iptables -t nat -F</string>
 	<string name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3 /system</string>
-
 	<string name="UserAgent">biAji's wap channel</string>
+	<string name="BUTTON_ENABLE">启用</string>
+	<string name="BUTTON_DISABLE">禁用</string>
 	<string name="MENU_TEST">环境测试</string>
 	<string name="MENU_SETTING">设置</string>
 	<string name="MENU_ABOUT">关于Cmwrap</string>
@@ -63,10 +64,13 @@
 	<string name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n
 	</string>
 	<string name="LogLevel">5</string>
-	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
-	</string>
-	
+
+	<!-- 关于 -->
 	<string name="ABOUT_VERSION">版本</string>
 	<string name="ABOUT_HOMEPAGE">主页</string>
+	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
+	</string>
+	<string name="ABOUT_EMAIL">邮箱</string>
+	<string name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
 
 </resources>
