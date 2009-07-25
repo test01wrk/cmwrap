@@ -294,32 +294,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		} catch (NameNotFoundException e) {
 			Logger.e(TAG, e.getLocalizedMessage());
 		}
-
-		// try {
-		// FileInputStream in = openFileInput("Version");
-		//
-		// int ver = in.read();
-		//
-		// PackageManager pm = getPackageManager();
-		// PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
-		//
-		// int newVer = pi.versionCode;
-		//
-		// if (ver == newVer) {
-		// firsTime = 1;
-		// } else {
-		// firsTime = 0;
-		// tag();
-		// }
-		// in.close();
-		// } catch (FileNotFoundException e) {
-		// Logger.e(TAG, "No Version File, First installed");
-		// tag();
-		// } catch (IOException e) {
-		// Logger.e(TAG, "IOerror");
-		// } catch (NameNotFoundException e) {
-		// Logger.e(TAG, e.getLocalizedMessage());
-		// }
 		return firsTime;
 	}
 
@@ -366,21 +340,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("VERSION", newVer);
 		editor.commit();
-		// FileOutputStream out;
-		// try {
-		// out = openFileOutput("Version", MODE_PRIVATE);
-		//
-		// out
-		// .write(getPackageManager().getPackageInfo(getPackageName(),
-		// 0).versionCode);
-		// out.close();
-		// } catch (FileNotFoundException ex) {
-		// Logger.e(TAG, "No Version File, First installed");
-		// } catch (IOException ex) {
-		// Logger.e(TAG, "写入版本号失败");
-		// } catch (NameNotFoundException e) {
-		// Logger.e(TAG, e.getLocalizedMessage());
-		// }
 	}
 
 	@Override

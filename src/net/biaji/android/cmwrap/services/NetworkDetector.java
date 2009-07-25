@@ -38,15 +38,15 @@ public class NetworkDetector extends BroadcastReceiver {
 				.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
-		
+
 		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
 
 			// 禁用自动启动
-			if (!autoBoot){
+			if (!autoBoot) {
 				Logger.d(TAG, "AUTOBOOT：" + autoBoot);
 				return;
 			}
-			//自动启动时，初始化iptables状态
+			// 自动启动时，初始化iptables状态
 			Utils.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
@@ -71,11 +71,15 @@ public class NetworkDetector extends BroadcastReceiver {
 		public void run() {
 
 			inArray++;
-			
-			Logger.d(TAG, inArray+ "");
+
+			Logger.d(TAG, inArray + "");
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(context);
+			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
+					+ ""));
 
 			try {
-				Thread.sleep(INTERVAL); 
+				Thread.sleep(latency);
 			} catch (InterruptedException e) {
 				Logger.e(TAG, "休息，休息一会儿～～ 失败了");
 			}
@@ -101,11 +105,10 @@ public class NetworkDetector extends BroadcastReceiver {
 					return;
 				}
 			}
-			
+
 			context.startService(intentS);
 
 			inArray = 0;
 		}
-
 	}
 }

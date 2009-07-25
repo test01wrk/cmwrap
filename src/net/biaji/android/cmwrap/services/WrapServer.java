@@ -77,6 +77,7 @@ public class WrapServer extends Thread {
 				clean();
 				Logger.v(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
+				socket.setSoTimeout(120 * 1000);
 				Logger.v(TAG, "获得客户端请求");
 				WapChannel channel = new WapChannel(socket, dest, proxyHost,
 						proxyPort);

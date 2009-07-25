@@ -4,12 +4,13 @@
 	<string name="serviceTagUp">Enable HTTP Proxy</string>
 	<string name="serviceTagDown">Disable HTTP Proxy</string>
 	<string name="serviceBaseTitle">Enable Base Mode</string>
-	<string name="serviceBaseComment">此状态下可使用浏览器、Google
-		Map等HTTP协议的应用，耗电量与未打开时几乎没有差别</string>
+	<string name="serviceBaseComment">You can use service base on http protocal:
+		Browser, Google Maps, etc.</string>
 	<string name="serviceTagApp">Enable Service Mode</string>
 	<string name="serviceAppTitle">Switch to Service Mode</string>
 	<string name="serviceAppComment">
-		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
+		You can enjoy basic google service such as Gmail,
+		Gtalk, etc.
 	</string>
 	<string name="serviceTagSuper">Enable All</string>
 	<!-- 设置界面文本 -->
@@ -19,13 +20,14 @@
 	<string name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
 	<string name="PREF_TITLE_ONLY_CMWAP">Only proxy cmwap</string>
-	<string name="PREF_SUMMARY_ONLY_CMWAP">仅对中国移动cmwap数据进行代理</string>
+	<string name="PREF_SUMMARY_ONLY_CMWAP">Only Effect on ChinaMobile's cmwap APN</string>
+	<string name="PREF_TITLE_LATENCY">Latency</string>
+	<string name="PREF_SUMMARY_LATENCY">数据连接改变后状态改变的延时（以秒为单位）</string>
 	<string name="PREF_CATEGORY_PROXY">Proxy Setting</string>
 	<string name="PREF_TITLE_PROXY_HOST">Proxy Address</string>
-	<string name="PREF_SUMMARY_PROXY_HOST">设置计划使用的HTTP代理服务器地址，默认10.0.0.172
-	</string>
+	<string name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172</string>
 	<string name="PREF_TITLE_PROXY_PORT">Port</string>
-	<string name="PREF_SUMMARY_PROXY_PORT">设置计划使用的HTTP代理服务器端口，默认80
+	<string name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
 	</string>
 	<!-- 设置界面文本结束 -->
 	<string name="proxyServer">10.0.0.172</string>
@@ -50,8 +52,8 @@
 	<string name="MENU_TEST">Environment Test</string>
 	<string name="MENU_SETTING">Settings</string>
 	<string name="MENU_ABOUT">About</string>
-	<string name="TEST_ROOT">测试是否具有root权限</string>
-	<string name="TEST_IPTABLES">测试是否有iptables支持</string>
+	<string name="TEST_ROOT">Test For Root Access</string>
+	<string name="TEST_IPTABLES">Test For iptables Support</string>
 	<string name="TEST_CMWAP">测试当前是否CMWAP连接</string>
 	<string name="TEST_HTTPS">测试是否支持HTTPS代理</string>
 	<string name="TEST_OTHER">测试是否支持HTTPS以外的协议代理</string>
