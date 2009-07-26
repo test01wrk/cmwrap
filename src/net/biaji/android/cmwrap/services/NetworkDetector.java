@@ -21,7 +21,7 @@ public class NetworkDetector extends BroadcastReceiver {
 	/**
 	 * 时间间隔，短于此间隔的变化不予实施
 	 */
-	private final long INTERVAL = 1000 * 60 * 2;
+	private final long INTERVAL = 120;
 
 	private static int inArray = 0;
 
@@ -76,7 +76,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			SharedPreferences pref = PreferenceManager
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
-					+ ""));
+					+ "")) * 1000;
 
 			try {
 				Thread.sleep(latency);
