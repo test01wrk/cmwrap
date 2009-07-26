@@ -16,6 +16,7 @@
 203.208.33.100			gdata.youtube.com
 203.208.39.99			upload.youtube.com insight.youtube.com
 203.208.39.160			help.youtube.com
+203.208.39.104			picasaweb.google.com
 
 88.198.9.5				ws.geonames.org
 63.216.60.76			static.rememberthemilk.com
@@ -45,7 +46,18 @@
 38.118.85.55            config.mobile.wxbug.com mapplets.weatherbug.com tiles.weatherbug.com
 209.249.20.150          pub.weatherbug.com
 212.27.63.112			koxx3.free.fr
-168.143.162.100			twitter.com  www.twitter.com
+
+#Twitter
+128.121.146.228			twitter.com
+128.121.146.228			www.twitter.com
+128.121.146.101			assets0.twitter.com
+128.121.146.101			assets1.twitter.com
+128.121.146.101			static.twitter.com
+128.121.146.229			assets2.twitter.com
+128.121.146.229			assets3.twitter.com
+65.74.185.41			twitter.zendesk.com
+65.74.185.41			help.twitter.com
+
 203.150.228.104         nest.onedd.net        
 64.4.9.254              messenger.hotmail.com
 209.85.173.192          supl.google.com
@@ -63,3 +75,16 @@
 209.17.74.13			twitgoo.com
 208.94.0.43				yfrog.com
 207.171.185.197			s3.amazonaws.com
+
+#Facebook + Others
+124.40.42.105			www.facebook.com
+69.63.180.173			login.facebook.com
+69.192.34.110			s-static.ak.facebook.com
+69.63.176.69			secure-profile.facebook.com
+69.63.176.59			secure-media-sf2p.facebook.com
+69.63.178.13			ssl.facebook.com
+96.6.122.57				profile.ak.facebook.com
+64.211.21.152			b.static.ak.facebook.com
+203.208.39.160			s.ytimg.com
+74.54.212.166			www.tumblr.com
+74.54.212.166			iksky.tumblr.com
