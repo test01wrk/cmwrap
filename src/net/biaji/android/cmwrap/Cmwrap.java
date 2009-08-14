@@ -217,9 +217,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
 		// 判断是否需要更新hosts文件
-		if (appStatus() == 1) {
+		int appStatus = appStatus();
+		if (appStatus == 1) {
 			logWindow.append("hosts文件不须更新\n");
-		} else if (appStatus() == -1) {
+		} else if (appStatus == -1) {
 			logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。");
 		} else {
 
@@ -286,7 +287,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			if (ver == newVer) {
 				firsTime = 1;
-			} else {
+			} else if (ver != -1) {
 				firsTime = 0;
 				tag(newVer);
 			}
