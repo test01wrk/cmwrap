@@ -16,7 +16,6 @@ package net.biaji.android.cmwrap;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -287,8 +286,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			if (ver == newVer) {
 				firsTime = 1;
-			} else if (ver != -1) {
-				firsTime = 0;
+			} else {
+				if (ver != -1)
+					firsTime = 0;
 				tag(newVer);
 			}
 
