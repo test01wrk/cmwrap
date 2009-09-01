@@ -219,9 +219,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int appStatus = appStatus();
 		if (appStatus == 1) {
 			logWindow.append("hosts文件不须更新\n");
-		} else if (appStatus == -1) {
-			logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。");
 		} else {
+			
+			if (appStatus == -1)
+				logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n");
 
 			logWindow.append("hosts文件更新...\n");
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
