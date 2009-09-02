@@ -72,14 +72,17 @@ public class NetworkDetector extends BroadcastReceiver {
 
 			inArray++;
 
-			Logger.d(TAG, inArray + "");
+			Logger.d(TAG, "inArray: " + inArray);
 			SharedPreferences pref = PreferenceManager
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
 
 			try {
+				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()
+						+ "准备暂停" + latency / 1000 + "秒");
 				Thread.sleep(latency);
+				Logger.v(TAG, "进程" + inArray + "等待结束");
 			} catch (InterruptedException e) {
 				Logger.e(TAG, "休息，休息一会儿～～ 失败了");
 			}
@@ -91,6 +94,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			}
 
 			int level = Utils.getServiceLevel(context);
+			Logger.v(TAG, "Service Level: " + level);
 			Intent intentS = new Intent(context, WrapService.class);
 
 			// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
@@ -107,6 +111,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			}
 
 			context.startService(intentS);
+			Logger.v(TAG, "启动服务结束");
 
 			inArray = 0;
 		}
