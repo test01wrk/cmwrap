@@ -3,14 +3,15 @@
 #google 
 209.85.237.25			smtp.google.com
 64.233.169.188			mtalk.google.com
+74.125.153.138			tools.google.com
 66.249.89.99			www.google.com
 74.125.19.100			android.clients.google.com android.l.google.com clients2.google.com clients.l.google.com
 #66.249.89.101			android.clients.google.com android.l.google.com
 66.249.89.104			maps.google.com
 72.14.203.102			csi.gstatic.com			csi.google.com
-209.85.145.160			m.google.cn
+203.208.39.104			m.google.cn
 72.14.203.83            mail.google.com
-209.85.145.160          www.google.cn
+203.208.39.104			www.google.cn
 74.125.19.100			docs.google.com	writely.google.com	spreadsheets.google.com
 203.208.39.104			www.youtube.com youtube.com
 203.208.33.100			gdata.youtube.com
