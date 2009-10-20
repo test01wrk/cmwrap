@@ -3,6 +3,7 @@ package net.biaji.android.cmwrap.services;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.Rule;
@@ -166,7 +167,7 @@ public class WrapService extends Service {
 		Notification note = new Notification(icon, notifyText, System
 				.currentTimeMillis());
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, WrapService.class), 0);
+				new Intent(this, Cmwrap.class), 0);
 		note.setLatestEventInfo(this, getText(R.string.app_name), notifyText,
 				reviewIntent);
 		nm.notify(R.string.serviceTagUp, note);
