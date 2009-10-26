@@ -16,6 +16,9 @@
 	<string name="PREF_CATEGORY_BASE">基础设置</string>
 	<string name="PREF_TITLE_AUTO_BOOT">自动开启</string>
 	<string name="PREF_SUMMARY_AUTO_BOOT">是否在启动时自动启动服务</string>
+	<string name="PREF_TITLE_ULTRA_MODE">增强模式</string>
+	<string name="PREF_SUMMARY_ULTRA_MODE">是否使用增强模式运行（注意：此模式会降低系统效率）
+	</string>
 	<string name="PREF_TITLE_AUTO_CHANGE">智能切换</string>
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
 	<string name="PREF_TITLE_ONLY_CMWAP">代理仅作用于CMWAP</string>

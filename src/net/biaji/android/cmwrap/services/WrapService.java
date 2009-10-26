@@ -37,6 +37,8 @@ public class WrapService extends Service {
 
 	private boolean inService = false;
 
+	private boolean isUltraMode = false;
+
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
@@ -77,6 +79,7 @@ public class WrapService extends Service {
 				R.string.proxyServer));
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getResources()
 				.getString(R.string.proxyPort)));
+		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 
 		// 载入所有规则
 		rules = Utils.loadRules(this);
@@ -94,7 +97,8 @@ public class WrapService extends Service {
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
 			if (Utils.isCmwap(this)) {
-				setForeground(true);
+				if (isUltraMode)
+					setForeground(true);
 				startSubDaemon();
 				inService = true;
 				showNotify();
@@ -111,7 +115,7 @@ public class WrapService extends Service {
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
-		
+
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
 			serverLevel = level;
 			refreshSubDaemon();
@@ -167,6 +171,8 @@ public class WrapService extends Service {
 
 		Notification note = new Notification(icon, notifyText, System
 				.currentTimeMillis());
+		if (isUltraMode)
+			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, Cmwrap.class), 0);
 		note.setLatestEventInfo(this, getText(R.string.app_name), notifyText,
@@ -215,10 +221,10 @@ public class WrapService extends Service {
 
 	private void forward() {
 
-		//如果iptables处于已执行状态，则啥都不干
-		if(Utils.isIptablesEnabled(this))
+		// 如果iptables处于已执行状态，则啥都不干
+		if (Utils.isIptablesEnabled(this))
 			return;
-		
+
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
@@ -247,7 +253,7 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
-		
+
 		Utils.setIptableStatus(this, true);
 
 	}

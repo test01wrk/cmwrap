@@ -4,6 +4,9 @@
 		<CheckBoxPreference android:summary="@string/PREF_SUMMARY_AUTO_BOOT"
 			android:title="@string/PREF_TITLE_AUTO_BOOT" android:key="AUTOBOOT"
 			android:defaultValue="false" />
+		<CheckBoxPreference android:summary="@string/PREF_SUMMARY_ULTRA_MODE"
+			android:title="@string/PREF_TITLE_ULTRA_MODE" android:key="ULTRAMODE"
+			android:defaultValue="false" />
 		<CheckBoxPreference android:key="ONLYCMWAP"
 			android:defaultValue="true" android:summary="@string/PREF_SUMMARY_ONLY_CMWAP"
 			android:title="@string/PREF_TITLE_ONLY_CMWAP" />
