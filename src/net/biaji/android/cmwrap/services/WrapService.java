@@ -94,6 +94,7 @@ public class WrapService extends Service {
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
 			if (Utils.isCmwap(this)) {
+				setForeground(true);
 				startSubDaemon();
 				inService = true;
 				showNotify();
