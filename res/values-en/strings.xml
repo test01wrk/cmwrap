@@ -16,7 +16,11 @@
 	<!-- 设置界面文本 -->
 	<string name="PREF_CATEGORY_BASE">Basic Settings</string>
 	<string name="PREF_TITLE_AUTO_BOOT">Auto Start</string>
-	<string name="PREF_SUMMARY_AUTO_BOOT">是否在启动时自动启动服务</string>
+	<string name="PREF_SUMMARY_AUTO_BOOT">Automatic Start Service After Boot
+	</string>
+	<string name="PREF_TITLE_ULTRA_MODE">Ultra Mode</string>
+	<string name="PREF_SUMMARY_ULTRA_MODE">Run Service In Ultra Mode(NOTICE:More System Resource Consume）
+	</string>
 	<string name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
 	<string name="PREF_TITLE_ONLY_CMWAP">Only proxy cmwap</string>
@@ -25,7 +29,8 @@
 	<string name="PREF_SUMMARY_LATENCY">数据连接改变后状态改变的延时（以秒为单位）</string>
 	<string name="PREF_CATEGORY_PROXY">Proxy Setting</string>
 	<string name="PREF_TITLE_PROXY_HOST">Proxy Address</string>
-	<string name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172</string>
+	<string name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172
+	</string>
 	<string name="PREF_TITLE_PROXY_PORT">Port</string>
 	<string name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
 	</string>
