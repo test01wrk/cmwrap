@@ -19,6 +19,8 @@
 203.208.39.160			help.youtube.com
 203.208.39.104			picasaweb.google.com
 72.14.203.133			mw2.google.com
+72.14.203.113			www.google-analytics.com
+
 #place directory
 72.14.203.93			lh3.ggpht.com lh4.ggpht.com lh5.ggpht.com lh6.ggpht.com
 74.125.153.104			base.googlehosted.com
@@ -68,6 +70,7 @@
 174.120.9.92			t.zhe.la
 216.137.55.35			a3.twimg.com
 216.137.55.37			a1.twimg.com
+#173.45.239.93			service.twidroid.com
         
 64.4.9.254              messenger.hotmail.com
 209.85.173.192          supl.google.com
