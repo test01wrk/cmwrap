@@ -1,5 +1,6 @@
 127.0.0.1            localhost data.flurry.com
 64.73.32.135			north-america.pool.ntp.org
+
 #google 
 209.85.237.25			smtp.google.com
 64.233.169.188			mtalk.google.com
@@ -24,6 +25,7 @@
 #place directory
 72.14.203.93			lh3.ggpht.com lh4.ggpht.com lh5.ggpht.com lh6.ggpht.com
 74.125.153.104			base.googlehosted.com
+64.233.183.118			mw2.google.com
 
 88.198.9.5				ws.geonames.org
 203.77.189.29			static.rememberthemilk.com
@@ -144,7 +146,7 @@
 
 #dianping
 114.80.166.162			api.dianping.com  stat.api.dianping.com
-61.129.77.34			i3.dpfile.com i1.dpfile.com i2.dpfile.com
+61.129.77.34			i3.dpfile.com i1.dpfile.com i2.dpfile.com p.dpfile.com
 
 #CCAV
 202.108.16.165			diaodu.getview.cn
