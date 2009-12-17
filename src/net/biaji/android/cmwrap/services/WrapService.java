@@ -62,9 +62,9 @@ public class WrapService extends Service {
 	public final static int SERVER_LEVEL_APPS = 2;
 
 	/**
-	 * 此级别加入更多需要HTTP隧道的应用。
+	 * 此级别服务运行于前台服务模式
 	 */
-	public final static int SERVER_LEVEL_MORE_APPS = 3;
+	public final static int SERVER_LEVEL_FROGROUND_SERVICE = 3;
 
 	private int serverLevel = SERVER_LEVEL_BASE;
 
@@ -97,8 +97,10 @@ public class WrapService extends Service {
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
 			if (Utils.isCmwap(this)) {
-				if (isUltraMode)
+				if (isUltraMode) {
+					serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
 					setForeground(true);
+				}
 				startSubDaemon();
 				inService = true;
 				showNotify();
@@ -163,7 +165,7 @@ public class WrapService extends Service {
 			notifyText = getText(R.string.serviceTagApp);
 			break;
 
-		case SERVER_LEVEL_MORE_APPS:
+		case SERVER_LEVEL_FROGROUND_SERVICE:
 			icon = R.drawable.notifysuper;
 			notifyText = getText(R.string.serviceTagSuper);
 			break;

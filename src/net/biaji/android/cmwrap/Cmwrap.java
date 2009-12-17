@@ -96,22 +96,22 @@ public class Cmwrap extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	
+
 		super.onCreate(savedInstanceState);
-	
+
 		setContentView(R.layout.main);
-	
+
 		logWindow = (TextView) findViewById(R.id.logwindow);
-	
+
 		// 判断是否需要更新hosts文件
 		int appStatus = appStatus();
 		if (appStatus == APP_STATUS_REPEAT && hasHosts()) {
 			logWindow.append("hosts文件不须更新\n");
 		} else {
-	
+
 			if (appStatus == APP_STATUS_NEW)
 				logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n");
-	
+
 			logWindow.append("hosts文件更新...\n");
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
@@ -121,19 +121,33 @@ public class Cmwrap extends Activity implements OnClickListener {
 				logWindow.append("更新完毕。\n");
 			}
 		}
-	
+
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		if (Utils.isCmwap(this))
+			serviceLevel = Utils.getServiceLevel(this);
+		else
+			serviceLevel = WrapService.SERVER_LEVEL_STOP;
+
+		Logger.d(TAG, "服务级别为：" + serviceLevel);
+
+		redrawButton();
 	}
 
 	public void onClick(View v) {
-	
+
 		Intent serviceIn = new Intent(this, WrapService.class);
-	
+
 		int message = R.string.serviceTagUp;
-	
+
 		switch (v.getId()) {
-	
+
 		case R.id.Switch:
-	
+
 			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
 				stopService(serviceIn);
 				Logger.i(TAG, "禁用服务");
@@ -149,7 +163,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				serviceLevel = WrapService.SERVER_LEVEL_BASE;
 			}
 			break;
-	
+
 		case R.id.BaseService:
 			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
 				serviceLevel = WrapService.SERVER_LEVEL_APPS;
@@ -157,10 +171,10 @@ public class Cmwrap extends Activity implements OnClickListener {
 			} else {
 				serviceLevel = WrapService.SERVER_LEVEL_BASE;
 			}
-	
+
 			break;
 		}
-	
+
 		serviceIn.putExtra("SERVERLEVEL", serviceLevel);
 		Logger.i(TAG, "启用服务");
 		startService(serviceIn);
@@ -183,7 +197,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 									dialog.cancel();
 								}
 							});
-	
+
 			AlertDialog dialog = builder.create();
 			return dialog;
 		case DIALOG_TEST_ID:
@@ -200,7 +214,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	
+
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.options_menu, menu);
 		return true;
@@ -208,7 +222,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	
+
 		switch (item.getItemId()) {
 		case R.id.TEST:
 			logWindow.setText("");
@@ -224,7 +238,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case R.id.ABOUT:
 			showDialog(DIALOG_ABOUT_ID);
 			return true;
-	
+
 		}
 		return false;
 	}
@@ -278,25 +292,25 @@ public class Cmwrap extends Activity implements OnClickListener {
 		FileOutputStream fo = null;
 		try {
 			bin = new BufferedInputStream(getResources().openRawResource(resId));
-	
+
 			if (mod == null)
 				mod = "644";
 			Utils.rootCMD("chmod 666 " + dest);
 			File destF = new File(dest);
-	
+
 			fo = new FileOutputStream(destF);
 			int length;
 			byte[] content = new byte[1024];
-	
+
 			while ((length = bin.read(content)) > 0) {
 				fo.write(content, 0, length);
 			}
-	
+
 			fo.close();
 			bin.close();
 			Utils.rootCMD("chmod " + mod + "  " + dest);
 			result = 0;
-	
+
 		} catch (FileNotFoundException e) {
 			Logger.e(TAG, "未发现目的路径", e);
 		} catch (IOException e) {
@@ -308,7 +322,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 	/**
 	 * 判断hosts文件是否需要更新
 	 * 
-	 * @return true 存在可用hosts文件  false 需要进行安装
+	 * @return true 存在可用hosts文件 false 需要进行安装
 	 */
 	private boolean hasHosts() {
 		boolean result = false;
@@ -335,7 +349,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			break;
 
 		case WrapService.SERVER_LEVEL_APPS:
-		case WrapService.SERVER_LEVEL_MORE_APPS:
+		case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
 			switcher.setChecked(true);
 			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(true);
@@ -361,20 +375,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("VERSION", newVer);
 		editor.commit();
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		if (Utils.isCmwap(this))
-			serviceLevel = Utils.getServiceLevel(this);
-		else
-			serviceLevel = WrapService.SERVER_LEVEL_STOP;
-
-		Logger.d(TAG, "服务级别为：" + serviceLevel);
-
-		redrawButton();
 	}
 
 	private class TestManager extends Thread {
