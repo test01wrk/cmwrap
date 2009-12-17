@@ -193,9 +193,15 @@ public class WrapService extends Service {
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
 				if (rule.mode == Rule.MODE_SERV) {
-					WrapServer server = new WrapServer(rule.name,
-							rule.servPort, proxyHost, proxyPort);
-					server.setDest(rule.desHost + ":" + rule.desPort);
+					WrapServer server = null;
+					if (rule.protocol.equals("tcp")) {
+						server = new NormalTcpServer(rule.name, rule.servPort,
+								proxyHost, proxyPort);
+						server.setDest(rule.desHost + ":" + rule.desPort);
+					} else {
+						server = new DNSServer(rule.name, rule.servPort,
+								proxyHost, proxyPort);
+					}
 					server.start();
 					servers.add(server);
 				}
@@ -236,14 +242,9 @@ public class WrapService extends Service {
 		if (onlyCmwap)
 			inface = " -o rmnet0 ";
 
-		String protocol = " -p tcp ";
-
 		for (Rule rule : rules) {
 			try {
-
-				if (rule.protocol != null && !rule.protocol.equals("")) {
-					protocol = " -p " + rule.protocol + " ";
-				}
+				String protocol = " -p " + rule.protocol;
 
 				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
 
@@ -254,7 +255,7 @@ public class WrapService extends Service {
 				else {
 					if (rule.desHost != null && !rule.desHost.equals("*"))
 						cmd += " -d " + rule.desHost;
-					
+
 					cmd += " --dport " + rule.desPort
 							+ " -j DNAT --to-destination 127.0.0.1:"
 							+ rule.servPort;
