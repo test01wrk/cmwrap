@@ -19,7 +19,8 @@
 	<string name="PREF_SUMMARY_AUTO_BOOT">Automatic Start Service After Boot
 	</string>
 	<string name="PREF_TITLE_ULTRA_MODE">Ultra Mode</string>
-	<string name="PREF_SUMMARY_ULTRA_MODE">Run Service In Ultra Mode(NOTICE:More System Resource Consume）
+	<string name="PREF_SUMMARY_ULTRA_MODE">Run Service In Ultra Mode(NOTICE:More System
+		Resource Consume）
 	</string>
 	<string name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
 	<string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
@@ -33,6 +34,13 @@
 	</string>
 	<string name="PREF_TITLE_PROXY_PORT">Port</string>
 	<string name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
+	</string>
+	<string name="PREF_CATEGORY_DNS">DNS Setting</string>
+	<string name="PREF_TITLE_DNS_ENABLE">DNS Proxy</string>
+	<string name="PREF_SUMMARY_DNS_ENABLE">If your current connection has no DNS support,
+		check this.</string>
+	<string name="PREF_TITLE_DNS">DNS Address</string>
+	<string name="PREF_SUMMARY_DNS">DNS Server's Address, Default 4.3.2.1
 	</string>
 	<!-- 设置界面文本结束 -->
 	<string name="proxyServer">10.0.0.172</string>
