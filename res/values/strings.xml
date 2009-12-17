@@ -11,7 +11,7 @@
 	<string name="serviceAppComment">
 		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
 	</string>
-	<string name="serviceTagSuper">启用所有服务</string>
+	<string name="serviceTagSuper">服务运行于增强模式</string>
 	<!-- 设置界面文本 -->
 	<string name="PREF_CATEGORY_BASE">基础设置</string>
 	<string name="PREF_TITLE_AUTO_BOOT">自动开启</string>

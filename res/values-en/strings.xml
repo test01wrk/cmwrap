@@ -12,7 +12,7 @@
 		You can enjoy basic google service such as Gmail,
 		Gtalk, etc.
 	</string>
-	<string name="serviceTagSuper">Enable All</string>
+	<string name="serviceTagSuper">Run In Ultra Mode</string>
 	<!-- 设置界面文本 -->
 	<string name="PREF_CATEGORY_BASE">Basic Settings</string>
 	<string name="PREF_TITLE_AUTO_BOOT">Auto Start</string>

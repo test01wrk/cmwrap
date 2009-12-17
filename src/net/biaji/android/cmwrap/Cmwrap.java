@@ -166,7 +166,12 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		case R.id.BaseService:
 			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
-				serviceLevel = WrapService.SERVER_LEVEL_APPS;
+
+				if (PreferenceManager.getDefaultSharedPreferences(this)
+						.getBoolean("ULTRAMODE", false) == true)
+					serviceLevel = WrapService.SERVER_LEVEL_FROGROUND_SERVICE;
+				else
+					serviceLevel = WrapService.SERVER_LEVEL_APPS;
 				message = R.string.serviceTagApp;
 			} else {
 				serviceLevel = WrapService.SERVER_LEVEL_BASE;
