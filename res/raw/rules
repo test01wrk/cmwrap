@@ -1,5 +1,6 @@
 HTTP BASE|80
 OPERA MINI|1080
+DNS Service|*|53|7442|udp
 Android Auth|android.clients.google.com|443|7443
 Google Service|www.google.com|443|7444
 Gmail Service|mail.google.com|443|7445

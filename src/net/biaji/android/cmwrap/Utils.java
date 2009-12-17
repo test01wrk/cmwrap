@@ -103,6 +103,9 @@ public class Utils {
 				String[] items = line.split("\\|");
 
 				rule.name = items[0];
+				if (items.length == 5)
+					rule.protocol = items[4];
+
 				if (items.length > 2) {
 					rule.mode = Rule.MODE_SERV;
 					rule.desHost = items[1];

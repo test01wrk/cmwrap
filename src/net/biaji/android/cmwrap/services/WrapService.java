@@ -236,19 +236,29 @@ public class WrapService extends Service {
 		if (onlyCmwap)
 			inface = " -o rmnet0 ";
 
+		String protocol = " -p tcp ";
+
 		for (Rule rule : rules) {
 			try {
-				String cmd;
+
+				if (rule.protocol != null && !rule.protocol.equals("")) {
+					protocol = " -p " + rule.protocol + " ";
+				}
+
+				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
+
 				if (rule.mode == Rule.MODE_BASE)
-					cmd = "iptables -t nat -A OUTPUT " + inface
-							+ " -p tcp --dport " + rule.desPort
-							+ " -j DNAT --to-destination " + proxyHost + ":"
+					cmd += "--dport " + rule.desPort + " -j DNAT "
+							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;
-				else
-					cmd = "iptables -t nat -A OUTPUT " + inface + " -p tcp -d "
-							+ rule.desHost + " --dport " + rule.desPort
+				else {
+					if (rule.desHost != null && !rule.desHost.equals("*"))
+						cmd += " -d " + rule.desHost;
+					
+					cmd += " --dport " + rule.desPort
 							+ " -j DNAT --to-destination 127.0.0.1:"
 							+ rule.servPort;
+				}
 				Utils.rootCMD(cmd);
 
 			} catch (Exception e) {

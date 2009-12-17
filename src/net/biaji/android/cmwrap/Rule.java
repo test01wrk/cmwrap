@@ -7,6 +7,7 @@ public class Rule {
 
 	public String name;
 	public int mode = MODE_BASE;
+	public String protocol;
 	public String desHost;
 	public int desPort;
 	public int servPort;
