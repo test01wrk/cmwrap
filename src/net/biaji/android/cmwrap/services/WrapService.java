@@ -194,7 +194,8 @@ public class WrapService extends Service {
 			if (rule.mode < serverLevel) {
 				if (rule.mode == Rule.MODE_SERV) {
 					WrapServer server = ServerFactory.getServer(rule);
-	//				server.set
+					server.setProxyHost(proxyHost);
+					server.setProxyPort(proxyPort);
 					server.start();
 					servers.add(server);
 				}
