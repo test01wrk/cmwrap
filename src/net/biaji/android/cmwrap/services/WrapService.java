@@ -193,15 +193,8 @@ public class WrapService extends Service {
 		for (Rule rule : rules) {
 			if (rule.mode < serverLevel) {
 				if (rule.mode == Rule.MODE_SERV) {
-					WrapServer server = null;
-					if (rule.protocol.equals("tcp")) {
-						server = new NormalTcpServer(rule.name, rule.servPort,
-								proxyHost, proxyPort);
-						server.setDest(rule.desHost + ":" + rule.desPort);
-					} else {
-						server = new DNSServer(rule.name, rule.servPort,
-								proxyHost, proxyPort);
-					}
+					WrapServer server = ServerFactory.getServer(rule);
+	//				server.set
 					server.start();
 					servers.add(server);
 				}
@@ -249,7 +242,7 @@ public class WrapService extends Service {
 				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
 
 				if (rule.mode == Rule.MODE_BASE)
-					cmd += "--dport " + rule.desPort + " -j DNAT "
+					cmd += " --dport " + rule.desPort + " -j DNAT "
 							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;
 				else {

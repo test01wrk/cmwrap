@@ -1,62 +1,25 @@
 package net.biaji.android.cmwrap.services;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.HashSet;
-
-import net.biaji.android.cmwrap.Logger;
 
 public abstract class WrapServer extends Thread {
 
-	private ServerSocket serSocket;
+	public abstract boolean isClosed();
 
-	private int servPort;
+	public abstract void close() throws IOException;
 
-	private String dest;
+	public abstract int getServPort();
 
-	private String name;
+	public abstract void setServPort(int port);
 
-	private String proxyHost;
+	public abstract void setProxyHost(String host);
 
-	private int proxyPort;
-
-	private final String TAG = "CMWRAP->Server";
-
-	private boolean inService = false;
-
-	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
-
-	public boolean isClosed() {
-		return serSocket.isClosed();
-	}
-
-	public void close() throws IOException {
-		inService = false;
-		serSocket.close(); // TODO 优雅点
-	}
-
-	public int getServPort() {
-		return servPort;
-	}
-
-	public void setServPort(int port) {
-		this.servPort = port;
-	}
+	public abstract void setProxyPort(int port);
 
 	/**
 	 * 设置此服务的目的地址
 	 * 
 	 * @param dest
 	 */
-	public void setDest(String dest) {
-		this.dest = dest;
-	}
-
-	@Override
-	public void destroy() {
-		Logger.v(TAG, name + "侦听服务被系统销毁");
-		super.destroy();
-	}
-
-
+	public abstract void setDest(String dest);
 }

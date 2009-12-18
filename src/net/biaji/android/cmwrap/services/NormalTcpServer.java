@@ -27,6 +27,10 @@ public class NormalTcpServer extends WrapServer {
 
 	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
 
+	public NormalTcpServer(String name, int port) {
+		this(name, port, "10.0.0.172", 80);
+	}
+
 	public NormalTcpServer(String name, int port, String proxyHost,
 			int proxyPort) {
 		this.servPort = port;
@@ -67,6 +71,18 @@ public class NormalTcpServer extends WrapServer {
 	 */
 	public void setDest(String dest) {
 		this.dest = dest;
+	}
+
+	@Override
+	public void setProxyHost(String proxyHost) {
+		this.proxyHost = proxyHost;
+
+	}
+
+	@Override
+	public void setProxyPort(int proxyPort) {
+		this.proxyPort = proxyPort;
+
 	}
 
 	@Override
