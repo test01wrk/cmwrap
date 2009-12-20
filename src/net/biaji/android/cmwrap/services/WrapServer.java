@@ -10,8 +10,6 @@ public abstract class WrapServer extends Thread {
 
 	public abstract int getServPort();
 
-	public abstract void setServPort(int port);
-
 	public abstract void setProxyHost(String host);
 
 	public abstract void setProxyPort(int port);

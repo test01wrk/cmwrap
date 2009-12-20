@@ -60,10 +60,6 @@ public class NormalTcpServer extends WrapServer {
 		return servPort;
 	}
 
-	public void setServPort(int port) {
-		this.servPort = port;
-	}
-
 	/**
 	 * 设置此服务的目的地址
 	 * 
