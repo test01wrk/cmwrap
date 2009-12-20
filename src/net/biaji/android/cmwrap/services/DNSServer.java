@@ -20,6 +20,8 @@ public class DNSServer extends WrapServer {
 
 	private final String TAG = "CMWRAP->DNSServer";
 
+	private boolean inService = false;
+
 	public DNSServer(String name, int port) {
 		this(name, port, "10.0.0.172", 80);
 	}
@@ -33,6 +35,8 @@ public class DNSServer extends WrapServer {
 			this.proxyPort = proxyPort;
 
 			srvSocket = new DatagramSocket(srvPort);
+			inService = true;
+			Logger.i(TAG, "DNSServer启动于端口： " + port);
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		}
@@ -46,7 +50,23 @@ public class DNSServer extends WrapServer {
 		DatagramPacket dnsq = new DatagramPacket(qbuffer, qbuffer.length);
 		while (true) {
 			try {
+				
 				srvSocket.receive(dnsq);
+				byte[] dnsquest = dnsq.getData();
+				
+				//连接外部DNS进行解析。
+				new Thread(){
+					public void run() {
+						DatagramPacket dnsAnswer = null;
+						try {
+							srvSocket.send(dnsAnswer);
+						} catch (IOException e) {
+							Logger.e(TAG, "返回DNS解析结果错误", e);
+						}
+					}
+					
+				}.start();
+
 			} catch (IOException e) {
 				Logger.e(TAG, "", e);
 			}
@@ -56,8 +76,8 @@ public class DNSServer extends WrapServer {
 
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-
+		inService = false;
+		srvSocket.close();
 	}
 
 	@Override
@@ -67,8 +87,7 @@ public class DNSServer extends WrapServer {
 
 	@Override
 	public boolean isClosed() {
-		// TODO Auto-generated method stub
-		return false;
+		return srvSocket.isClosed();
 	}
 
 	@Override
