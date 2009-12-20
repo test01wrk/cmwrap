@@ -26,6 +26,8 @@ public class WrapService extends Service {
 	private NotificationManager nm;
 
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
+	
+	private String DNSServer;
 
 	private String proxyHost;
 
@@ -80,6 +82,8 @@ public class WrapService extends Service {
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getResources()
 				.getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
+		
+		DNSServer = pref.getString("DNSADD", "4.3.2.1");
 
 		// 载入所有规则
 		rules = Utils.loadRules(this);

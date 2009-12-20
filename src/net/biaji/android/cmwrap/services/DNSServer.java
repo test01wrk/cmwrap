@@ -64,6 +64,7 @@ public class DNSServer extends WrapServer {
 					Socket innerSocket;
 					private final String UA = "biAji's wap channel";
 					private long starTime = System.currentTimeMillis();
+					private String target = "4.3.2.1";  //TODO 读取配置
 
 					public void run() {
 						DatagramPacket dnsAnswer = null;
@@ -95,8 +96,7 @@ public class DNSServer extends WrapServer {
 							dout = new BufferedWriter(new OutputStreamWriter(
 									innerSocket.getOutputStream()));
 
-							String connectStr = "CONNECT " + proxyHost + ":"
-									+ proxyPort + " HTTP/1.0\r\nUser-agent: "
+							String connectStr = "CONNECT " + target + " HTTP/1.0\r\nUser-agent: "
 									+ this.UA + "\r\n\r\n";
 
 							dout.write(connectStr);
