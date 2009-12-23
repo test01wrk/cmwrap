@@ -99,14 +99,14 @@ public class DNSServer extends WrapServer {
 									bout.write(b);
 								}
 								byte[] response = bout.toByteArray();
-								Logger.i(TAG, "response Length: "
+								Logger.d(TAG, "response Length: "
 										+ response.length);
 								DatagramPacket resp = new DatagramPacket(
 										response, 2, response.length - 2);
 								resp.setPort(dnsq.getPort());
 								resp.setAddress(dnsq.getAddress());
 
-								Logger.i(TAG, "Address: " + dnsq.getAddress()
+								Logger.d(TAG, "Address: " + dnsq.getAddress()
 										+ "port: " + dnsq.getPort() + "SocketAddress: " + dnsq.getAddress());
 								srvSocket.send(resp);
 								innerSocket.close();
