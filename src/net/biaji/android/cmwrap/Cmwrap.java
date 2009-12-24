@@ -93,7 +93,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		}
 	};
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -105,7 +104,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		// 判断是否需要更新hosts文件
 		int appStatus = appStatus();
-		if (appStatus == APP_STATUS_REPEAT && hasHosts()) {
+
+		if (appStatus == APP_STATUS_REPEAT && hasFile("/system/etc/hosts", 200)) {
 			logWindow.append("hosts文件不须更新\n");
 		} else {
 
@@ -119,6 +119,11 @@ public class Cmwrap extends Activity implements OnClickListener {
 			} else {
 				installFiles("/system/etc/hosts", R.raw.hosts, null);
 				logWindow.append("更新完毕。\n");
+			}
+			if (hasFile("/system/bin/dnsmasq")) {
+				logWindow.append("本机安装了dnsmasq，尝试安装DNS解析配置...\n");
+				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq, null);
+				logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
 			}
 		}
 
@@ -324,16 +329,27 @@ public class Cmwrap extends Activity implements OnClickListener {
 		return result;
 	}
 
-	/**
-	 * 判断hosts文件是否需要更新
-	 * 
-	 * @return true 存在可用hosts文件 false 需要进行安装
-	 */
-	private boolean hasHosts() {
+	private boolean hasFile(String file) {
 		boolean result = false;
-		File hosts = new File("/system/etc/hosts");
-		if (hosts.length() > 200)
+		result = hasFile(file, 0);
+		return result;
+	}
+
+	/**
+	 * 判断是否存在指定文件
+	 * 
+	 * @param file
+	 *            文件绝对路径名
+	 * @param length
+	 *            指定文件长度
+	 * @return
+	 */
+	private boolean hasFile(String file, int length) {
+		boolean result = false;
+		File dstFile = new File(file);
+		if (dstFile.length() > length)
 			result = true;
+
 		return result;
 	}
 

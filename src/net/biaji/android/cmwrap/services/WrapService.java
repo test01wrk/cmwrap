@@ -26,7 +26,7 @@ public class WrapService extends Service {
 	private NotificationManager nm;
 
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
-	
+
 	private String DNSServer;
 
 	private String proxyHost;
@@ -82,7 +82,7 @@ public class WrapService extends Service {
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getResources()
 				.getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
-		
+
 		DNSServer = pref.getString("DNSADD", "4.3.2.1");
 
 		// 载入所有规则
@@ -241,6 +241,10 @@ public class WrapService extends Service {
 			inface = " -o rmnet0 ";
 
 		for (Rule rule : rules) {
+			//DNS规则跳过 
+			if (rule.desHost.equals("*"))
+				continue;
+
 			try {
 				String protocol = " -p " + rule.protocol;
 
@@ -264,6 +268,8 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
+
+		Utils.rootCMD("dnsmasq");
 
 		Utils.setIptableStatus(this, true);
 
