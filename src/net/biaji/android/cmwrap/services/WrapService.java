@@ -242,7 +242,7 @@ public class WrapService extends Service {
 
 		for (Rule rule : rules) {
 			//DNS规则跳过 
-			if (rule.desHost.equals("*"))
+			if (rule.desHost != null && rule.desHost.equals("*"))
 				continue;
 
 			try {
@@ -250,7 +250,7 @@ public class WrapService extends Service {
 
 				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
 
-				if (rule.mode == Rule.MODE_BASE)
+				if (rule.mode == Rule.MODE_BASE) 
 					cmd += " --dport " + rule.desPort + " -j DNAT "
 							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;
