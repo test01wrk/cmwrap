@@ -106,25 +106,24 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int appStatus = appStatus();
 
 		if (appStatus == APP_STATUS_REPEAT && hasFile("/system/etc/hosts", 200)) {
-			logWindow.append("hosts文件不须更新\n");
+			logWindow.append("DNS解析文件不须更新\n");
 		} else {
 
 			if (appStatus == APP_STATUS_NEW)
 				logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n");
 
-			logWindow.append("hosts文件更新...\n");
+			logWindow.append("DNS解析文件更新...\n");
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
-			} else {
-				installFiles("/system/etc/hosts", R.raw.hosts, null);
-				logWindow.append("更新完毕。\n");
-			}
-			if (hasFile("/system/bin/dnsmasq")) {
+			} else if (hasFile("/system/bin/dnsmasq")) {
 				logWindow.append("本机安装了dnsmasq，尝试安装DNS解析配置...\n");
 				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq, null);
 				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
 				logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
+			} else {
+				installFiles("/system/etc/hosts", R.raw.hosts, null);
+				logWindow.append("更新完毕。\n");
 			}
 		}
 
