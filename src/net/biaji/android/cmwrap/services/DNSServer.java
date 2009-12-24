@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.Utils;
 
 public class DNSServer extends WrapServer {
 
@@ -33,8 +34,6 @@ public class DNSServer extends WrapServer {
 	DatagramPacket dnsq;
 
 	Socket innerSocket;
-	private final String UA = "biAji's wap channel";
-	private long starTime = System.currentTimeMillis();
 	private String target = "4.3.2.1:53"; // TODO 读取配置
 
 	public DNSServer(String name, int port) {
@@ -52,6 +51,7 @@ public class DNSServer extends WrapServer {
 			srvSocket = new DatagramSocket(srvPort);
 			inService = true;
 			Logger.i(TAG, "DNSServer启动于端口： " + port);
+			Utils.rootCMD("dnsmasq");
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		}
@@ -73,7 +73,8 @@ public class DNSServer extends WrapServer {
 				DataInputStream in;
 				DataOutputStream out;
 				try {
-					buildProxy();
+					innerSocket = new InnerSocketBuilder(proxyHost, proxyPort,
+							target).getSocket();
 					if (innerSocket.isConnected()) {
 						// 构造TCP DNS包
 						byte[] data = dnsq.getData();
@@ -125,48 +126,6 @@ public class DNSServer extends WrapServer {
 			}
 		}
 
-	}
-
-	private void buildProxy() {
-		starTime = System.currentTimeMillis();
-		Logger.v(TAG, "建立通道");
-		BufferedReader din = null;
-		BufferedWriter dout = null;
-
-		try {
-			innerSocket = new Socket(proxyHost, proxyPort);
-			innerSocket.setKeepAlive(true);
-			innerSocket.setSoTimeout(120 * 1000);
-
-			din = new BufferedReader(new InputStreamReader(innerSocket
-					.getInputStream()));
-			dout = new BufferedWriter(new OutputStreamWriter(innerSocket
-					.getOutputStream()));
-
-			String connectStr = "CONNECT " + target
-					+ " HTTP/1.0\r\nUser-agent: " + this.UA + "\r\n\r\n";
-
-			dout.write(connectStr);
-			dout.flush();
-			Logger.v(TAG, connectStr);
-
-			String result = din.readLine();
-			String line = "";
-			while ((line = din.readLine()) != null) {
-				if (line.trim().equals(""))
-					break;
-				Logger.v(TAG, line);
-			}
-
-			if (result != null && result.contains("200")) {
-				Logger.v(TAG, result);
-				Logger.i(TAG, "通道建立成功， 耗时："
-						+ (System.currentTimeMillis() - starTime) / 1000);
-			}
-
-		} catch (IOException e) {
-			Logger.e(TAG, "建立隧道失败：" + e.getLocalizedMessage());
-		}
 	}
 
 	private byte[] int2byte(int res) {

@@ -255,7 +255,7 @@ public class WrapService extends Service {
 							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;
 				else {
-					if (rule.desHost != null && !rule.desHost.equals("*"))
+					if (rule.desHost != null)
 						cmd += " -d " + rule.desHost;
 
 					cmd += " --dport " + rule.desPort
@@ -268,8 +268,6 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
-
-		Utils.rootCMD("dnsmasq");
 
 		Utils.setIptableStatus(this, true);
 

@@ -64,61 +64,8 @@ public class WapChannel extends Thread {
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
 
-		buildProxy();
-	}
-
-	/**
-	 * 建立经由HTTP代理服务器链接至目的服务器的隧道
-	 */
-	private void buildProxy() {
-
-		Logger.v(TAG, "建立通道");
-		BufferedReader din = null;
-		BufferedWriter dout = null;
-
-		try {
-			innerSocket = new Socket(proxyHost, proxyPort);
-			innerSocket.setKeepAlive(true);
-			innerSocket.setSoTimeout(120 * 1000);
-
-			din = new BufferedReader(new InputStreamReader(innerSocket
-					.getInputStream()));
-			dout = new BufferedWriter(new OutputStreamWriter(innerSocket
-					.getOutputStream()));
-
-			String connectStr = "CONNECT " + target
-					+ " HTTP/1.0\r\nUser-agent: " + this.UA + "\r\n\r\n";
-
-			dout.write(connectStr);
-			dout.flush();
-			Logger.v(TAG, connectStr);
-
-			String result = din.readLine();
-			String line = "";
-			while ((line = din.readLine()) != null) {
-				if (line.trim().equals(""))
-					break;
-				Logger.v(TAG, line);
-			}
-			// if (result != null && result.contains("ZTE")) {
-			// Logger.v(TAG, "ZTE WAP GATEWAY");
-			// din.readLine();
-			// din.readLine();
-			// }
-			// din.readLine(); // 多了个0D0A
-
-			if (result != null && result.contains("200")) {
-				Logger.v(TAG, result);
-				isConnected = true;
-				Logger.i(TAG, "通道建立成功， 耗时："
-						+ (System.currentTimeMillis() - starTime) / 1000);
-			}
-
-		} catch (UnknownHostException e) {
-			Logger.e(TAG, "无法解析代理服务器地址：" + e.getLocalizedMessage());
-		} catch (IOException e) {
-			Logger.e(TAG, "建立隧道失败：" + e.getLocalizedMessage());
-		}
+		this.innerSocket = new InnerSocketBuilder(proxyHost, proxyPort, target)
+				.getSocket();
 	}
 
 	@Override
