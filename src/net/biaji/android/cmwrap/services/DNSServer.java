@@ -1,18 +1,14 @@
 package net.biaji.android.cmwrap.services;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.Utils;
@@ -31,9 +27,8 @@ public class DNSServer extends WrapServer {
 
 	private boolean inService = false;
 
-	DatagramPacket dnsq;
+	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
 
-	Socket innerSocket;
 	private String target = "4.3.2.1:53"; // TODO 读取配置
 
 	public DNSServer(String name, int port) {
@@ -62,7 +57,7 @@ public class DNSServer extends WrapServer {
 	public void run() {
 
 		byte[] qbuffer = new byte[576];
-		dnsq = new DatagramPacket(qbuffer, qbuffer.length);
+		DatagramPacket dnsq = new DatagramPacket(qbuffer, qbuffer.length);
 		while (true) {
 			try {
 
@@ -70,56 +65,36 @@ public class DNSServer extends WrapServer {
 
 				// 连接外部DNS进行解析。
 
-				DataInputStream in;
-				DataOutputStream out;
-				try {
-					innerSocket = new InnerSocketBuilder(proxyHost, proxyPort,
-							target).getSocket();
-					if (innerSocket.isConnected()) {
-						// 构造TCP DNS包
-						byte[] data = dnsq.getData();
-						int dnsqLength = dnsq.getLength();
+				byte[] data = dnsq.getData();
+				int dnsqLength = dnsq.getLength();
+				byte[] udpreq = new byte[dnsqLength];
+				System.arraycopy(data, 0, udpreq, 0, dnsqLength);
+				// 尝试从缓存读取域名解析
+				String questDomain = getRequestDomain(udpreq);
 
-						Logger.d(TAG, "UDP DNS REQUEST LENGTH: " + dnsqLength);
-						byte[] tcpdnsq = new byte[dnsqLength + 2];
-						System
-								.arraycopy(int2byte(dnsqLength), 0, tcpdnsq, 1,
-										1);
-						System.arraycopy(data, 0, tcpdnsq, 2, dnsqLength);
+				Logger.d(TAG, "解析" + questDomain);
 
-						// 转发DNS
-						in = new DataInputStream(innerSocket.getInputStream());
-						out = new DataOutputStream(innerSocket
-								.getOutputStream());
-						out.write(tcpdnsq);
-						out.flush();
+				if (dnsCache.containsKey(questDomain)) {
+					sendDns(dnsCache.get(questDomain).getDnsResponse(), dnsq,
+							srvSocket);
+					Logger.d(TAG, "命中缓存");
 
-						ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				} else {
+					byte[] answer = fetchAnswer(udpreq);
+					if (answer != null && answer.length != 0) {
+						DnsResponse response = new DnsResponse();
+						response.setDnsResponse(answer);
+						dnsCache.put(questDomain, response);
+						sendDns(answer, dnsq, srvSocket);
 
-						int b = -1;
-						while ((b = in.read()) != -1) {
-							bout.write(b);
-						}
-						byte[] response = bout.toByteArray();
-						if (response == null || response.length == 0) {
-							Logger.e(TAG, "返回DNS包长为0");
-						} else {
-							DatagramPacket resp = new DatagramPacket(response,
-									2, response.length - 2);
-							resp.setPort(dnsq.getPort());
-							resp.setAddress(dnsq.getAddress());
-
-							Logger.d(TAG, "正确返回DNS解析，长度：" + resp.getLength());
-							srvSocket.send(resp);
-							innerSocket.close();
-						}
+					} else {
+						Logger.e(TAG, "返回DNS包长为0");
 					}
-				} catch (IOException e) {
-					Logger.e(TAG, "返回DNS解析结果错误", e);
+
 				}
 
 			} catch (SocketException e) {
-				Logger.e(TAG, "", e);
+				Logger.e(TAG, e.getLocalizedMessage());
 				break;
 			} catch (IOException e) {
 				Logger.e(TAG, "", e);
@@ -128,14 +103,107 @@ public class DNSServer extends WrapServer {
 
 	}
 
-	private byte[] int2byte(int res) {
-		byte[] targets = new byte[4];
+	/**
+	 * 由上级DNS取得解析
+	 * 
+	 * @param quest
+	 * @return
+	 */
+	private byte[] fetchAnswer(byte[] quest) {
 
-		targets[0] = (byte) (res & 0xff);// 最低位
-		targets[1] = (byte) ((res >> 8) & 0xff);// 次低位
-		targets[2] = (byte) ((res >> 16) & 0xff);// 次高位
-		targets[3] = (byte) (res >>> 24);// 最高位,无符号右移。
-		return targets;
+		Socket innerSocket = new InnerSocketBuilder(proxyHost, proxyPort,
+				target).getSocket();
+
+		DataInputStream in;
+		DataOutputStream out;
+		byte[] result = null;
+		try {
+			if (innerSocket != null && innerSocket.isConnected()) {
+				// 构造TCP DNS包
+				int dnsqLength = quest.length;
+				byte[] tcpdnsq = new byte[dnsqLength + 2];
+				System.arraycopy(Utils.int2byte(dnsqLength), 0, tcpdnsq, 1, 1);
+				System.arraycopy(quest, 0, tcpdnsq, 2, dnsqLength);
+
+				// 转发DNS
+				in = new DataInputStream(innerSocket.getInputStream());
+				out = new DataOutputStream(innerSocket.getOutputStream());
+				out.write(tcpdnsq);
+				out.flush();
+
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+				int b = -1;
+				while ((b = in.read()) != -1) {
+					bout.write(b);
+				}
+				byte[] tcpdnsr = bout.toByteArray();
+				result = new byte[tcpdnsr.length - 2];
+				System.arraycopy(tcpdnsr, 2, result, 0, tcpdnsr.length - 2);
+			}
+			innerSocket.close();
+		} catch (IOException e) {
+			Logger.e(TAG, "", e);
+		}
+		return result;
+	}
+
+	private void sendDns(byte[] response, DatagramPacket dnsq,
+			DatagramSocket srvSocket) {
+
+		// 同步identifier
+		System.arraycopy(dnsq.getData(), 0, response, 0, 2);
+
+		DatagramPacket resp = new DatagramPacket(response, 0, response.length);
+		resp.setPort(dnsq.getPort());
+		resp.setAddress(dnsq.getAddress());
+
+		Logger.d(TAG, "正确返回DNS解析，长度：" + resp.getLength());
+		try {
+			srvSocket.send(resp);
+		} catch (IOException e) {
+			Logger.e(TAG, "", e);
+		}
+	}
+
+	/**
+	 * 获取UDP DNS请求的域名
+	 * 
+	 * @param request
+	 *            dns udp包
+	 * @return 请求的域名
+	 */
+	private String getRequestDomain(byte[] request) {
+		String requestDomain = "";
+		int reqLength = request.length;
+		if (reqLength > 13) { // 包含包体
+			byte[] question = new byte[reqLength - 12];
+			System.arraycopy(request, 12, question, 0, reqLength - 12);
+			requestDomain = getPartialDomain(question);
+			requestDomain = requestDomain.substring(0,
+					requestDomain.length() - 1);
+		}
+		return requestDomain;
+	}
+
+	/**
+	 * 解析域名
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private String getPartialDomain(byte[] request) {
+		String result = "";
+		int length = request.length;
+		int partLength = request[0];
+		if (partLength == 0)
+			return result;
+		byte[] left = new byte[length - partLength - 1];
+		System.arraycopy(request, partLength + 1, left, 0, length - partLength
+				- 1);
+		result = new String(request, 1, partLength) + ".";
+		result += getPartialDomain(left);
+		return result;
 	}
 
 	@Override
@@ -169,6 +237,45 @@ public class DNSServer extends WrapServer {
 	public void setProxyPort(int port) {
 		this.proxyPort = port;
 
+	}
+
+}
+
+class DnsResponse {
+
+	private long timestamp;
+	private int reqTimes;
+	private byte[] dnsResponse;
+
+	/**
+	 * @return the timestamp
+	 */
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @return the reqTimes
+	 */
+	public int getReqTimes() {
+		return reqTimes;
+	}
+
+	/**
+	 * @return the dnsResponse
+	 */
+	public byte[] getDnsResponse() {
+		this.reqTimes++;
+		this.timestamp = System.currentTimeMillis();
+		return dnsResponse;
+	}
+
+	/**
+	 * @param dnsResponse
+	 *            the dnsResponse to set
+	 */
+	public void setDnsResponse(byte[] dnsResponse) {
+		this.dnsResponse = dnsResponse;
 	}
 
 }
