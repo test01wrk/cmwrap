@@ -47,6 +47,8 @@ public class DNSServer extends WrapServer {
 			inService = true;
 			Logger.i(TAG, "DNSServer启动于端口： " + port);
 			Utils.rootCMD("dnsmasq");
+			Utils.rootCMD("setprop net.dns1 127.0.0.1");
+			
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		}
@@ -140,8 +142,8 @@ public class DNSServer extends WrapServer {
 				byte[] tcpdnsr = bout.toByteArray();
 				result = new byte[tcpdnsr.length - 2];
 				System.arraycopy(tcpdnsr, 2, result, 0, tcpdnsr.length - 2);
+				innerSocket.close();
 			}
-			innerSocket.close();
 		} catch (IOException e) {
 			Logger.e(TAG, "", e);
 		}
