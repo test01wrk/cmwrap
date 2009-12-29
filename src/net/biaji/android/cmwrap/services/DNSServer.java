@@ -45,7 +45,7 @@ public class DNSServer extends WrapServer {
 
 			srvSocket = new DatagramSocket(srvPort);
 			inService = true;
-			Logger.i(TAG, "DNSServer启动于端口： " + port);
+			Logger.i(TAG, this.name + "启动于端口： " + port);
 			Utils.rootCMD("dnsmasq");
 			Utils.rootCMD("setprop net.dns1 127.0.0.1");
 

@@ -118,6 +118,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
 			} else if (hasFile("/system/bin/dnsmasq")) {
 				logWindow.append("本机安装了dnsmasq，尝试安装DNS解析配置...\n");
+				installFiles("/system/etc/hosts", R.raw.basichosts, null);
 				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq, null);
 				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
 				logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
