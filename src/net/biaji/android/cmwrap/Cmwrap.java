@@ -116,14 +116,20 @@ public class Cmwrap extends Activity implements OnClickListener {
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
-			} else if (hasFile("/system/bin/dnsmasq")) {
-				logWindow.append("本机安装了dnsmasq，尝试安装DNS解析配置...\n");
-				installFiles("/system/etc/hosts", R.raw.basichosts, null);
-				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq, null);
-				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
-				logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
 			} else {
-				installFiles("/system/etc/hosts", R.raw.hosts, null);
+				installFiles("/system/etc/hosts", R.raw.basichosts, null);
+
+				if (!hasFile("/system/bin/dnsmasq")) {
+					logWindow.append("本机没有dnsmasq支持，尝试安装dnsmasq...\n");
+					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, null);
+					logWindow.append("dnsmasq安装完毕！\n");
+				} else {
+					logWindow.append("安装DNS解析配置...\n");
+					installFiles("/system/etc/dnsmasq.conf",
+							R.raw.dnsmasq_conf, null);
+					installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
+					logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
+				}
 				logWindow.append("更新完毕。\n");
 			}
 		}
