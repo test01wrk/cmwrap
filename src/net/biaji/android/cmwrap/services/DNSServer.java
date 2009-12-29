@@ -13,6 +13,12 @@ import java.util.Hashtable;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.Utils;
 
+/**
+ * 此类实现了DNS代理
+ * 
+ * @author biaji
+ * 
+ */
 public class DNSServer extends WrapServer {
 
 	private DatagramSocket srvSocket;
@@ -106,7 +112,7 @@ public class DNSServer extends WrapServer {
 	}
 
 	/**
-	 * 由上级DNS取得解析
+	 * 由上级DNS通过TCP取得解析
 	 * 
 	 * @param quest
 	 * @return
@@ -152,6 +158,16 @@ public class DNSServer extends WrapServer {
 		return result;
 	}
 
+	/**
+	 * 向来源发送dns应答
+	 * 
+	 * @param response
+	 *            应答包
+	 * @param dnsq
+	 *            请求包
+	 * @param srvSocket
+	 *            侦听Socket
+	 */
 	private void sendDns(byte[] response, DatagramPacket dnsq,
 			DatagramSocket srvSocket) {
 

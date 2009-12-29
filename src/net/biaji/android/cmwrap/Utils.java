@@ -225,7 +225,7 @@ public class Utils {
 			if (result == 0)
 				Logger.d(TAG, cmd + " exec success");
 			else {
-				Logger.d(TAG, cmd + " exec with result" + result);
+				Logger.d(TAG, cmd + " exec with result " + result);
 			}
 			os.close();
 			process.destroy();

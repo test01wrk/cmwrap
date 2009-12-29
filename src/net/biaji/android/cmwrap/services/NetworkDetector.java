@@ -19,7 +19,7 @@ public class NetworkDetector extends BroadcastReceiver {
 	private final String TAG = "CMWRAP->NetworkDetector";
 
 	/**
-	 * 时间间隔，短于此间隔的变化不予实施
+	 * 时间间隔，短于此间隔的变化不予实施,单位为秒 
 	 */
 	private final long INTERVAL = 120;
 
@@ -50,6 +50,9 @@ public class NetworkDetector extends BroadcastReceiver {
 			Utils.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+			
+			Utils.rootCMD("setprop net.dns1 127.0.0.1");  //TODO 统一处理
+			
 			// 禁用自动状态切换
 			if (!autoChange)
 				return;
