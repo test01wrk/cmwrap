@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import net.biaji.android.cmwrap.services.WrapService;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
@@ -23,7 +22,7 @@ import android.preference.PreferenceManager;
 
 public class Utils {
 
-	private static String TAG = "CMWRAP->Utils";
+	private final static String TAG = "CMWRAP->Utils";
 
 	public static String errMsg = "";
 
@@ -246,63 +245,9 @@ public class Utils {
 		return result;
 	}
 
-	/**
-	 * 记录当前服务状态
-	 */
-	public static void saveServiceLevel(Context context, int level) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putInt("SERVERLEVEL", level);
-		editor.commit();
-	}
-
-	/**
-	 * 获取当前服务状态
-	 */
-	public static int getServiceLevel(Context context) {
-		int result = WrapService.SERVER_LEVEL_NULL;
-		Logger.v(TAG, "读取记录");
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
-		Logger.v(TAG, "读取结束");
-		return result;
-	}
-
-	/**
-	 * 获取iptables运行状态
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public static boolean isIptablesEnabled(Context context) {
-		boolean result = false;
-		Logger.v(TAG, "读取iptables");
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		result = pref.getBoolean("IPTABLES", false);
-		Logger.v(TAG, "读取结束");
-		return result;
-	}
-
-	/**
-	 * 保存iptables运行状态
-	 * 
-	 * @param context
-	 * @param iptables
-	 */
-	public static void setIptableStatus(Context context, boolean iptables) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putBoolean("IPTABLES", iptables);
-		editor.commit();
-	}
-
 	public static byte[] int2byte(int res) {
 		byte[] targets = new byte[4];
-	
+
 		targets[0] = (byte) (res & 0xff);// 最低位
 		targets[1] = (byte) ((res >> 8) & 0xff);// 次低位
 		targets[2] = (byte) ((res >> 16) & 0xff);// 次高位

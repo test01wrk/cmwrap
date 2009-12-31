@@ -141,7 +141,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		super.onStart();
 
 		if (Utils.isCmwap(this))
-			serviceLevel = Utils.getServiceLevel(this);
+			serviceLevel = Config.getServiceLevel(this);
 		else
 			serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
@@ -168,8 +168,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 						Toast.LENGTH_SHORT).show();
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
 				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-				Utils.saveServiceLevel(this, serviceLevel);
-				Utils.setIptableStatus(this, false);
+				Config.saveServiceLevel(this, serviceLevel);
+				Config.setIptableStatus(this, false);
 				redrawButton();
 				return;
 			} else {

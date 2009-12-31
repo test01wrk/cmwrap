@@ -1,5 +1,6 @@
 package net.biaji.android.cmwrap.services;
 
+import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.Utils;
 import android.content.BroadcastReceiver;
@@ -47,7 +48,7 @@ public class NetworkDetector extends BroadcastReceiver {
 				return;
 			}
 			// 自动启动时，初始化iptables状态
-			Utils.setIptableStatus(context, false);
+			Config.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
 			
@@ -96,7 +97,7 @@ public class NetworkDetector extends BroadcastReceiver {
 				return;
 			}
 
-			int level = Utils.getServiceLevel(context);
+			int level = Config.getServiceLevel(context);
 			Logger.v(TAG, "Service Level: " + level);
 			Intent intentS = new Intent(context, WrapService.class);
 

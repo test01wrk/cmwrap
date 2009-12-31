@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.biaji.android.cmwrap.Cmwrap;
+import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.Rule;
@@ -96,7 +97,7 @@ public class WrapService extends Service {
 
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
-		serverLevel = Utils.getServiceLevel(this);
+		serverLevel = Config.getServiceLevel(this);
 
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
@@ -130,7 +131,7 @@ public class WrapService extends Service {
 		showNotify();
 		// 保存服务状态，以备被杀
 		if (serverLevel != SERVER_LEVEL_STOP)
-			Utils.saveServiceLevel(this, serverLevel);
+			Config.saveServiceLevel(this, serverLevel);
 
 	}
 
@@ -144,7 +145,7 @@ public class WrapService extends Service {
 		stopSubDaemon();
 		cleanForward();
 		serverLevel = SERVER_LEVEL_NULL;
-		Utils.saveServiceLevel(this, serverLevel);
+		Config.saveServiceLevel(this, serverLevel);
 		nm.cancel(R.string.serviceTagUp);
 	}
 
@@ -228,7 +229,7 @@ public class WrapService extends Service {
 	private void forward() {
 
 		// 如果iptables处于已执行状态，则啥都不干
-		if (Utils.isIptablesEnabled(this))
+		if (Config.isIptablesEnabled(this))
 			return;
 
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
@@ -269,7 +270,7 @@ public class WrapService extends Service {
 			}
 		}
 
-		Utils.setIptableStatus(this, true);
+		Config.setIptableStatus(this, true);
 
 	}
 
