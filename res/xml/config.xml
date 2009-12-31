@@ -28,7 +28,7 @@
 	<PreferenceCategory android:title="@string/PREF_CATEGORY_DNS">
 		<CheckBoxPreference android:summary="@string/PREF_SUMMARY_DNS_ENABLE"
 			android:title="@string/PREF_TITLE_DNS_ENABLE" android:key="DNSENABLED"
-			android:defaultValue="true" />
+			android:defaultValue="true" android:enabled="false" />
 		<EditTextPreference android:summary="@string/PREF_SUMMARY_DNS"
 			android:title="@string/PREF_TITLE_DNS" android:key="DNSADD"
 			android:defaultValue="4.3.2.1" android:dependency="DNSENABLED" />
