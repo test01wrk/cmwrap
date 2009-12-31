@@ -11,7 +11,7 @@ import java.net.SocketException;
 import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.Utils;
+import net.biaji.android.cmwrap.utils.Utils;
 
 /**
  * 此类实现了DNS代理

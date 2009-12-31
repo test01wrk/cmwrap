@@ -2,7 +2,7 @@ package net.biaji.android.cmwrap.services;
 
 import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.Utils;
+import net.biaji.android.cmwrap.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

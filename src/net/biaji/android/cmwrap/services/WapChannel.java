@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.Utils;
+import net.biaji.android.cmwrap.utils.Utils;
 
 public class WapChannel extends Thread {
 

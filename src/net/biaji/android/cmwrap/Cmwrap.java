@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import net.biaji.android.cmwrap.services.WapChannel;
 import net.biaji.android.cmwrap.services.WrapService;
+import net.biaji.android.cmwrap.utils.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -110,9 +111,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 		} else {
 
 			if (appStatus == APP_STATUS_NEW)
-				logWindow.append("这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n");
+				logWindow.append(getString(R.string.MSG_FISRT_TIME));
 
-			logWindow.append("DNS解析文件更新...\n");
+			logWindow.append(getString(R.string.MSG_DNS_FILES_UPDATE));
 			int result = Utils.rootCMD(getString(R.string.CMDremount));
 			if (result != 0) {
 				logWindow.append(getString(R.string.ERR_NO_ROOT));
@@ -120,9 +121,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 				installFiles("/system/etc/hosts", R.raw.basichosts, null);
 
 				if (!hasFile("/system/bin/dnsmasq")) {
-					logWindow.append("本机没有dnsmasq支持，尝试安装dnsmasq...\n");
+					logWindow.append(getString(R.string.MSG_NO_DNSMASQ));
 					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, null);
-					logWindow.append("dnsmasq安装完毕！\n");
+					logWindow.append(getString(R.string.MSG_DNSMASQ_INSTALLED));
 				} else {
 					logWindow.append("安装DNS解析配置...\n");
 					installFiles("/system/etc/dnsmasq.conf",

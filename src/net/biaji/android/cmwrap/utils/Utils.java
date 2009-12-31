@@ -1,4 +1,4 @@
-package net.biaji.android.cmwrap;
+package net.biaji.android.cmwrap.utils;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -10,6 +10,11 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.R;
+import net.biaji.android.cmwrap.Rule;
+import net.biaji.android.cmwrap.R.raw;
 
 import android.content.Context;
 import android.content.ContextWrapper;

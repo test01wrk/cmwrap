@@ -8,7 +8,7 @@ import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.Rule;
-import net.biaji.android.cmwrap.Utils;
+import net.biaji.android.cmwrap.utils.Utils;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

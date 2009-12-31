@@ -84,5 +84,11 @@
 	</string>
 	<string name="ABOUT_EMAIL">邮箱</string>
 	<string name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
+	
+	<!-- 文字提示 -->
+	<string name="MSG_FISRT_TIME">这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n</string>
+	<string name="MSG_DNS_FILES_UPDATE">DNS解析文件更新...\n</string>
+	<string name="MSG_NO_DNSMASQ">本机没有dnsmasq支持，尝试安装dnsmasq...\n</string>
+	<string name="MSG_DNSMASQ_INSTALLED">dnsmasq安装完毕！\n</string>
 
 </resources>
