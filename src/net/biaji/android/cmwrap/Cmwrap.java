@@ -122,16 +122,17 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 				if (!hasFile("/system/bin/dnsmasq")) {
 					logWindow.append(getString(R.string.MSG_NO_DNSMASQ));
-					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, null);
+					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, "755");
 					logWindow.append(getString(R.string.MSG_DNSMASQ_INSTALLED));
-				} else {
-					logWindow.append("安装DNS解析配置...\n");
-					installFiles("/system/etc/dnsmasq.conf",
-							R.raw.dnsmasq_conf, null);
-					installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
-					logWindow.append("安装完毕~ 请重启手机以使配置生效。\n");
 				}
-				logWindow.append("更新完毕。\n");
+
+				logWindow.append("安装DNS解析配置...\n");
+				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq_conf,
+						null);
+				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
+
+				logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
+				logWindow.append(getString(R.string.MSG_UPDATE_COMPLETE));
 			}
 		}
 
@@ -314,8 +315,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 			if (mod == null)
 				mod = "644";
-			Utils.rootCMD("chmod 666 " + dest);
+
 			File destF = new File(dest);
+
+			// 如果文件不存在，则随便touch一个先
+			if (!destF.exists())
+				Utils.rootCMD("busybox touch " + dest);
+
+			Utils.rootCMD("chmod 666 " + dest);
 
 			fo = new FileOutputStream(destF);
 			int length;

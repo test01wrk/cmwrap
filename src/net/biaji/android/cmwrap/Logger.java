@@ -5,7 +5,7 @@ import android.util.Log;
 //TODO 由String加载日志级别
 public class Logger {
 
-	private static int debugLevel = Log.WARN;
+	private static int debugLevel = Log.DEBUG;
 
 	public static void v(String TAG, String msg) {
 		if (debugLevel <= Log.VERBOSE)

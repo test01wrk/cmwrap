@@ -90,5 +90,7 @@
 	<string name="MSG_DNS_FILES_UPDATE">DNS解析文件更新...\n</string>
 	<string name="MSG_NO_DNSMASQ">本机没有dnsmasq支持，尝试安装dnsmasq...\n</string>
 	<string name="MSG_DNSMASQ_INSTALLED">dnsmasq安装完毕！\n</string>
+	<string name="MSG_INSTALL_COMPLETED">安装完毕~ 请重启手机以使配置生效。\n</string>
+	<string name="MSG_UPDATE_COMPLETED">更新完毕。\n</string>
 
 </resources>
