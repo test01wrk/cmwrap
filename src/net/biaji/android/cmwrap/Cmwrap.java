@@ -126,7 +126,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 					logWindow.append(getString(R.string.MSG_DNSMASQ_INSTALLED));
 				}
 
-				logWindow.append("安装DNS解析配置...\n");
 				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq_conf,
 						null);
 				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
