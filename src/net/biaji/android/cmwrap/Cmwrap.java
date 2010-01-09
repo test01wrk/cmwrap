@@ -132,7 +132,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
 
 				logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
-				logWindow.append(getString(R.string.MSG_UPDATE_COMPLETE));
+				logWindow.append(getString(R.string.MSG_UPDATE_COMPLETED));
 			}
 		}
 
