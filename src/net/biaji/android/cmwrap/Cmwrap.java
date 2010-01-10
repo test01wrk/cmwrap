@@ -107,7 +107,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int appStatus = appStatus();
 
 		if (appStatus == APP_STATUS_REPEAT && hasFile("/system/etc/hosts", 200)) {
-			logWindow.append("DNS解析文件不须更新\n");
+			logWindow.append(getString(R.string.MSG_DNS_NONEED_UPDATE));
 		} else {
 
 			if (appStatus == APP_STATUS_NEW)
