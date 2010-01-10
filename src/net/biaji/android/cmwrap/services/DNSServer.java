@@ -6,8 +6,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Logger;
@@ -49,13 +51,16 @@ public class DNSServer extends WrapServer {
 			this.proxyHost = proxyHost;
 			this.proxyPort = proxyPort;
 
-			srvSocket = new DatagramSocket(srvPort);
+			srvSocket = new DatagramSocket(srvPort, InetAddress
+					.getByName("127.0.0.1"));
 			inService = true;
 			Logger.i(TAG, this.name + "启动于端口： " + port);
-			Utils.rootCMD("dnsmasq");
-			Utils.rootCMD("setprop net.dns1 127.0.0.1");
+			// Utils.rootCMD("dnsmasq");
+			// Utils.rootCMD("setprop net.dns1 127.0.0.1");
 
 		} catch (SocketException e) {
+			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
+		} catch (UnknownHostException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		}
 

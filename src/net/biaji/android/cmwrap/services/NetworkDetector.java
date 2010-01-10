@@ -52,7 +52,7 @@ public class NetworkDetector extends BroadcastReceiver {
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
 			
-			Utils.rootCMD("setprop net.dns1 127.0.0.1");  //TODO 统一处理
+			//Utils.rootCMD("setprop net.dns1 127.0.0.1");  //TODO 统一处理
 			
 			// 禁用自动状态切换
 			if (!autoChange)

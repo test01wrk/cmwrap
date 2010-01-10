@@ -1,6 +1,12 @@
+#此文件为规则定义文件
+#格式为：
+#    服务名称|端口号
+#或者
+#    服务名称|目的地址|目的端口|本机侦听端口 
+
 HTTP BASE|80
 OPERA MINI|1080
-DNS Service|*|5443|7442|udp
+DNS Service||53|7442|udp
 Android Auth|android.clients.google.com|443|7443
 Google Service|www.google.com|443|7444
 Gmail Service|mail.google.com|443|7445

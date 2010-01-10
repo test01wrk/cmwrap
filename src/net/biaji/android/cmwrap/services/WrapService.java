@@ -243,8 +243,8 @@ public class WrapService extends Service {
 
 		for (Rule rule : rules) {
 			//DNS规则跳过 
-			if (rule.desHost != null && rule.desHost.equals("*"))
-				continue;
+//			if (rule.desHost != null && rule.desHost.equals("*"))
+//				continue;
 
 			try {
 				String protocol = " -p " + rule.protocol;
@@ -256,7 +256,7 @@ public class WrapService extends Service {
 							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;
 				else {
-					if (rule.desHost != null)
+					if (rule.desHost != null && !rule.desHost.equals(""))
 						cmd += " -d " + rule.desHost;
 
 					cmd += " --dport " + rule.desPort

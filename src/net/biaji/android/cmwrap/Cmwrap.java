@@ -120,15 +120,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 			} else {
 				installFiles("/system/etc/hosts", R.raw.basichosts, null);
 
-				if (!hasFile("/system/bin/dnsmasq")) {
-					logWindow.append(getString(R.string.MSG_NO_DNSMASQ));
-					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, "755");
-					logWindow.append(getString(R.string.MSG_DNSMASQ_INSTALLED));
-				}
-
-				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq_conf,
-						null);
-				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
+//				if (!hasFile("/system/bin/dnsmasq")) {
+//					logWindow.append(getString(R.string.MSG_NO_DNSMASQ));
+//					installFiles("/system/bin/dnsmasq", R.raw.dnsmasq, "755");
+//					logWindow.append(getString(R.string.MSG_DNSMASQ_INSTALLED));
+//				}
+//
+//				installFiles("/system/etc/dnsmasq.conf", R.raw.dnsmasq_conf,
+//						null);
+//				installFiles("/system/etc/resolv.conf", R.raw.resolv, null);
 
 				logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
 				logWindow.append(getString(R.string.MSG_UPDATE_COMPLETED));

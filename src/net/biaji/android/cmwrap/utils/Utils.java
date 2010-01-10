@@ -100,6 +100,9 @@ public class Utils {
 			String line = "";
 			while ((line = in.readLine()) != null) {
 
+				if (line.startsWith("#"))
+					continue; // 去掉注释
+
 				Rule rule = new Rule();
 				// if (line != null)
 				// line = new String(line.trim().getBytes("UTF-8"));
@@ -119,7 +122,7 @@ public class Utils {
 					rule.mode = Rule.MODE_BASE;
 					rule.desPort = Integer.parseInt(items[1]);
 				}
-				Logger.v(TAG, "载入" + rule.name + "规则");
+				Logger.d(TAG, "载入" + rule.name + "规则");
 				rules.add(rule);
 
 			}
