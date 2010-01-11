@@ -14,8 +14,6 @@ import java.util.Calendar;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.Rule;
-import net.biaji.android.cmwrap.R.raw;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;

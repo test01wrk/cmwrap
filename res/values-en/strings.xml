@@ -49,12 +49,6 @@
 	</string>
 	<string name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward
 	</string>
-	<string name="CMDiptablesEnable">iptables -t nat -A OUTPUT -o rmnet0 -p tcp
-		-d android.clients.google.com --dport 443 -j DNAT --to-destination
-		127.0.0.1:7443｜iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport 80
-		-j DNAT --to-destination 10.0.0.172:80｜iptables -t nat -A OUTPUT -o
-		rmnet0 -p tcp --dport 1080 -j DNAT --to-destination 10.0.0.172:80
-	</string>
 	<string name="CMDiptablesDisable">iptables -t nat -F</string>
 	<string name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3 /system</string>
