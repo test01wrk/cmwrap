@@ -218,16 +218,21 @@ public class DNSServer extends WrapServer {
 	 * @return
 	 */
 	private String getPartialDomain(byte[] request) {
+
 		String result = "";
 		int length = request.length;
 		int partLength = request[0];
 		if (partLength == 0)
 			return result;
-		byte[] left = new byte[length - partLength - 1];
-		System.arraycopy(request, partLength + 1, left, 0, length - partLength
-				- 1);
-		result = new String(request, 1, partLength) + ".";
-		result += getPartialDomain(left);
+		try {
+			byte[] left = new byte[length - partLength - 1];
+			System.arraycopy(request, partLength + 1, left, 0, length
+					- partLength - 1);
+			result = new String(request, 1, partLength) + ".";
+			result += getPartialDomain(left);
+		} catch (Exception e) {
+			Logger.e(TAG, e.getLocalizedMessage());
+		}
 		return result;
 	}
 
