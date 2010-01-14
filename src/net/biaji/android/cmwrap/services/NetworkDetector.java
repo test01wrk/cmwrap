@@ -51,9 +51,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			Config.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
-			
-			//Utils.rootCMD("setprop net.dns1 127.0.0.1");  //TODO 统一处理
-			
+
 			// 禁用自动状态切换
 			if (!autoChange)
 				return;

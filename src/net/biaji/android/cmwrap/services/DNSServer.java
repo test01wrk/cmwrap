@@ -55,8 +55,6 @@ public class DNSServer extends WrapServer {
 					.getByName("127.0.0.1"));
 			inService = true;
 			Logger.i(TAG, this.name + "启动于端口： " + port);
-			// Utils.rootCMD("dnsmasq");
-			// Utils.rootCMD("setprop net.dns1 127.0.0.1");
 
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
