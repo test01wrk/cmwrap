@@ -61,7 +61,7 @@ public class WapChannel extends Thread {
 
 		this.innerSocket = new InnerSocketBuilder(proxyHost, proxyPort, target)
 				.getSocket();
-		if (innerSocket.isConnected())
+		if (innerSocket != null && innerSocket.isConnected())
 			this.isConnected = true;
 	}
 
