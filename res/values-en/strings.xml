@@ -54,8 +54,8 @@
 		/dev/block/mtdblock3 /system</string>
 
 	<string name="UserAgent">biAji's wap channel</string>
-	<string name="BUTTON_ENABLE">ON</string>
-	<string name="BUTTON_DISABLE">OFF</string>
+	<string name="BUTTON_ENABLE">OFF</string>
+	<string name="BUTTON_DISABLE">ON</string>
 	<string name="MENU_TEST">Environment Test</string>
 	<string name="MENU_SETTING">Settings</string>
 	<string name="MENU_ABOUT">About</string>

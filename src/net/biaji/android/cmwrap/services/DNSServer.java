@@ -68,10 +68,12 @@ public class DNSServer extends WrapServer {
 	public void run() {
 
 		byte[] qbuffer = new byte[576];
-		DatagramPacket dnsq = new DatagramPacket(qbuffer, qbuffer.length);
+
 		while (true) {
 			try {
-
+				DatagramPacket dnsq = new DatagramPacket(qbuffer,
+						qbuffer.length);
+				
 				srvSocket.receive(dnsq); // TODO 解决侦听服务端口出错
 
 				// 连接外部DNS进行解析。
@@ -108,7 +110,7 @@ public class DNSServer extends WrapServer {
 				Logger.e(TAG, e.getLocalizedMessage());
 				break;
 			} catch (IOException e) {
-				Logger.e(TAG, "", e);
+				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
 

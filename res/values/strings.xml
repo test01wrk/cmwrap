@@ -50,8 +50,8 @@
 	<string name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3 /system</string>
 	<string name="UserAgent">biAji's wap channel</string>
-	<string name="BUTTON_ENABLE">启用</string>
-	<string name="BUTTON_DISABLE">禁用</string>
+	<string name="BUTTON_ENABLE">禁用</string>
+	<string name="BUTTON_DISABLE">启用</string>
 	<string name="MENU_TEST">环境测试</string>
 	<string name="MENU_SETTING">设置</string>
 	<string name="MENU_ABOUT">关于Cmwrap</string>
