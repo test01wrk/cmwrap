@@ -68,14 +68,13 @@ public class DNSServer extends WrapServer {
 	public void run() {
 
 		byte[] qbuffer = new byte[576];
-
+		long starTime = System.currentTimeMillis();
 		while (true) {
 			try {
 				DatagramPacket dnsq = new DatagramPacket(qbuffer,
 						qbuffer.length);
-				
-				srvSocket.receive(dnsq); // TODO 解决侦听服务端口出错
 
+				srvSocket.receive(dnsq);
 				// 连接外部DNS进行解析。
 
 				byte[] data = dnsq.getData();
@@ -93,13 +92,17 @@ public class DNSServer extends WrapServer {
 					Logger.d(TAG, "命中缓存");
 
 				} else {
+					starTime = System.currentTimeMillis();
 					byte[] answer = fetchAnswer(udpreq);
 					if (answer != null && answer.length != 0) {
 						DnsResponse response = new DnsResponse();
 						response.setDnsResponse(answer);
 						dnsCache.put(questDomain, response);
 						sendDns(answer, dnsq, srvSocket);
-
+						Logger.d(TAG, "正确返回DNS解析，长度："
+								+ response.getDnsResponse().length + "  耗时："
+								+ (System.currentTimeMillis() - starTime)
+								/ 1000 + "s");
 					} else {
 						Logger.e(TAG, "返回DNS包长为0");
 					}
@@ -126,7 +129,6 @@ public class DNSServer extends WrapServer {
 
 		Socket innerSocket = new InnerSocketBuilder(proxyHost, proxyPort,
 				target).getSocket();
-
 		DataInputStream in;
 		DataOutputStream out;
 		byte[] result = null;
@@ -183,7 +185,6 @@ public class DNSServer extends WrapServer {
 		resp.setPort(dnsq.getPort());
 		resp.setAddress(dnsq.getAddress());
 
-		Logger.d(TAG, "正确返回DNS解析，长度：" + resp.getLength());
 		try {
 			srvSocket.send(resp);
 		} catch (IOException e) {

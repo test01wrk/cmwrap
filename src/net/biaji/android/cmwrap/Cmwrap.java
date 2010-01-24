@@ -434,7 +434,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// 测试iptables是否存在
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
-			if (result == 127) { // 没有iptables TODO: 安装iptables以及后续检查
+			if (result == 127) { // 没有iptables 
 				bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
 				bundle.putInt("PROGRESS", 100);
 				msg.setData(bundle);

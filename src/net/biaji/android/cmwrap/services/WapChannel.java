@@ -157,8 +157,8 @@ public class WapChannel extends Thread {
 					count = in.read(buff);
 
 					if (count > 0) {
-						Logger.v(TAG, "方向" + direction
-								+ Utils.bytesToHexString(buff, 0, count));
+						// Logger.v(TAG, "方向" + direction
+						// + Utils.bytesToHexString(buff, 0, count));
 						Logger.v(TAG, direction + "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {

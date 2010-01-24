@@ -120,7 +120,7 @@ public class Utils {
 					rule.mode = Rule.MODE_BASE;
 					rule.desPort = Integer.parseInt(items[1]);
 				}
-				Logger.d(TAG, "载入" + rule.name + "规则");
+				Logger.v(TAG, "载入" + rule.name + "规则");
 				rules.add(rule);
 
 			}
