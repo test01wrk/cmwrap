@@ -255,8 +255,8 @@ public class DNSServer extends WrapServer {
 	}
 
 	@Override
-	public void setDest(String dest) {
-		// null
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	@Override

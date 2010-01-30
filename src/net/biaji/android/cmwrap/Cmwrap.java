@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.services.WapChannel;
 import net.biaji.android.cmwrap.services.WrapService;
@@ -53,7 +54,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
 
-	private String proxyHost;
+	private String proxyHost, DNSServer;
 
 	private int proxyPort;
 
@@ -69,30 +70,9 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private final int APP_STATUS_REPEAT = 1;
 
-	private ProgressDialog diagDialog; // 这个定义让我感觉很诡异，我就没别的办法获取这个对象了么
+	private ProgressDialog diagDialog; // TODO
 
-	final Handler handler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			int progress = msg.getData().getInt("PROGRESS");
-
-			if (progress >= 100) {
-				dismissDialog(DIALOG_TEST_ID);
-			} else {
-				diagDialog.setProgress(progress);
-			}
-			String testName = msg.getData().getString("TESTNAME");
-			String diaMsg = msg.getData().getString("MESSAGE");
-			String errMsg = msg.getData().getString("ERRMSG");
-			Logger.d(TAG, "testName: " + testName);
-			diagDialog.setMessage(diaMsg);
-			if (errMsg != null) {
-				logWindow.append(errMsg);
-			} else {
-				logWindow.append(testName + "       测试通过\n");
-			}
-		}
-	};
+	private Handler handler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -198,7 +178,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			builder.setView(
 					LayoutInflater.from(this).inflate(R.layout.about, null))
 					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
-					.setPositiveButton("喔",
+					.setPositiveButton(R.string.OKOK,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
@@ -234,15 +214,43 @@ public class Cmwrap extends Activity implements OnClickListener {
 		switch (item.getItemId()) {
 		case R.id.TEST:
 			logWindow.setText("");
-			SharedPreferences pref = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			proxyHost = pref.getString("PROXYHOST", "10.0.0.172");
-			proxyPort = Integer.parseInt(pref.getString("PROXYPORT", "80"));
+	
+			handler = new Handler() {
+				int progress = 0;
+
+				@Override
+				public void handleMessage(Message msg) {
+					progress = msg.getData().getInt("PROGRESS");
+					if (progress >= 100) {
+						diagDialog.setProgress(0);
+						dismissDialog(DIALOG_TEST_ID);
+					} else {
+						diagDialog.setProgress(progress);
+					}
+					String testName = msg.getData().getString("TESTNAME");
+					String diaMsg = msg.getData().getString("MESSAGE");
+					String errMsg = msg.getData().getString("ERRMSG");
+					Logger.d(TAG, "testName: " + testName);
+					diagDialog.setMessage(diaMsg);
+					if (errMsg != null) {
+						logWindow.append(errMsg);
+					} else {
+						logWindow.append(testName
+								+ getString(R.string.TEST_PASSED));
+					}
+				}
+			};
+			proxyHost = Config.getStringPref(this, "PROXYHOST", "10.0.0.172");
+			proxyPort = Integer.parseInt(Config.getStringPref(this,
+					"PROXYPORT", "80"));
+			DNSServer = Config.getStringPref(this, "DNSADD", "");
 			showDialog(DIALOG_TEST_ID);
 			return true;
+			
 		case R.id.SETTING:
 			startActivityForResult(new Intent(this, Config.class), 0);
 			return true;
+			
 		case R.id.ABOUT:
 			showDialog(DIALOG_ABOUT_ID);
 			return true;
@@ -425,7 +433,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				handler.sendMessage(msg);
 				return;
 			}
-			bundle.putInt("PROGRESS", 20);
+			bundle.putInt("PROGRESS", 10);
 			bundle.putString("MESSAGE", getString(R.string.TEST_IPTABLES));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
@@ -434,14 +442,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// 测试iptables是否存在
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
-			if (result == 127) { // 没有iptables 
+			if (result == 127) { // 没有iptables
 				bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
 				bundle.putInt("PROGRESS", 100);
 				msg.setData(bundle);
 				handler.sendMessage(msg);
 				return;
 			}
-			bundle.putInt("PROGRESS", 40);
+			bundle.putInt("PROGRESS", 20);
 			bundle.putString("MESSAGE", getString(R.string.TEST_CMWAP));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
@@ -454,7 +462,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				bundle.putString("ERRMSG", getString(R.string.ERR_NOT_CMWAP));
 				bundle.putInt("PROGRESS", 100);
 			}
-			bundle.putInt("PROGRESS", 60);
+			bundle.putInt("PROGRESS", 40);
 			bundle.putString("MESSAGE", getString(R.string.TEST_HTTPS));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
@@ -470,10 +478,26 @@ public class Cmwrap extends Activity implements OnClickListener {
 						getString(R.string.ERR_UNSUPPORT_HTTPS));
 			}
 			channel.destory();
-			bundle.putInt("PROGRESS", 80);
+			bundle.putInt("PROGRESS", 60);
 			bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
 			msg.setData(bundle);
 			handler.sendMessage(msg);
+
+			// 测试DNS
+			// msg = handler.obtainMessage();
+			// bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
+			// channel = new WapChannel(null, DNSServer + ":53", proxyHost,
+			// proxyPort);
+			// testSleep(5000);
+			// if (!channel.isConnected()) {
+			// bundle.putString("ERRMSG",
+			// getString(R.string.ERR_UNSUPPORT_DNS));
+			// }
+			// channel.destory();
+			// bundle.putInt("PROGRESS", 80);
+			// bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
+			// msg.setData(bundle);
+			// handler.sendMessage(msg);
 
 			// 测试Gtalk
 			msg = handler.obtainMessage();
@@ -494,7 +518,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		private void testSleep(long time) {
 			try {
-				Thread.sleep(time);
+				TimeUnit.MILLISECONDS.sleep(time);
 			} catch (InterruptedException e) {
 			}
 		}

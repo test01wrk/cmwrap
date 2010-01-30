@@ -72,4 +72,15 @@ public class Config extends PreferenceActivity {
 		return result;
 	}
 
+	public static String getStringPref(Context context, String key,
+			String defValue) {
+		String result = "";
+		Logger.v(TAG, "读取记录");
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		result = pref.getString(key, defValue);
+		Logger.v(TAG, "读取结束");
+		return result;
+	}
+
 }

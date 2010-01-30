@@ -65,7 +65,7 @@ public class NormalTcpServer extends WrapServer {
 	 * 
 	 * @param dest
 	 */
-	public void setDest(String dest) {
+	public void setTarget(String dest) {
 		this.dest = dest;
 	}
 

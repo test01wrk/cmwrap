@@ -8,7 +8,7 @@ public class ServerFactory {
 		WrapServer server = null;
 		if (rule.protocol.equals("tcp")) {
 			server = new NormalTcpServer(rule.name, rule.servPort);
-			server.setDest(rule.desHost + ":" + rule.desPort);
+			server.setTarget(rule.desHost + ":" + rule.desPort);
 		} else {
 			server = new DNSServer(rule.name, rule.servPort);
 		}

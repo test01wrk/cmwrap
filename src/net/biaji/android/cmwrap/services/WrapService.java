@@ -78,13 +78,13 @@ public class WrapService extends Service {
 		Logger.d(TAG, "创建wrap服务");
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		proxyHost = pref.getString("PROXYHOST", getResources().getString(
-				R.string.proxyServer));
-		proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getResources()
-				.getString(R.string.proxyPort)));
+		proxyHost = pref
+				.getString("PROXYHOST", getString(R.string.proxyServer));
+		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
+				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 
-		DNSServer = pref.getString("DNSADD", "4.3.2.1");
+		DNSServer = pref.getString("DNSADD", "8.8.8.8");
 
 		// 载入所有规则
 		rules = Utils.loadRules(this);
@@ -201,6 +201,8 @@ public class WrapService extends Service {
 					WrapServer server = ServerFactory.getServer(rule);
 					server.setProxyHost(proxyHost);
 					server.setProxyPort(proxyPort);
+					if (rule.protocol.equalsIgnoreCase("udp")) // TODO refactor
+						server.setTarget(DNSServer + ":53");
 					server.start();
 					servers.add(server);
 				}
@@ -242,16 +244,12 @@ public class WrapService extends Service {
 			inface = " -o rmnet0 ";
 
 		for (Rule rule : rules) {
-			//DNS规则跳过 
-//			if (rule.desHost != null && rule.desHost.equals("*"))
-//				continue;
-
 			try {
 				String protocol = " -p " + rule.protocol;
 
 				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
 
-				if (rule.mode == Rule.MODE_BASE) 
+				if (rule.mode == Rule.MODE_BASE)
 					cmd += " --dport " + rule.desPort + " -j DNAT "
 							+ " --to-destination " + proxyHost + ":"
 							+ proxyPort;

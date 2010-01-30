@@ -17,7 +17,7 @@ public abstract class WrapServer extends Thread {
 	/**
 	 * 设置此服务的目的地址
 	 * 
-	 * @param dest
+	 * @param target
 	 */
-	public abstract void setDest(String dest);
+	public abstract void setTarget(String target);
 }
