@@ -37,7 +37,7 @@ public class DNSServer extends WrapServer {
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
 
-	private String target = "4.3.2.1:53"; // TODO 读取配置
+	private String target = "8.8.8.8:53"; // TODO 读取配置
 
 	public DNSServer(String name, int port) {
 		this(name, port, "10.0.0.172", 80);
