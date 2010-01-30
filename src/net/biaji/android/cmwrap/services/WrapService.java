@@ -38,9 +38,7 @@ public class WrapService extends Service {
 
 	private final String TAG = "CMWRAP->Service";
 
-	private boolean inService = false;
-
-	private boolean isUltraMode = false;
+	private boolean inService = false, isUltraMode = false, dnsEnabled = true;
 
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
@@ -83,6 +81,7 @@ public class WrapService extends Service {
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
+		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
 
@@ -201,8 +200,12 @@ public class WrapService extends Service {
 					WrapServer server = ServerFactory.getServer(rule);
 					server.setProxyHost(proxyHost);
 					server.setProxyPort(proxyPort);
-					if (rule.protocol.equalsIgnoreCase("udp")) // TODO refactor
+					if (rule.protocol.equalsIgnoreCase("udp")) { // TODO
+						// refactor
+						if (!dnsEnabled)
+							continue;
 						server.setTarget(DNSServer + ":53");
+					}
 					server.start();
 					servers.add(server);
 				}
