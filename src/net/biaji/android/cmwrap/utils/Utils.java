@@ -98,8 +98,8 @@ public class Utils {
 			String line = "";
 			while ((line = in.readLine()) != null) {
 
-				if (line.startsWith("#"))
-					continue; // 去掉注释
+				if (line.startsWith("#") || line.trim().equals(""))
+					continue; // 去掉注释和空行
 
 				Rule rule = new Rule();
 				// if (line != null)
