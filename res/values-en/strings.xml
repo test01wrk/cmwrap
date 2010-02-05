@@ -166,8 +166,7 @@
 	<string
 		name="MSG_DNSMASQ_INSTALLED">dnsmasq install completed! \n</string>
 	<string
-		name="MSG_INSTALL_COMPLETED">Install completed! Maybe you need a reboot to enable some
-		function. \n</string>
+		name="MSG_INSTALL_COMPLETED">Install completed!\n</string>
 	<string
 		name="MSG_UPDATE_COMPLETED">Update completed! \n</string>
 	<string

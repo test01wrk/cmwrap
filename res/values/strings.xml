@@ -15,7 +15,7 @@
 	<string
 		name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
 	<string
-		name="serviceAppTitle">切换基本服务状态</string>
+		name="serviceAppTiftle">切换基本服务状态</string>
 	<string
 		name="serviceAppComment">
 		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
@@ -157,7 +157,7 @@
 	<string
 		name="MSG_DNSMASQ_INSTALLED">dnsmasq安装完毕！\n</string>
 	<string
-		name="MSG_INSTALL_COMPLETED">安装完毕~ 请重启手机以使配置生效。\n</string>
+		name="MSG_INSTALL_COMPLETED">安装完毕~！\n</string>
 	<string
 		name="MSG_UPDATE_COMPLETED">更新完毕。\n</string>
 	<string
