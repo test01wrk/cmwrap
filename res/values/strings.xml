@@ -15,7 +15,7 @@
 	<string
 		name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
 	<string
-		name="serviceAppTiftle">切换基本服务状态</string>
+		name="serviceAppTitle">切换基本服务状态</string>
 	<string
 		name="serviceAppComment">
 		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
