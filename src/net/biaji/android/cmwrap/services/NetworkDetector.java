@@ -20,7 +20,7 @@ public class NetworkDetector extends BroadcastReceiver {
 	private final String TAG = "CMWRAP->NetworkDetector";
 
 	/**
-	 * 时间间隔，短于此间隔的变化不予实施,单位为秒 
+	 * 时间间隔，短于此间隔的变化不予实施,单位为秒
 	 */
 	private final long INTERVAL = 120;
 
@@ -51,9 +51,6 @@ public class NetworkDetector extends BroadcastReceiver {
 			Config.setIptableStatus(context, false);
 
 		} else if (action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
-			
-			Utils.rootCMD("setprop net.rmnet0.dns1 8.8.8.8");  //TODO 统一处理
-			
 			// 禁用自动状态切换
 			if (!autoChange)
 				return;
@@ -81,6 +78,8 @@ public class NetworkDetector extends BroadcastReceiver {
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
+
+			Utils.flushDns("");
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()

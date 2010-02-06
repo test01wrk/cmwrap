@@ -84,6 +84,8 @@ public class WrapService extends Service {
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
+		
+		Utils.flushDns(DNSServer);
 
 		// 载入所有规则
 		rules = Utils.loadRules(this);

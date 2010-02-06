@@ -182,6 +182,12 @@ public class Utils {
 		return result;
 	}
 
+	public static void flushDns(String dns) {
+		if (dns == null || dns.equals(""))
+			dns = "8.8.8.8";
+		rootCMD("setprop net.dns1 " + dns);
+	}
+
 	/**
 	 * 判断目前设置是否仅对cmwap进行代理处理
 	 * 
