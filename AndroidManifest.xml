@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="net.biaji.android.cmwrap" android:versionCode="244" android:versionName="beta 1.4">
+	package="net.biaji.android.cmwrap" android:versionName="beta 1.4.1" android:versionCode="247">
 	<uses-sdk android:minSdkVersion="2" />
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<activity android:name="Cmwrap" android:label="@string/app_name" android:launchMode="singleTask">
