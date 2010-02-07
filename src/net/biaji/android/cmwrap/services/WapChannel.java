@@ -6,9 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.utils.Utils;
 
-public class WapChannel extends Thread {
+public class WapChannel implements Runnable {
 
 	private long starTime = System.currentTimeMillis();
 
@@ -65,7 +64,6 @@ public class WapChannel extends Thread {
 			this.isConnected = true;
 	}
 
-	@Override
 	public void run() {
 		if (orgSocket != null && innerSocket != null && orgSocket.isConnected()
 				&& innerSocket.isConnected()) {

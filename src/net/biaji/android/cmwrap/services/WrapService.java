@@ -40,6 +40,12 @@ public class WrapService extends Service {
 
 	private boolean inService = false, isUltraMode = false, dnsEnabled = true;
 
+	private String[] iptablesRules = new String[] {
+			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s",
+			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix CMWRAP",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
+
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
@@ -84,7 +90,7 @@ public class WrapService extends Service {
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
-		
+
 		Utils.flushDns(DNSServer);
 
 		// 载入所有规则
@@ -248,25 +254,11 @@ public class WrapService extends Service {
 		if (onlyCmwap)
 			inface = " -o rmnet0 ";
 
-		for (Rule rule : rules) {
+		for (String rule : iptablesRules) {
 			try {
-				String protocol = " -p " + rule.protocol;
-
-				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
-
-				if (rule.mode == Rule.MODE_BASE)
-					cmd += " --dport " + rule.desPort + " -j DNAT "
-							+ " --to-destination " + proxyHost + ":"
-							+ proxyPort;
-				else {
-					if (rule.desHost != null && !rule.desHost.equals(""))
-						cmd += " -d " + rule.desHost;
-
-					cmd += " --dport " + rule.desPort
-							+ " -j DNAT --to-destination 127.0.0.1:"
-							+ rule.servPort;
-				}
-				Utils.rootCMD(cmd);
+				rule = String.format(rule, inface, this.proxyHost + ":"
+						+ this.proxyPort);
+				Utils.rootCMD(rule);
 
 			} catch (Exception e) {
 				Logger.e(TAG, e.getLocalizedMessage());

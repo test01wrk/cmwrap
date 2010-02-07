@@ -1,14 +1,26 @@
 package net.biaji.android.cmwrap.services;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
 
 public class NormalTcpServer extends WrapServer {
+
+	private final String LINE_SEPARATOR = System.getProperty("line.separator");
+
 	private ServerSocket serSocket;
 
 	private int servPort;
@@ -25,12 +37,23 @@ public class NormalTcpServer extends WrapServer {
 
 	private boolean inService = false;
 
-	private HashSet<WapChannel> channels = new HashSet<WapChannel>();
+	private ExecutorService serv = Executors.newCachedThreadPool();
 
 	public NormalTcpServer(String name, int port) {
 		this(name, port, "10.0.0.172", 80);
 	}
 
+	/**
+	 * 
+	 * @param name
+	 *            服务名称
+	 * @param port
+	 *            侦听端口号
+	 * @param proxyHost
+	 *            HTTP代理服务器地址
+	 * @param proxyPort
+	 *            HTTP代理服务器端口
+	 */
 	public NormalTcpServer(String name, int port, String proxyHost,
 			int proxyPort) {
 		this.servPort = port;
@@ -53,7 +76,7 @@ public class NormalTcpServer extends WrapServer {
 
 	public void close() throws IOException {
 		inService = false;
-		serSocket.close(); // TODO 优雅点
+		serSocket.close();
 	}
 
 	public int getServPort() {
@@ -91,16 +114,11 @@ public class NormalTcpServer extends WrapServer {
 				Socket socket = serSocket.accept();
 				socket.setSoTimeout(120 * 1000);
 				Logger.v(TAG, "获得客户端请求");
-				WapChannel channel = new WapChannel(socket, dest, proxyHost,
-						proxyPort);
-				if (channel.isConnected()) {
-					channel.start();
-					channels.add(channel);
-				} else {
-					channel.destory();
-				}
 
-				Thread.sleep(100);
+				Future<?> f = serv.submit(new WapChannel(socket, dest,
+						proxyHost, proxyPort));
+
+				TimeUnit.MILLISECONDS.sleep(100);
 			} catch (IOException e) {
 				Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
 			} catch (InterruptedException e) {
@@ -124,22 +142,56 @@ public class NormalTcpServer extends WrapServer {
 	}
 
 	private void clean() {
+		serv.shutdownNow();
+	}
 
-		for (Iterator<WapChannel> it = channels.iterator(); it.hasNext();) {
-			WapChannel channel = it.next();
-			if (channel != null && !channel.isConnected()) {
-				channel.destory();
-				it.remove();
-				channels.remove(channel);
-				Logger.d(TAG, name + "清理链接");
-			} else if (channel == null) {
-				it.remove();
-				channels.remove(channel);
-				Logger.d(TAG, name + "清理无效链接");
+	private synchronized String rootCMD(String cmd) {
+		String result = "";
+		DataOutputStream os = null;
+		InputStream out = null;
+		try {
+			Process process = Runtime.getRuntime().exec("su");
+
+			os = new DataOutputStream(process.getOutputStream());
+
+			os.writeBytes(cmd + "\n");
+			os.flush();
+			os.writeBytes("exit\n");
+			os.flush();
+
+			int execResult = process.waitFor();
+			if (execResult == 0)
+				Logger.d(TAG, cmd + " exec success");
+			else {
+				Logger.d(TAG, cmd + " exec with result " + execResult);
 			}
+
+			out = process.getInputStream();
+			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
+			String line = "";
+			StringBuilder outBuilder = new StringBuilder();
+			while ((line = outR.readLine()) != null)
+				outBuilder.append(line + LINE_SEPARATOR);
+
+			result = outBuilder.toString();
+
+			os.close();
+			process.destroy();
+		} catch (IOException e) {
+			Logger.e(TAG, "Failed to exec command", e);
+		} catch (InterruptedException e) {
+			Logger.e(TAG, "线程意外终止", e);
+		} finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+			}
+
 		}
 
-		Logger.d(TAG, name + " " + channels.size() + " channel 未清理");
+		return result;
 	}
 
 }
