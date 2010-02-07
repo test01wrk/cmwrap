@@ -114,8 +114,10 @@ public class Utils {
 				if (items.length > 2) {
 					rule.mode = Rule.MODE_SERV;
 					rule.desHost = items[1];
-					rule.desPort = Integer.parseInt(items[2]);
-					rule.servPort = Integer.parseInt(items[3]);
+					rule.desPort = items[2].trim().equals("") ? -1
+							: Integer.parseInt(items[2]);
+					rule.servPort = items[3].trim().equals("") ? -1
+							: Integer.parseInt(items[3]);
 				} else if (items.length == 2) {
 					rule.mode = Rule.MODE_BASE;
 					rule.desPort = Integer.parseInt(items[1]);
@@ -127,7 +129,7 @@ public class Utils {
 			in.close();
 			in = null;
 		} catch (Exception e) {
-			Logger.e("CMWRAP", "载入规则文件失败：" + e.getLocalizedMessage());
+			Logger.e("CMWRAP", "载入规则文件失败：", e);
 		} finally {
 			if (in != null) {
 				try {
@@ -154,8 +156,7 @@ public class Utils {
 
 		// -------------------
 
-		ConnectivityManager manager = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
@@ -196,8 +197,7 @@ public class Utils {
 	 */
 	public static boolean isCmwapOnly(Context context) {
 		boolean result = true;
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		result = pref.getBoolean("ONLYCMWAP", true);
 		return result;
 	}

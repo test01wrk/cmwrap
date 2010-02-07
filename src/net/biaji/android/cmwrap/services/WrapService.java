@@ -43,7 +43,7 @@ public class WrapService extends Service {
 	private String[] iptablesRules = new String[] {
 			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s",
 			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442",
-			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix CMWRAP",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
 			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
 
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
