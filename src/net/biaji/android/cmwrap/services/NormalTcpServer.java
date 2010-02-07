@@ -56,7 +56,7 @@ public class NormalTcpServer extends WrapServer {
 		this.servPort = port;
 		this.name = name;
 		this.proxyHost = proxyHost;
-		this.proxyPort = proxyPort;
+		this.proxyPort = proxyPort; 
 		try {
 			serSocket = new ServerSocket(port);
 			inService = true;
@@ -116,10 +116,11 @@ public class NormalTcpServer extends WrapServer {
 				socket.setSoTimeout(120 * 1000);
 				Logger.v(TAG, "获得客户端请求");
 
-				String srcPort = socket.getLocalPort() + "";
+				String srcPort = socket.getPort() + "";
 				target = getTarget(srcPort);
 				if (target == null || target.trim().equals("")) {
 					Logger.d(TAG, "源于端口号" + srcPort + "的链接未匹配。");
+					socket.close();
 					continue;
 				} else {
 					Logger.d(TAG, srcPort + "匹配至目的地址：" + target);
@@ -205,18 +206,15 @@ public class NormalTcpServer extends WrapServer {
 						String trimParm = parm.trim();
 						if (trimParm.startsWith("DST")) {
 							addr = getValue(trimParm);
-							break;
 						}
 
 						if (trimParm.startsWith("SPT")) {
 							if (sourcePort.equals(getValue(trimParm)))
 								match = true;
-							break;
 						}
 
 						if (trimParm.startsWith("DPT")) {
 							destPort = getValue(trimParm);
-							break;
 						}
 
 					}
