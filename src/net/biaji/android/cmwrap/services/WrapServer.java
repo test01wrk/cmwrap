@@ -2,7 +2,7 @@ package net.biaji.android.cmwrap.services;
 
 import java.io.IOException;
 
-public abstract class WrapServer extends Thread {
+public interface WrapServer extends Runnable {
 
 	public abstract boolean isClosed();
 

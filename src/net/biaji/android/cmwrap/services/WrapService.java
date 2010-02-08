@@ -93,9 +93,6 @@ public class WrapService extends Service {
 
 		Utils.flushDns(DNSServer);
 
-		// 载入所有规则
-		rules = Utils.loadRules(this);
-
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -201,24 +198,18 @@ public class WrapService extends Service {
 
 		if (serverLevel <= SERVER_LEVEL_STOP)
 			return;
-
-		for (Rule rule : rules) {
-			if (rule.mode < serverLevel) {
-				if (rule.mode == Rule.MODE_SERV) {
-					WrapServer server = ServerFactory.getServer(rule);
-					server.setProxyHost(proxyHost);
-					server.setProxyPort(proxyPort);
-					if (rule.protocol.equalsIgnoreCase("udp")) { // TODO
-						// refactor
-						if (!dnsEnabled)
-							continue;
-						server.setTarget(DNSServer + ":53");
-					}
-					server.start();
-					servers.add(server);
-				}
-			}
+		if (dnsEnabled) {
+			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
+					proxyPort);
+			dnsSer.setTarget(DNSServer + ":53");
+			new Thread(dnsSer).start();
+			servers.add(dnsSer);
 		}
+		//
+		NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost,
+				proxyPort);
+		new Thread(tcpSer).start();
+		servers.add(tcpSer);
 	}
 
 	private void stopSubDaemon() {

@@ -21,7 +21,7 @@ import net.biaji.android.cmwrap.utils.Utils;
  * @author biaji
  * 
  */
-public class DNSServer extends WrapServer {
+public class DNSServer implements WrapServer {
 
 	private DatagramSocket srvSocket;
 

@@ -85,64 +85,6 @@ public class Utils {
 	}
 
 	/**
-	 * 载入转向规则
-	 */
-	public static ArrayList<Rule> loadRules(ContextWrapper context) {
-
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-
-		DataInputStream in = null;
-		try {
-			in = new DataInputStream(context.getResources().openRawResource(
-					R.raw.rules));
-			String line = "";
-			while ((line = in.readLine()) != null) {
-
-				if (line.startsWith("#") || line.trim().equals(""))
-					continue; // 去掉注释和空行
-
-				Rule rule = new Rule();
-				// if (line != null)
-				// line = new String(line.trim().getBytes("UTF-8"));
-
-				String[] items = line.split("\\|");
-
-				rule.name = items[0];
-				if (items.length == 5)
-					rule.protocol = items[4];
-
-				if (items.length > 2) {
-					rule.mode = Rule.MODE_SERV;
-					rule.desHost = items[1];
-					rule.desPort = items[2].trim().equals("") ? -1
-							: Integer.parseInt(items[2]);
-					rule.servPort = items[3].trim().equals("") ? -1
-							: Integer.parseInt(items[3]);
-				} else if (items.length == 2) {
-					rule.mode = Rule.MODE_BASE;
-					rule.desPort = Integer.parseInt(items[1]);
-				}
-				Logger.v(TAG, "载入" + rule.name + "规则");
-				rules.add(rule);
-
-			}
-			in.close();
-			in = null;
-		} catch (Exception e) {
-			Logger.e("CMWRAP", "载入规则文件失败：", e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-				in = null;
-			}
-		}
-		return rules;
-	}
-
-	/**
 	 * 判断当前网络连接是否为cmwap
 	 * 
 	 * @param context

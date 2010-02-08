@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
 
-public class NormalTcpServer extends WrapServer {
+public class NormalTcpServer implements WrapServer {
 
 	private ServerSocket serSocket;
 
-	private int servPort;
+	private final int servPort = 7443;
 
 	private String target;
 
@@ -36,32 +36,28 @@ public class NormalTcpServer extends WrapServer {
 
 	private Hashtable<String, String> connReq = new Hashtable<String, String>();
 
-	public NormalTcpServer(String name, int port) {
-		this(name, port, "10.0.0.172", 80);
+	public NormalTcpServer(String name) {
+		this(name, "10.0.0.172", 80);
 	}
 
 	/**
 	 * 
 	 * @param name
 	 *            服务名称
-	 * @param port
-	 *            侦听端口号
 	 * @param proxyHost
 	 *            HTTP代理服务器地址
 	 * @param proxyPort
 	 *            HTTP代理服务器端口
 	 */
-	public NormalTcpServer(String name, int port, String proxyHost,
-			int proxyPort) {
-		this.servPort = port;
+	public NormalTcpServer(String name, String proxyHost, int proxyPort) {
 		this.name = name;
 		this.proxyHost = proxyHost;
-		this.proxyPort = proxyPort; 
+		this.proxyPort = proxyPort;
 		try {
-			serSocket = new ServerSocket(port);
+			serSocket = new ServerSocket(servPort);
 			inService = true;
 		} catch (IOException e) {
-			Logger.e(TAG, "Server初始化错误，端口号" + port, e);
+			Logger.e(TAG, "Server初始化错误，端口号" + servPort, e);
 		}
 		Logger.d(TAG, "启用" + name + "服务于" + servPort + "端口");
 
@@ -143,13 +139,6 @@ public class NormalTcpServer extends WrapServer {
 		}
 		Logger.v(TAG, name + "侦听服务停止");
 
-	}
-
-	@Override
-	public void destroy() {
-		Logger.v(TAG, name + "侦听服务被系统销毁");
-		close();
-		super.destroy();
 	}
 
 	/**
