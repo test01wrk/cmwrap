@@ -7,7 +7,6 @@ import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
-import net.biaji.android.cmwrap.Rule;
 import net.biaji.android.cmwrap.utils.Utils;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,8 +24,6 @@ import android.preference.PreferenceManager;
 public class WrapService extends Service {
 
 	private NotificationManager nm;
-
-	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String DNSServer;
 
