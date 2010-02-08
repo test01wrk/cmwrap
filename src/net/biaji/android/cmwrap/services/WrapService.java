@@ -196,7 +196,7 @@ public class WrapService extends Service {
 	 */
 	private void startSubDaemon() {
 
-		if (serverLevel <= SERVER_LEVEL_STOP)
+		if (serverLevel <= SERVER_LEVEL_BASE)
 			return;
 		if (dnsEnabled) {
 			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
