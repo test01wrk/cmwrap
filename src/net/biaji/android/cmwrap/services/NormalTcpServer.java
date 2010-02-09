@@ -34,7 +34,7 @@ public class NormalTcpServer implements WrapServer {
 
 	private ExecutorService serv = Executors.newCachedThreadPool();
 
-	private Hashtable<String, String> connReq = new Hashtable<String, String>();
+	private static Hashtable<String, String> connReq = new Hashtable<String, String>();
 
 	public NormalTcpServer(String name) {
 		this(name, "10.0.0.172", 80);
@@ -90,19 +90,16 @@ public class NormalTcpServer implements WrapServer {
 		this.target = dest;
 	}
 
-	@Override
 	public void setProxyHost(String proxyHost) {
 		this.proxyHost = proxyHost;
 
 	}
 
-	@Override
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
 
 	}
 
-	@Override
 	public void run() {
 
 		while (inService) {
