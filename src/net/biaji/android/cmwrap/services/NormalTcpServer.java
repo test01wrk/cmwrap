@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
@@ -126,6 +127,8 @@ public class NormalTcpServer implements WrapServer {
 				Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
 			} catch (InterruptedException e) {
 				Logger.e(TAG, "Interrupted:" + e.getMessage());
+			} catch (RejectedExecutionException e) {
+				Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
 			}
 		}
 

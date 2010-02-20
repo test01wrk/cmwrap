@@ -51,8 +51,8 @@ public class DNSServer implements WrapServer {
 			this.proxyHost = proxyHost;
 			this.proxyPort = proxyPort;
 
-			srvSocket = new DatagramSocket(srvPort, InetAddress
-					.getByName("127.0.0.1"));
+			srvSocket = new DatagramSocket(srvPort,
+					InetAddress.getByName("127.0.0.1"));
 			inService = true;
 			Logger.i(TAG, this.name + "启动于端口： " + port);
 
@@ -64,7 +64,6 @@ public class DNSServer implements WrapServer {
 
 	}
 
-	@Override
 	public void run() {
 
 		byte[] qbuffer = new byte[576];
@@ -237,34 +236,28 @@ public class DNSServer implements WrapServer {
 		return result;
 	}
 
-	@Override
 	public void close() throws IOException {
 		inService = false;
 		srvSocket.close();
 		Logger.i(TAG, "服务关闭");
 	}
 
-	@Override
 	public int getServPort() {
 		return this.srvPort;
 	}
 
-	@Override
 	public boolean isClosed() {
 		return srvSocket.isClosed();
 	}
 
-	@Override
 	public void setTarget(String target) {
 		this.target = target;
 	}
 
-	@Override
 	public void setProxyHost(String host) {
 		this.proxyHost = host;
 	}
 
-	@Override
 	public void setProxyPort(int port) {
 		this.proxyPort = port;
 
