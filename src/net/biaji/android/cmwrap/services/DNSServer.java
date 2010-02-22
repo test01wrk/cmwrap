@@ -3,6 +3,7 @@ package net.biaji.android.cmwrap.services;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -31,7 +31,7 @@ import net.biaji.android.cmwrap.utils.Utils;
 public class DNSServer implements WrapServer {
 
 	private final String TAG = "CMWRAP->DNSServer";
-	private final String CACHE_FILE = "/sdcard/.dnscache";
+	private final String CACHE_FILE = "/data/data/net.biaji.android.cmwrap/dnscache";
 
 	private DatagramSocket srvSocket;
 
@@ -246,8 +246,11 @@ public class DNSServer implements WrapServer {
 	 */
 	private void loadCache() {
 		ObjectInputStream ois = null;
+		File cache = new File(CACHE_FILE);
 		try {
-			ois = new ObjectInputStream(new FileInputStream(CACHE_FILE));
+			if (!cache.exists())
+				return;
+			ois = new ObjectInputStream(new FileInputStream(cache));
 			dnsCache = (Hashtable<String, DnsResponse>) ois.readObject();
 			ois.close();
 			ois = null;
@@ -273,8 +276,11 @@ public class DNSServer implements WrapServer {
 	 */
 	private void saveCache() {
 		ObjectOutputStream oos = null;
+		File cache = new File(CACHE_FILE);
 		try {
-			oos = new ObjectOutputStream(new FileOutputStream(CACHE_FILE));
+			if (!cache.exists())
+				cache.createNewFile();
+			oos = new ObjectOutputStream(new FileOutputStream(cache));
 			oos.writeObject(dnsCache);
 			oos.flush();
 			oos.close();
