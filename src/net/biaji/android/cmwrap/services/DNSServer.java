@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;
@@ -31,7 +32,10 @@ import net.biaji.android.cmwrap.utils.Utils;
 public class DNSServer implements WrapServer {
 
 	private final String TAG = "CMWRAP->DNSServer";
-	private final String CACHE_FILE = "/data/data/net.biaji.android.cmwrap/dnscache";
+
+	private String homePath;
+	private final String CACHE_PATH = "/cache";
+	private final String CACHE_FILE = "/dnscache";
 
 	private DatagramSocket srvSocket;
 
@@ -58,7 +62,7 @@ public class DNSServer implements WrapServer {
 			srvSocket = new DatagramSocket(srvPort,
 					InetAddress.getByName("127.0.0.1"));
 			inService = true;
-			loadCache();
+
 			Logger.d(TAG, this.name + "启动于端口： " + port);
 
 		} catch (SocketException e) {
@@ -70,6 +74,8 @@ public class DNSServer implements WrapServer {
 	}
 
 	public void run() {
+
+		loadCache();
 
 		byte[] qbuffer = new byte[576];
 		long starTime = System.currentTimeMillis();
@@ -91,8 +97,14 @@ public class DNSServer implements WrapServer {
 				Logger.d(TAG, "解析" + questDomain);
 
 				if (dnsCache.containsKey(questDomain)) {
+
 					sendDns(dnsCache.get(questDomain).getDnsResponse(), dnsq,
 							srvSocket);
+					
+					// 检查缓存时效(十天)
+					if ((System.currentTimeMillis() - dnsCache.get(questDomain).getTimestamp()) > 864000000L)
+						dnsCache.remove(questDomain);
+					
 					Logger.d(TAG, "命中缓存");
 
 				} else {
@@ -246,7 +258,7 @@ public class DNSServer implements WrapServer {
 	 */
 	private void loadCache() {
 		ObjectInputStream ois = null;
-		File cache = new File(CACHE_FILE);
+		File cache = new File(homePath + CACHE_PATH + CACHE_FILE);
 		try {
 			if (!cache.exists())
 				return;
@@ -276,10 +288,15 @@ public class DNSServer implements WrapServer {
 	 */
 	private void saveCache() {
 		ObjectOutputStream oos = null;
-		File cache = new File(CACHE_FILE);
+		File cache = new File(homePath + CACHE_PATH + CACHE_FILE);
 		try {
-			if (!cache.exists())
+			if (!cache.exists()) {
+				File cacheDir = new File(homePath + CACHE_PATH);
+				if (!cacheDir.exists()) { // android的createNewFile这个方法真够恶心的啊
+					cacheDir.mkdir();
+				}
 				cache.createNewFile();
+			}
 			oos = new ObjectOutputStream(new FileOutputStream(cache));
 			oos.writeObject(dnsCache);
 			oos.flush();
@@ -326,6 +343,10 @@ public class DNSServer implements WrapServer {
 
 	}
 
+	public void setBasePath(String path) {
+		this.homePath = path;
+	}
+
 }
 
 class DnsResponse implements Serializable {
@@ -333,7 +354,7 @@ class DnsResponse implements Serializable {
 	private static final long serialVersionUID = -6693216674221293274L;
 
 	private String request;
-	private long timestamp;
+	private long timestamp = System.currentTimeMillis();;
 	private int reqTimes;
 	private byte[] dnsResponse;
 
@@ -364,7 +385,7 @@ class DnsResponse implements Serializable {
 	 */
 	public byte[] getDnsResponse() {
 		this.reqTimes++;
-		this.timestamp = System.currentTimeMillis();
+		// this.timestamp = System.currentTimeMillis();
 		return dnsResponse;
 	}
 
