@@ -60,7 +60,7 @@ public class NormalTcpServer implements WrapServer {
 		} catch (IOException e) {
 			Logger.e(TAG, "Server初始化错误，端口号" + servPort, e);
 		}
-		Logger.d(TAG, "启用" + name + "服务于" + servPort + "端口");
+		Logger.d(TAG, name + "启动于端口： " + servPort);
 
 	}
 

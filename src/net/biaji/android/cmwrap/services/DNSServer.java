@@ -3,7 +3,14 @@ package net.biaji.android.cmwrap.services;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -23,6 +30,9 @@ import net.biaji.android.cmwrap.utils.Utils;
  */
 public class DNSServer implements WrapServer {
 
+	private final String TAG = "CMWRAP->DNSServer";
+	private final String CACHE_FILE = "/sdcard/.dnscache";
+
 	private DatagramSocket srvSocket;
 
 	private int srvPort;
@@ -31,17 +41,11 @@ public class DNSServer implements WrapServer {
 	private String proxyHost;
 	private int proxyPort;
 
-	private final String TAG = "CMWRAP->DNSServer";
-
 	private boolean inService = false;
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
 
-	private String target = "8.8.8.8:53"; // TODO 读取配置
-
-	public DNSServer(String name, int port) {
-		this(name, port, "10.0.0.172", 80);
-	}
+	private String target = "8.8.8.8:53";
 
 	public DNSServer(String name, int port, String proxyHost, int proxyPort) {
 		try {
@@ -54,7 +58,8 @@ public class DNSServer implements WrapServer {
 			srvSocket = new DatagramSocket(srvPort,
 					InetAddress.getByName("127.0.0.1"));
 			inService = true;
-			Logger.i(TAG, this.name + "启动于端口： " + port);
+			loadCache();
+			Logger.d(TAG, this.name + "启动于端口： " + port);
 
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
@@ -94,7 +99,7 @@ public class DNSServer implements WrapServer {
 					starTime = System.currentTimeMillis();
 					byte[] answer = fetchAnswer(udpreq);
 					if (answer != null && answer.length != 0) {
-						DnsResponse response = new DnsResponse();
+						DnsResponse response = new DnsResponse(questDomain);
 						response.setDnsResponse(answer);
 						dnsCache.put(questDomain, response);
 						sendDns(answer, dnsq, srvSocket);
@@ -236,10 +241,62 @@ public class DNSServer implements WrapServer {
 		return result;
 	}
 
+	/**
+	 * 由缓存载入域名解析缓存
+	 */
+	private void loadCache() {
+		ObjectInputStream ois = null;
+		try {
+			ois = new ObjectInputStream(new FileInputStream(CACHE_FILE));
+			dnsCache = (Hashtable<String, DnsResponse>) ois.readObject();
+			ois.close();
+			ois = null;
+		} catch (ClassCastException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (FileNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (ClassNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} finally {
+			try {
+				if (ois != null)
+					ois.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+	/**
+	 * 保存域名解析内容缓存
+	 */
+	private void saveCache() {
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(new FileOutputStream(CACHE_FILE));
+			oos.writeObject(dnsCache);
+			oos.flush();
+			oos.close();
+			oos = null;
+		} catch (FileNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} finally {
+			try {
+				if (oos != null)
+					oos.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
 	public void close() throws IOException {
 		inService = false;
 		srvSocket.close();
-		Logger.i(TAG, "服务关闭");
+		saveCache();
+		Logger.i(TAG, "DNS服务关闭");
 	}
 
 	public int getServPort() {
@@ -265,11 +322,22 @@ public class DNSServer implements WrapServer {
 
 }
 
-class DnsResponse {
+class DnsResponse implements Serializable {
 
+	private static final long serialVersionUID = -6693216674221293274L;
+
+	private String request;
 	private long timestamp;
 	private int reqTimes;
 	private byte[] dnsResponse;
+
+	public DnsResponse(String request) {
+		this.request = request;
+	}
+
+	public String getRequest() {
+		return this.request;
+	}
 
 	/**
 	 * @return the timestamp
