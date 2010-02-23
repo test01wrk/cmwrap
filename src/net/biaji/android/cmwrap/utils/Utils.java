@@ -48,38 +48,6 @@ public class Utils {
 	}
 
 	/**
-	 * 在SD卡记录日志
-	 * 
-	 * @param log
-	 */
-	public static void writeLog(String log) {
-		FileWriter objFileWriter = null;
-
-		try {
-			Calendar objCalendar = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-			String strDate = sdf.format(objCalendar.getTime());
-
-			StringBuilder objStringBuilder = new StringBuilder();
-
-			objStringBuilder.append(strDate);
-			objStringBuilder.append(": ");
-			objStringBuilder.append(log);
-			objStringBuilder.append("\n");
-
-			objFileWriter = new FileWriter("/sdcard/log.txt", true);
-			objFileWriter.write(objStringBuilder.toString());
-			objFileWriter.flush();
-			objFileWriter.close();
-		} catch (Exception e) {
-			try {
-				objFileWriter.close();
-			} catch (Exception e2) {
-			}
-		}
-	}
-
-	/**
 	 * 判断当前网络连接是否为cmwap
 	 * 
 	 * @param context
