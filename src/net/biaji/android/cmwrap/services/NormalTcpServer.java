@@ -113,11 +113,11 @@ public class NormalTcpServer implements WrapServer {
 				String srcPort = socket.getPort() + "";
 				target = getTarget(srcPort);
 				if (target == null || target.trim().equals("")) {
-					Logger.d(TAG, "源于端口号" + srcPort + "的链接未匹配。");
+					Logger.d(TAG, "SPT:" + srcPort + " doesn't match");
 					socket.close();
 					continue;
 				} else {
-					Logger.d(TAG, srcPort + "匹配至目的地址：" + target);
+					Logger.d(TAG, "SPT:" + srcPort + "----->" + target);
 				}
 				serv.execute(new WapChannel(socket, target, proxyHost,
 						proxyPort));

@@ -341,12 +341,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		return result;
 	}
 
-	private boolean hasFile(String file) {
-		boolean result = false;
-		result = hasFile(file, 0);
-		return result;
-	}
-
 	/**
 	 * 判断是否存在指定文件
 	 * 

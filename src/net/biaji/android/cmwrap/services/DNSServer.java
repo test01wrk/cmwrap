@@ -59,8 +59,8 @@ public class DNSServer implements WrapServer {
 			this.proxyHost = proxyHost;
 			this.proxyPort = proxyPort;
 
-			srvSocket = new DatagramSocket(srvPort,
-					InetAddress.getByName("127.0.0.1"));
+			srvSocket = new DatagramSocket(srvPort, InetAddress
+					.getByName("127.0.0.1"));
 			inService = true;
 
 			Logger.d(TAG, this.name + "启动于端口： " + port);
@@ -100,11 +100,7 @@ public class DNSServer implements WrapServer {
 
 					sendDns(dnsCache.get(questDomain).getDnsResponse(), dnsq,
 							srvSocket);
-					
-					// 检查缓存时效(十天)
-					if ((System.currentTimeMillis() - dnsCache.get(questDomain).getTimestamp()) > 864000000L)
-						dnsCache.remove(questDomain);
-					
+
 					Logger.d(TAG, "命中缓存");
 
 				} else {
@@ -115,6 +111,7 @@ public class DNSServer implements WrapServer {
 						response.setDnsResponse(answer);
 						dnsCache.put(questDomain, response);
 						sendDns(answer, dnsq, srvSocket);
+						saveCache();
 						Logger.d(TAG, "正确返回DNS解析，长度："
 								+ response.getDnsResponse().length + "  耗时："
 								+ (System.currentTimeMillis() - starTime)
@@ -266,6 +263,13 @@ public class DNSServer implements WrapServer {
 			dnsCache = (Hashtable<String, DnsResponse>) ois.readObject();
 			ois.close();
 			ois = null;
+
+			for (DnsResponse resp : dnsCache.values()) {
+				// 检查缓存时效(十天)
+				if ((System.currentTimeMillis() - resp.getTimestamp()) > 864000000L)
+					dnsCache.remove(resp.getRequest());
+			}
+
 		} catch (ClassCastException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
 		} catch (FileNotFoundException e) {

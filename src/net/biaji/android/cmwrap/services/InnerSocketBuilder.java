@@ -49,7 +49,7 @@ public class InnerSocketBuilder {
 					.getOutputStream()));
 
 			String connectStr = "CONNECT " + target
-					+ " HTTP/1.0\r\nUser-agent: " + this.UA + "\r\n\r\n";
+					+ " HTTP/1.1\r\nUser-agent: " + this.UA + "\r\n\r\n";
 
 			dout.write(connectStr);
 			dout.flush();
