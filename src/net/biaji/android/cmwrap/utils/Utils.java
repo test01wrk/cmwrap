@@ -9,14 +9,13 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 
 public class Utils {
 
@@ -56,7 +55,7 @@ public class Utils {
 	public static boolean isCmwap(Context context) {
 
 		// 根据配置情况决定是否检查当前数据连接
-		if (!isCmwapOnly(context))
+		if (!Config.isCmwapOnly(context))
 			return true;
 
 		// -------------------
@@ -80,7 +79,7 @@ public class Utils {
 						result = true;
 				}
 			} catch (Exception e) {
-				Logger.e(TAG, "Can not get Network info");
+				Logger.e(TAG, "Can not get Network info", e);
 			} finally {
 				mCursor.close();
 			}
@@ -92,19 +91,6 @@ public class Utils {
 		if (dns == null || dns.equals(""))
 			dns = "8.8.8.8";
 		rootCMD("setprop net.dns1 " + dns);
-	}
-
-	/**
-	 * 判断目前设置是否仅对cmwap进行代理处理
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public static boolean isCmwapOnly(Context context) {
-		boolean result = true;
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-		result = pref.getBoolean("ONLYCMWAP", true);
-		return result;
 	}
 
 	/**

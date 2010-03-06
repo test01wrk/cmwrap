@@ -19,6 +19,19 @@ public class Config extends PreferenceActivity {
 	}
 
 	/**
+	 * 判断目前设置是否仅对cmwap进行代理处理
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isCmwapOnly(Context context) {
+		boolean result = true;
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		result = pref.getBoolean("ONLYCMWAP", true);
+		return result;
+	}
+
+	/**
 	 * 保存iptables运行状态
 	 * 
 	 * @param context
