@@ -87,10 +87,22 @@ public class Utils {
 		return result;
 	}
 
-	public static void flushDns(String dns) {
+	/**
+	 * 重新设置DNS服务器地址
+	 * 
+	 * @param dns
+	 *            服务器地址 默认8.8.8.8
+	 * @param context
+	 */
+	public static void flushDns(String dns, Context context) {
 		if (dns == null || dns.equals(""))
 			dns = "8.8.8.8";
-		rootCMD("setprop net.dns1 " + dns);
+		String setcmd;
+		if (isCmwap(context))
+			setcmd = "setprop net.rmnet0.dns1 ";
+		else
+			setcmd = "setprop net.dns1 ";
+		rootCMD(setcmd + dns);
 	}
 
 	/**

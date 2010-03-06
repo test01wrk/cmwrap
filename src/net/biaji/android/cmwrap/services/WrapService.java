@@ -87,7 +87,7 @@ public class WrapService extends Service {
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
 
-		Utils.flushDns(DNSServer);
+		Utils.flushDns(DNSServer, this);
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

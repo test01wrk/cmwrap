@@ -35,8 +35,7 @@ public class NetworkDetector extends BroadcastReceiver {
 
 		Logger.d(TAG, "捕获事件：" + action);
 
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
 
@@ -74,12 +73,11 @@ public class NetworkDetector extends BroadcastReceiver {
 			inArray++;
 
 			Logger.d(TAG, "inArray: " + inArray);
-			SharedPreferences pref = PreferenceManager
-					.getDefaultSharedPreferences(context);
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
 
-			Utils.flushDns("");
+			Utils.flushDns("", context);
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()
@@ -97,6 +95,10 @@ public class NetworkDetector extends BroadcastReceiver {
 			}
 
 			int level = Config.getServiceLevel(context);
+
+			if (level == WrapService.SERVER_LEVEL_NULL)
+				return;
+
 			Logger.v(TAG, "Service Level: " + level);
 			Intent intentS = new Intent(context, WrapService.class);
 
@@ -105,8 +107,7 @@ public class NetworkDetector extends BroadcastReceiver {
 				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
 				Logger.v(TAG, "目前不是cmwap接入，暂停服务");
 			} else {
-				if (level != WrapService.SERVER_LEVEL_NULL
-						&& level != WrapService.SERVER_LEVEL_STOP) {
+				if (level != WrapService.SERVER_LEVEL_STOP) {
 					intentS.putExtra("SERVERLEVEL", level);
 				} else {
 					return;

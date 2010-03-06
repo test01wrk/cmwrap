@@ -161,11 +161,8 @@
 	</string>
 	<string
 		name="MSG_DNS_FILES_UPDATE">Update DNS resolv files...\n</string>
-	
-	
 	<string
 		name="MSG_INSTALL_COMPLETED">Install completed!\n</string>
-	
 	<string
 		name="MSG_DNS_NONEED_UPDATE">Don't need a update. \n</string>
 </resources>

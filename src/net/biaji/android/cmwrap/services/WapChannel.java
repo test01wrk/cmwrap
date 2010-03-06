@@ -15,17 +15,9 @@ public class WapChannel implements Runnable {
 
 	private Socket orgSocket;
 
-	private String target;
-
 	private Socket innerSocket;
 
-	private String proxyHost;
-
-	private int proxyPort;
-
 	private final String TAG = "CMWRAP->WapChannel";
-
-	private final String UA = "biAji's wap channel";
 
 	/**
 	 * 
@@ -54,12 +46,8 @@ public class WapChannel implements Runnable {
 	public WapChannel(Socket socket, String target, String proxyHost,
 			int proxyPort) {
 		this.orgSocket = socket;
-		this.target = target;
-		this.proxyHost = proxyHost;
-		this.proxyPort = proxyPort;
 
-		this.innerSocket = new InnerSocketBuilder(proxyHost, proxyPort, target)
-				.getSocket();
+		this.innerSocket = new InnerSocketBuilder(proxyHost, proxyPort, target).getSocket();
 		if (innerSocket != null && innerSocket.isConnected())
 			this.isConnected = true;
 	}
@@ -131,6 +119,12 @@ public class WapChannel implements Runnable {
 		}
 	}
 
+	/**
+	 * 经由HTTP代理建立的管道
+	 * 
+	 * @author biaji
+	 * 
+	 */
 	class Pipe extends Thread {
 		DataInputStream in = null;
 		DataOutputStream out = null;
