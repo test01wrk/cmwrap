@@ -1,21 +1,16 @@
 package net.biaji.android.cmwrap.utils;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import net.biaji.android.cmwrap.Logger;
-import net.biaji.android.cmwrap.R;
-import net.biaji.android.cmwrap.Rule;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -53,94 +48,6 @@ public class Utils {
 	}
 
 	/**
-	 * 在SD卡记录日志
-	 * 
-	 * @param log
-	 */
-	public static void writeLog(String log) {
-		FileWriter objFileWriter = null;
-
-		try {
-			Calendar objCalendar = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-			String strDate = sdf.format(objCalendar.getTime());
-
-			StringBuilder objStringBuilder = new StringBuilder();
-
-			objStringBuilder.append(strDate);
-			objStringBuilder.append(": ");
-			objStringBuilder.append(log);
-			objStringBuilder.append("\n");
-
-			objFileWriter = new FileWriter("/sdcard/log.txt", true);
-			objFileWriter.write(objStringBuilder.toString());
-			objFileWriter.flush();
-			objFileWriter.close();
-		} catch (Exception e) {
-			try {
-				objFileWriter.close();
-			} catch (Exception e2) {
-			}
-		}
-	}
-
-	/**
-	 * 载入转向规则
-	 */
-	public static ArrayList<Rule> loadRules(ContextWrapper context) {
-
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-
-		DataInputStream in = null;
-		try {
-			in = new DataInputStream(context.getResources().openRawResource(
-					R.raw.rules));
-			String line = "";
-			while ((line = in.readLine()) != null) {
-
-				if (line.startsWith("#") || line.trim().equals(""))
-					continue; // 去掉注释和空行
-
-				Rule rule = new Rule();
-				// if (line != null)
-				// line = new String(line.trim().getBytes("UTF-8"));
-
-				String[] items = line.split("\\|");
-
-				rule.name = items[0];
-				if (items.length == 5)
-					rule.protocol = items[4];
-
-				if (items.length > 2) {
-					rule.mode = Rule.MODE_SERV;
-					rule.desHost = items[1];
-					rule.desPort = Integer.parseInt(items[2]);
-					rule.servPort = Integer.parseInt(items[3]);
-				} else if (items.length == 2) {
-					rule.mode = Rule.MODE_BASE;
-					rule.desPort = Integer.parseInt(items[1]);
-				}
-				Logger.v(TAG, "载入" + rule.name + "规则");
-				rules.add(rule);
-
-			}
-			in.close();
-			in = null;
-		} catch (Exception e) {
-			Logger.e("CMWRAP", "载入规则文件失败：" + e.getLocalizedMessage());
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-				in = null;
-			}
-		}
-		return rules;
-	}
-
-	/**
 	 * 判断当前网络连接是否为cmwap
 	 * 
 	 * @param context
@@ -154,8 +61,7 @@ public class Utils {
 
 		// -------------------
 
-		ConnectivityManager manager = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
@@ -196,8 +102,7 @@ public class Utils {
 	 */
 	public static boolean isCmwapOnly(Context context) {
 		boolean result = true;
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		result = pref.getBoolean("ONLYCMWAP", true);
 		return result;
 	}

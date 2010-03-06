@@ -7,7 +7,6 @@ import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
-import net.biaji.android.cmwrap.Rule;
 import net.biaji.android.cmwrap.utils.Utils;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -26,8 +25,6 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private ArrayList<Rule> rules = new ArrayList<Rule>();
-
 	private String DNSServer;
 
 	private String proxyHost;
@@ -39,6 +36,12 @@ public class WrapService extends Service {
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false, isUltraMode = false, dnsEnabled = true;
+
+	private String[] iptablesRules = new String[] {
+			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s",
+			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
 
 	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
@@ -76,19 +79,15 @@ public class WrapService extends Service {
 		Logger.d(TAG, "创建wrap服务");
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		proxyHost = pref
-				.getString("PROXYHOST", getString(R.string.proxyServer));
+		proxyHost = pref.getString("PROXYHOST", getString(R.string.proxyServer));
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
-		
-		Utils.flushDns(DNSServer);
 
-		// 载入所有规则
-		rules = Utils.loadRules(this);
+		Utils.flushDns(DNSServer);
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -177,8 +176,8 @@ public class WrapService extends Service {
 			break;
 		}
 
-		Notification note = new Notification(icon, notifyText, System
-				.currentTimeMillis());
+		Notification note = new Notification(icon, notifyText,
+				System.currentTimeMillis());
 		if (isUltraMode)
 			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
@@ -193,26 +192,21 @@ public class WrapService extends Service {
 	 */
 	private void startSubDaemon() {
 
-		if (serverLevel <= SERVER_LEVEL_STOP)
+		if (serverLevel <= SERVER_LEVEL_BASE)
 			return;
-
-		for (Rule rule : rules) {
-			if (rule.mode < serverLevel) {
-				if (rule.mode == Rule.MODE_SERV) {
-					WrapServer server = ServerFactory.getServer(rule);
-					server.setProxyHost(proxyHost);
-					server.setProxyPort(proxyPort);
-					if (rule.protocol.equalsIgnoreCase("udp")) { // TODO
-						// refactor
-						if (!dnsEnabled)
-							continue;
-						server.setTarget(DNSServer + ":53");
-					}
-					server.start();
-					servers.add(server);
-				}
-			}
+		if (dnsEnabled) {
+			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
+					proxyPort);
+			dnsSer.setTarget(DNSServer + ":53");
+			dnsSer.setBasePath(this.getFilesDir().getParent());
+			new Thread(dnsSer).start();
+			servers.add(dnsSer);
 		}
+		//
+		NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost,
+				proxyPort);
+		new Thread(tcpSer).start();
+		servers.add(tcpSer);
 	}
 
 	private void stopSubDaemon() {
@@ -248,25 +242,11 @@ public class WrapService extends Service {
 		if (onlyCmwap)
 			inface = " -o rmnet0 ";
 
-		for (Rule rule : rules) {
+		for (String rule : iptablesRules) {
 			try {
-				String protocol = " -p " + rule.protocol;
-
-				String cmd = "iptables -t nat -A OUTPUT " + inface + protocol;
-
-				if (rule.mode == Rule.MODE_BASE)
-					cmd += " --dport " + rule.desPort + " -j DNAT "
-							+ " --to-destination " + proxyHost + ":"
-							+ proxyPort;
-				else {
-					if (rule.desHost != null && !rule.desHost.equals(""))
-						cmd += " -d " + rule.desHost;
-
-					cmd += " --dport " + rule.desPort
-							+ " -j DNAT --to-destination 127.0.0.1:"
-							+ rule.servPort;
-				}
-				Utils.rootCMD(cmd);
+				rule = String.format(rule, inface, this.proxyHost + ":"
+						+ this.proxyPort);
+				Utils.rootCMD(rule);
 
 			} catch (Exception e) {
 				Logger.e(TAG, e.getLocalizedMessage());

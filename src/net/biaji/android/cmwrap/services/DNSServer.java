@@ -3,7 +3,14 @@ package net.biaji.android.cmwrap.services;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -11,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;
@@ -21,7 +29,13 @@ import net.biaji.android.cmwrap.utils.Utils;
  * @author biaji
  * 
  */
-public class DNSServer extends WrapServer {
+public class DNSServer implements WrapServer {
+
+	private final String TAG = "CMWRAP->DNSServer";
+
+	private String homePath;
+	private final String CACHE_PATH = "/cache";
+	private final String CACHE_FILE = "/dnscache";
 
 	private DatagramSocket srvSocket;
 
@@ -31,17 +45,11 @@ public class DNSServer extends WrapServer {
 	private String proxyHost;
 	private int proxyPort;
 
-	private final String TAG = "CMWRAP->DNSServer";
-
 	private boolean inService = false;
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
 
-	private String target = "8.8.8.8:53"; // TODO 读取配置
-
-	public DNSServer(String name, int port) {
-		this(name, port, "10.0.0.172", 80);
-	}
+	private String target = "8.8.8.8:53";
 
 	public DNSServer(String name, int port, String proxyHost, int proxyPort) {
 		try {
@@ -54,7 +62,8 @@ public class DNSServer extends WrapServer {
 			srvSocket = new DatagramSocket(srvPort, InetAddress
 					.getByName("127.0.0.1"));
 			inService = true;
-			Logger.i(TAG, this.name + "启动于端口： " + port);
+
+			Logger.d(TAG, this.name + "启动于端口： " + port);
 
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
@@ -64,8 +73,9 @@ public class DNSServer extends WrapServer {
 
 	}
 
-	@Override
 	public void run() {
+
+		loadCache();
 
 		byte[] qbuffer = new byte[576];
 		long starTime = System.currentTimeMillis();
@@ -87,18 +97,21 @@ public class DNSServer extends WrapServer {
 				Logger.d(TAG, "解析" + questDomain);
 
 				if (dnsCache.containsKey(questDomain)) {
+
 					sendDns(dnsCache.get(questDomain).getDnsResponse(), dnsq,
 							srvSocket);
+
 					Logger.d(TAG, "命中缓存");
 
 				} else {
 					starTime = System.currentTimeMillis();
 					byte[] answer = fetchAnswer(udpreq);
 					if (answer != null && answer.length != 0) {
-						DnsResponse response = new DnsResponse();
+						DnsResponse response = new DnsResponse(questDomain);
 						response.setDnsResponse(answer);
 						dnsCache.put(questDomain, response);
 						sendDns(answer, dnsq, srvSocket);
+						saveCache();
 						Logger.d(TAG, "正确返回DNS解析，长度："
 								+ response.getDnsResponse().length + "  耗时："
 								+ (System.currentTimeMillis() - starTime)
@@ -237,46 +250,125 @@ public class DNSServer extends WrapServer {
 		return result;
 	}
 
-	@Override
+	/**
+	 * 由缓存载入域名解析缓存
+	 */
+	private void loadCache() {
+		ObjectInputStream ois = null;
+		File cache = new File(homePath + CACHE_PATH + CACHE_FILE);
+		try {
+			if (!cache.exists())
+				return;
+			ois = new ObjectInputStream(new FileInputStream(cache));
+			dnsCache = (Hashtable<String, DnsResponse>) ois.readObject();
+			ois.close();
+			ois = null;
+
+			for (DnsResponse resp : dnsCache.values()) {
+				// 检查缓存时效(十天)
+				if ((System.currentTimeMillis() - resp.getTimestamp()) > 864000000L)
+					dnsCache.remove(resp.getRequest());
+			}
+
+		} catch (ClassCastException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (FileNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (ClassNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} finally {
+			try {
+				if (ois != null)
+					ois.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+	/**
+	 * 保存域名解析内容缓存
+	 */
+	private void saveCache() {
+		ObjectOutputStream oos = null;
+		File cache = new File(homePath + CACHE_PATH + CACHE_FILE);
+		try {
+			if (!cache.exists()) {
+				File cacheDir = new File(homePath + CACHE_PATH);
+				if (!cacheDir.exists()) { // android的createNewFile这个方法真够恶心的啊
+					cacheDir.mkdir();
+				}
+				cache.createNewFile();
+			}
+			oos = new ObjectOutputStream(new FileOutputStream(cache));
+			oos.writeObject(dnsCache);
+			oos.flush();
+			oos.close();
+			oos = null;
+		} catch (FileNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} finally {
+			try {
+				if (oos != null)
+					oos.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
 	public void close() throws IOException {
 		inService = false;
 		srvSocket.close();
-		Logger.i(TAG, "服务关闭");
+		saveCache();
+		Logger.i(TAG, "DNS服务关闭");
 	}
 
-	@Override
 	public int getServPort() {
 		return this.srvPort;
 	}
 
-	@Override
 	public boolean isClosed() {
 		return srvSocket.isClosed();
 	}
 
-	@Override
 	public void setTarget(String target) {
 		this.target = target;
 	}
 
-	@Override
 	public void setProxyHost(String host) {
 		this.proxyHost = host;
 	}
 
-	@Override
 	public void setProxyPort(int port) {
 		this.proxyPort = port;
 
 	}
 
+	public void setBasePath(String path) {
+		this.homePath = path;
+	}
+
 }
 
-class DnsResponse {
+class DnsResponse implements Serializable {
 
-	private long timestamp;
+	private static final long serialVersionUID = -6693216674221293274L;
+
+	private String request;
+	private long timestamp = System.currentTimeMillis();;
 	private int reqTimes;
 	private byte[] dnsResponse;
+
+	public DnsResponse(String request) {
+		this.request = request;
+	}
+
+	public String getRequest() {
+		return this.request;
+	}
 
 	/**
 	 * @return the timestamp
@@ -297,7 +389,7 @@ class DnsResponse {
 	 */
 	public byte[] getDnsResponse() {
 		this.reqTimes++;
-		this.timestamp = System.currentTimeMillis();
+		// this.timestamp = System.currentTimeMillis();
 		return dnsResponse;
 	}
 
