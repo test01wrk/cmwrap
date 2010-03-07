@@ -15,6 +15,10 @@ public class InnerSocketBuilder {
 	private int proxyPort = 80;
 	private String target = "";
 
+	private Socket innerSocket = null;
+
+	private boolean isConnected = false;
+
 	private long starTime = System.currentTimeMillis();
 	private final String TAG = "CMWRAP->InnerSocketBuilder";
 	private final String UA = "biAji's wap channel";
@@ -27,11 +31,10 @@ public class InnerSocketBuilder {
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
 		this.target = target;
-
+		connect();
 	}
 
-	public Socket getSocket() {
-		Socket innerSocket = null;
+	private void connect() {
 
 		// starTime = System.currentTimeMillis();
 		Logger.v(TAG, "建立通道");
@@ -43,10 +46,10 @@ public class InnerSocketBuilder {
 			innerSocket.setKeepAlive(true);
 			innerSocket.setSoTimeout(120 * 1000);
 
-			din = new BufferedReader(new InputStreamReader(innerSocket
-					.getInputStream()));
-			dout = new BufferedWriter(new OutputStreamWriter(innerSocket
-					.getOutputStream()));
+			din = new BufferedReader(new InputStreamReader(
+					innerSocket.getInputStream()));
+			dout = new BufferedWriter(new OutputStreamWriter(
+					innerSocket.getOutputStream()));
 
 			String connectStr = "CONNECT " + target
 					+ " HTTP/1.1\r\nUser-agent: " + this.UA + "\r\n\r\n";
@@ -67,6 +70,7 @@ public class InnerSocketBuilder {
 				Logger.v(TAG, result);
 				Logger.v(TAG, "通道建立成功， 耗时："
 						+ (System.currentTimeMillis() - starTime) / 1000);
+				isConnected = true;
 			} else {
 				Logger.d(TAG, "建立隧道失败");
 			}
@@ -74,7 +78,14 @@ public class InnerSocketBuilder {
 		} catch (IOException e) {
 			Logger.e(TAG, "建立隧道失败：" + e.getLocalizedMessage());
 		}
+	}
+
+	public Socket getSocket() {
 		return innerSocket;
+	}
+
+	public boolean isConnected() {
+		return this.isConnected;
 	}
 
 }

@@ -458,20 +458,20 @@ public class Cmwrap extends Activity implements OnClickListener {
 			handler.sendMessage(msg);
 
 			// 测试DNS
-			// msg = handler.obtainMessage();
-			// bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
-			// channel = new WapChannel(null, DNSServer + ":53", proxyHost,
-			// proxyPort);
-			// testSleep(5000);
-			// if (!channel.isConnected()) {
-			// bundle.putString("ERRMSG",
-			// getString(R.string.ERR_UNSUPPORT_DNS));
-			// }
-			// channel.destory();
-			// bundle.putInt("PROGRESS", 80);
-			// bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
-			// msg.setData(bundle);
-			// handler.sendMessage(msg);
+			msg = handler.obtainMessage();
+			bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
+			channel = new WapChannel(null, DNSServer + ":53", proxyHost,
+					proxyPort);
+			testSleep(5000);
+			if (!channel.isConnected()) {
+				bundle.putString("ERRMSG",
+						getString(R.string.ERR_UNSUPPORT_DNS));
+			}
+			channel.destory();
+			bundle.putInt("PROGRESS", 80);
+			bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
+			msg.setData(bundle);
+			handler.sendMessage(msg);
 
 			// 测试Gtalk
 			msg = handler.obtainMessage();

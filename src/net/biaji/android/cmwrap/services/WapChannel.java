@@ -47,8 +47,11 @@ public class WapChannel implements Runnable {
 			int proxyPort) {
 		this.orgSocket = socket;
 
-		this.innerSocket = new InnerSocketBuilder(proxyHost, proxyPort, target).getSocket();
-		if (innerSocket != null && innerSocket.isConnected())
+		InnerSocketBuilder builder = new InnerSocketBuilder(proxyHost,
+				proxyPort, target);
+		this.innerSocket = builder.getSocket();
+		if (innerSocket != null && innerSocket.isConnected()
+				&& builder.isConnected())
 			this.isConnected = true;
 	}
 
@@ -159,7 +162,10 @@ public class WapChannel implements Runnable {
 
 				}
 			} catch (IOException e) {
-				Logger.e(TAG, direction + " 管道通讯失败：" + e.getLocalizedMessage());
+
+				Logger.e(TAG, direction
+						+ (System.currentTimeMillis() - starTime) / 1000
+						+ " 管道通讯失败：" + e.getLocalizedMessage());
 				isConnected = false;
 			}
 		}
