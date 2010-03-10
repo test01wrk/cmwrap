@@ -67,8 +67,8 @@ public class WapChannel implements Runnable {
 				din = new DataInputStream(innerSocket.getInputStream());
 				dout = new DataOutputStream(innerSocket.getOutputStream());
 
-				Pipe go = new Pipe(oin, dout, "↑", orgSocket);
-				Pipe come = new Pipe(din, oout, "↓", orgSocket);
+				Pipe go = new Pipe(oin, dout, "↑");
+				Pipe come = new Pipe(din, oout, "↓");
 				go.start();
 				come.start();
 
@@ -132,13 +132,12 @@ public class WapChannel implements Runnable {
 		DataInputStream in = null;
 		DataOutputStream out = null;
 		String direction = "";
-		Socket inSocket = null;
 
-		Pipe(DataInputStream in, DataOutputStream out, String direction, Socket socketNeedCare) {
+		Pipe(DataInputStream in, DataOutputStream out, String direction) {
 			this.in = in;
 			this.out = out;
 			this.direction = direction;
-			inSocket = socketNeedCare;
+
 		}
 
 		@Override
@@ -168,13 +167,13 @@ public class WapChannel implements Runnable {
 				Logger.e(TAG, direction
 						+ (System.currentTimeMillis() - starTime) / 1000
 						+ " 管道通讯失败：" + e.getLocalizedMessage());
-				if (inSocket != null && !inSocket.isClosed()) {
+				if (orgSocket != null && !orgSocket.isClosed()) {
 					try {
 						Logger.d(TAG,
-								inSocket.getRemoteSocketAddress().toString()
+								orgSocket.getRemoteSocketAddress().toString()
 										+ " closed!");
-						inSocket.close();
-						inSocket = null;
+						orgSocket.close();
+						orgSocket = null;
 					} catch (Exception e2) {
 						Logger.e(TAG, "", e2);
 					}
