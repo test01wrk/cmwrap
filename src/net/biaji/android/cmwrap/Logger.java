@@ -2,7 +2,6 @@ package net.biaji.android.cmwrap;
 
 import android.util.Log;
 
-//TODO 由String加载日志级别
 public class Logger {
 
 	private static int debugLevel = Log.DEBUG;

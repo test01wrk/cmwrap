@@ -107,10 +107,12 @@ public class NormalTcpServer implements WrapServer {
 			try {
 				Logger.v(TAG, "等待客户端请求……");
 				Socket socket = serSocket.accept();
-				socket.setSoTimeout(120 * 1000);
+				//socket.setSoTimeout(120 * 1000);
 				Logger.v(TAG, "获得客户端请求");
 
 				String srcPort = socket.getPort() + "";
+				Logger.d(TAG, "source port:" + srcPort);
+
 				target = getTarget(srcPort);
 				if (target == null || target.trim().equals("")) {
 					Logger.d(TAG, "SPT:" + srcPort + " doesn't match");

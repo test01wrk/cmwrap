@@ -155,7 +155,8 @@ public class WapChannel implements Runnable {
 					if (count > 0) {
 						// Logger.v(TAG, "方向" + direction
 						// + Utils.bytesToHexString(buff, 0, count));
-						Logger.v(TAG, direction + "--" + count);
+						Logger.v(TAG, orgSocket.getPort() + ": " + direction
+								+ "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
@@ -169,16 +170,12 @@ public class WapChannel implements Runnable {
 						+ " 管道通讯失败：" + e.getLocalizedMessage());
 				if (orgSocket != null && !orgSocket.isClosed()) {
 					try {
-						Logger.d(TAG,
-								orgSocket.getRemoteSocketAddress().toString()
-										+ " closed!");
+						Logger.d(TAG, orgSocket.getPort() + " closed!");
 						orgSocket.close();
 						orgSocket = null;
 					} catch (Exception e2) {
 						Logger.e(TAG, "", e2);
 					}
-				} else {
-					Logger.d(TAG, "orgSocket is NULL!!!");
 				}
 
 				isConnected = false;
