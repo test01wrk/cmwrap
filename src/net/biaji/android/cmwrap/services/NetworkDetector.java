@@ -35,7 +35,8 @@ public class NetworkDetector extends BroadcastReceiver {
 
 		Logger.d(TAG, "捕获事件：" + action);
 
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		boolean autoBoot = pref.getBoolean("AUTOBOOT", true);
 		boolean autoChange = pref.getBoolean("AUTOCHANGE", true);
 
@@ -73,7 +74,8 @@ public class NetworkDetector extends BroadcastReceiver {
 			inArray++;
 
 			Logger.d(TAG, "inArray: " + inArray);
-			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
 

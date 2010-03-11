@@ -60,7 +60,8 @@ public class Utils {
 
 		// -------------------
 
-		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
@@ -98,10 +99,11 @@ public class Utils {
 		if (dns == null || dns.equals(""))
 			dns = "8.8.8.8";
 		String setcmd;
-		if (isCmwap(context))
-			setcmd = "setprop net.rmnet0.dns1 ";
-		else
-			setcmd = "setprop net.dns1 ";
+
+		// if (isCmwap(context)) --不符合国情
+		// setcmd = "setprop net.rmnet0.dns1 ";
+		// else
+		setcmd = "setprop net.dns1 ";
 		rootCMD(setcmd + dns);
 	}
 

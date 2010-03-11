@@ -83,11 +83,25 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		logWindow = (TextView) findViewById(R.id.logwindow);
 
-		// 首次安装提示
+		// 判断是否需要更新hosts文件
 		int appStatus = appStatus();
 
-		if (appStatus == APP_STATUS_NEW)
-			logWindow.append(getString(R.string.MSG_FISRT_TIME));
+		if (appStatus == APP_STATUS_REPEAT && hasFile("/system/etc/hosts", 200)) {
+			logWindow.append(getString(R.string.MSG_DNS_NONEED_UPDATE));
+		} else {
+			if (appStatus == APP_STATUS_NEW)
+				logWindow.append(getString(R.string.MSG_FISRT_TIME));
+
+			logWindow.append(getString(R.string.MSG_DNS_FILES_UPDATE));
+			int result = Utils.rootCMD(getString(R.string.CMDremount));
+			if (result != 0) {
+				logWindow.append(getString(R.string.ERR_NO_ROOT));
+			} else {
+				installFiles("/system/etc/hosts", R.raw.basichosts, null);
+				logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
+			}
+		}
+
 	}
 
 	@Override
@@ -134,8 +148,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case R.id.BaseService:
 			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
 
-				if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-						"ULTRAMODE", false) == true)
+				if (PreferenceManager.getDefaultSharedPreferences(this)
+						.getBoolean("ULTRAMODE", false) == true)
 					serviceLevel = WrapService.SERVER_LEVEL_FROGROUND_SERVICE;
 				else
 					serviceLevel = WrapService.SERVER_LEVEL_APPS;
@@ -160,13 +174,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case DIALOG_ABOUT_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setView(
-					LayoutInflater.from(this).inflate(R.layout.about, null)).setIcon(
-					R.drawable.icon).setTitle(R.string.MENU_ABOUT).setPositiveButton(
-					R.string.OKOK, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
-						}
-					});
+					LayoutInflater.from(this).inflate(R.layout.about, null))
+					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
+					.setPositiveButton(R.string.OKOK,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
 
 			AlertDialog dialog = builder.create();
 			return dialog;
@@ -250,7 +266,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int firsTime = APP_STATUS_NEW;
 		// 判断状态
 		try {
-			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(this);
 			int ver = pref.getInt("VERSION", APP_STATUS_NEW);
 			PackageManager pm = getPackageManager();
 			PackageInfo pi;
@@ -378,7 +395,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 	 * 更新版本号
 	 */
 	private void tag(int newVer) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("VERSION", newVer);
 		editor.commit();

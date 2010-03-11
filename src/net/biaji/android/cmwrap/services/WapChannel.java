@@ -155,8 +155,9 @@ public class WapChannel implements Runnable {
 					if (count > 0) {
 						// Logger.v(TAG, "方向" + direction
 						// + Utils.bytesToHexString(buff, 0, count));
-						Logger.v(TAG, orgSocket.getPort() + ": " + direction
-								+ "--" + count);
+						if (orgSocket != null)
+							Logger.v(TAG, orgSocket.getPort() + ": "
+									+ direction + "--" + count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
