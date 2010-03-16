@@ -18,7 +18,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
-import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;

@@ -111,6 +111,7 @@ public class WrapService extends Service {
 				showNotify();
 			} else {
 				serverLevel = SERVER_LEVEL_STOP;
+				cleanForward();
 			}
 		}
 	}
@@ -194,6 +195,7 @@ public class WrapService extends Service {
 
 		if (serverLevel <= SERVER_LEVEL_BASE)
 			return;
+
 		if (dnsEnabled) {
 			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
 					proxyPort);
