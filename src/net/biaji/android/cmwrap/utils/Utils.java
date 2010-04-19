@@ -21,6 +21,9 @@ public class Utils {
 
 	private final static String TAG = "CMWRAP->Utils";
 
+	private final static String LINEBREAK = System
+			.getProperty("line.separator");
+
 	public static String errMsg = "";
 
 	public static String getErr() {
@@ -113,8 +116,9 @@ public class Utils {
 		int result = -1;
 		DataOutputStream os = null;
 		InputStream err = null, out = null;
+		Process process = null;
 		try {
-			Process process = Runtime.getRuntime().exec("su");
+			process = Runtime.getRuntime().exec("su");
 			err = process.getErrorStream();
 			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
 					1024 * 8);
@@ -123,9 +127,9 @@ public class Utils {
 
 			os = new DataOutputStream(process.getOutputStream());
 
-			os.writeBytes(cmd + "\n");
+			os.writeBytes(cmd + LINEBREAK);
 			os.flush();
-			os.writeBytes("exit\n");
+			os.writeBytes("exit" + LINEBREAK);
 			os.flush();
 
 			String resp;
@@ -150,6 +154,8 @@ public class Utils {
 				if (os != null) {
 					os.close();
 				}
+				if (process != null)
+					;
 			} catch (IOException e) {
 			}
 
