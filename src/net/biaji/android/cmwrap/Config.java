@@ -26,7 +26,8 @@ public class Config extends PreferenceActivity {
 	 */
 	public static boolean isCmwapOnly(Context context) {
 		boolean result = true;
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getBoolean("ONLYCMWAP", true);
 		return result;
 	}
@@ -94,6 +95,23 @@ public class Config extends PreferenceActivity {
 		result = pref.getString(key, defValue);
 		Logger.v(TAG, "读取结束");
 		return result;
+	}
+
+	/**
+	 * 读取dns设置
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static String getDNServer(Context context) {
+		String dns = null;
+		Logger.v(TAG, "读取DNS");
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		dns = pref.getString("DNSADD", "8.8.8.8");
+		Logger.v(TAG, "读取结束");
+		return dns;
+
 	}
 
 }

@@ -92,17 +92,13 @@ public class Utils {
 	 * 重新设置DNS服务器地址
 	 * 
 	 * @param dns
-	 *            服务器地址 默认8.8.8.8
+	 *            服务器地址 如无定义则从配置读取
 	 * @param context
 	 */
 	public static void flushDns(String dns, Context context) {
 		if (dns == null || dns.equals(""))
-			dns = "8.8.8.8";
+			dns = Config.getDNServer(context);
 		String setcmd;
-
-		// if (isCmwap(context)) --不符合国情
-		// setcmd = "setprop net.rmnet0.dns1 ";
-		// else
 		setcmd = "setprop net.dns1 ";
 		rootCMD(setcmd + dns);
 	}

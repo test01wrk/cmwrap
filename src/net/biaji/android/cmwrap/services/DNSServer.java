@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Logger;
@@ -265,8 +266,10 @@ public class DNSServer implements WrapServer {
 
 			for (DnsResponse resp : dnsCache.values()) {
 				// 检查缓存时效(十天)
-				if ((System.currentTimeMillis() - resp.getTimestamp()) > 864000000L)
+				if ((System.currentTimeMillis() - resp.getTimestamp()) > 864000000L) {
+					Logger.d(TAG, "删除" + resp.getRequest() + "记录");
 					dnsCache.remove(resp.getRequest());
+				}
 			}
 
 		} catch (ClassCastException e) {
@@ -276,6 +279,8 @@ public class DNSServer implements WrapServer {
 		} catch (IOException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
 		} catch (ClassNotFoundException e) {
+			Logger.e(TAG, e.getLocalizedMessage(), e);
+		} catch (ConcurrentModificationException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
 		} finally {
 			try {
