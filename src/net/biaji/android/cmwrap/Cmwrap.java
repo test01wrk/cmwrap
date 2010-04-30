@@ -130,24 +130,24 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		switch (v.getId()) {
 
-		case R.id.Switch:
-
-			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
-				stopService(serviceIn);
-				Logger.i(TAG, "禁用服务");
-				// Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-				Toast.makeText(this, R.string.serviceTagDown,
-						Toast.LENGTH_SHORT).show();
-				serviceLevel = WrapService.SERVER_LEVEL_NULL;
-				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-				Config.saveServiceLevel(this, serviceLevel);
-				Config.setIptableStatus(this, false);
-				redrawButton();
-				return;
-			} else {
-				serviceLevel = WrapService.SERVER_LEVEL_BASE;
-			}
-			break;
+//		case R.id.Switch:
+//
+//			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
+//				stopService(serviceIn);
+//				Logger.i(TAG, "禁用服务");
+//				// Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+//				Toast.makeText(this, R.string.serviceTagDown,
+//						Toast.LENGTH_SHORT).show();
+//				serviceLevel = WrapService.SERVER_LEVEL_NULL;
+//				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+//				Config.saveServiceLevel(this, serviceLevel);
+//				Config.setIptableStatus(this, false);
+//				redrawButton();
+//				return;
+//			} else {
+//				serviceLevel = WrapService.SERVER_LEVEL_BASE;
+//			}
+//			break;
 
 		case R.id.BaseService:
 			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
@@ -363,8 +363,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private void redrawButton() {
 
-		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
-		switcher.setOnClickListener(this);
+//		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
+//		switcher.setOnClickListener(this);
 
 		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
 		baseServiceSwitcher.setOnClickListener(this);
@@ -372,14 +372,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 		switch (serviceLevel) {
 
 		case WrapService.SERVER_LEVEL_BASE:
-			switcher.setChecked(true);
+			//switcher.setChecked(true);
 			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(false);
 			break;
 
 		case WrapService.SERVER_LEVEL_APPS:
 		case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
-			switcher.setChecked(true);
+		//	switcher.setChecked(true);
 			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(true);
 			break;
@@ -391,7 +391,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		default:
 			baseServiceSwitcher.setEnabled(false);
-			switcher.setEnabled(false);
+		//	switcher.setEnabled(false);
 		}
 	}
 

@@ -1,168 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string
-		name="app_name">Cmwrap</string>
-	<string
-		name="serviceTagUp">Enable HTTP Proxy</string>
-	<string
-		name="serviceTagDown">Disable HTTP Proxy</string>
-	<string
-		name="serviceBaseTitle">Enable Base Mode</string>
-	<string
-		name="serviceBaseComment">You can use service base on http protocal:
-		Browser, Google Maps,
+	<string name="app_name">Cmwrap</string>
+	<string name="serviceTagUp">Enable HTTP Proxy</string>
+	<string name="serviceTagDown">Disable HTTP Proxy</string>
+	<string name="serviceBaseTitle">Enable Base Mode</string>
+	<string name="serviceBaseComment">You can use service base on http protocal:
+		Browser,
+		Google Maps,
 		etc.</string>
-	<string
-		name="serviceTagApp">Enable Service Mode</string>
-	<string
-		name="serviceAppTitle">Switch to Service Mode</string>
-	<string
-		name="serviceAppComment">
+	<string name="serviceTagApp">Enable Service Mode</string>
+	<string name="serviceAppTitle">Switch to Service Mode</string>
+	<string name="serviceAppComment">
 		You can enjoy basic google service such as Gmail,
 		Gtalk, etc.
 	</string>
-	<string
-		name="serviceTagSuper">Run In Ultra Mode</string>
+	<string name="serviceTagSuper">Run In Ultra Mode</string>
 	<!-- 设置界面文本 -->
-	<string
-		name="PREF_CATEGORY_BASE">Basic Settings</string>
-	<string
-		name="PREF_TITLE_AUTO_BOOT">Auto Start</string>
-	<string
-		name="PREF_SUMMARY_AUTO_BOOT">Automatic Start Service After Boot
+	<string name="PREF_CATEGORY_BASE">Basic Settings</string>
+	<string name="PREF_TITLE_AUTO_BOOT">Auto Start</string>
+	<string name="PREF_SUMMARY_AUTO_BOOT">Automatic Start Service After Boot
 	</string>
-	<string
-		name="PREF_TITLE_ULTRA_MODE">Ultra Mode</string>
-	<string
-		name="PREF_SUMMARY_ULTRA_MODE">Run Service In Ultra Mode(NOTICE:More System
+	<string name="PREF_TITLE_ONLY_HTTP">Only HTTP</string>
+	<string name="PREF_SUMMARY_ONLY_HTTP">Only enable http redirection. Lower power consume
+		with lower functional</string>
+	<string name="PREF_TITLE_ULTRA_MODE">Ultra Mode</string>
+	<string name="PREF_SUMMARY_ULTRA_MODE">Run Service In Ultra Mode(NOTICE:More System
 		Resource Consume）
 	</string>
-	<string
-		name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
-	<string
-		name="PREF_SUMMARY_AUTO_CHANGE">Change Running Status Depend On Data Connection Change</string>
-	<string
-		name="PREF_TITLE_ONLY_CMWAP">Only proxy cmwap</string>
-	<string
-		name="PREF_SUMMARY_ONLY_CMWAP">Only Effect on ChinaMobile's cmwap APN</string>
-	<string
-		name="PREF_TITLE_LATENCY">Latency</string>
-	<string
-		name="PREF_SUMMARY_LATENCY">The Latency Since Data Connection Changed(in second)</string>
-	<string
-		name="PREF_CATEGORY_PROXY">Proxy Setting</string>
-	<string
-		name="PREF_TITLE_PROXY_HOST">Proxy Address</string>
-	<string
-		name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172
+	<string name="PREF_TITLE_AUTO_CHANGE">Auto Switch</string>
+	<string name="PREF_SUMMARY_AUTO_CHANGE">Change Running Status Depend On Data Connection
+		Change</string>
+	<string name="PREF_TITLE_ONLY_CMWAP">Only proxy cmwap</string>
+	<string name="PREF_SUMMARY_ONLY_CMWAP">Only Effect on ChinaMobile's cmwap APN</string>
+	<string name="PREF_TITLE_LATENCY">Latency</string>
+	<string name="PREF_SUMMARY_LATENCY">The Latency Since Data Connection Changed(in
+		second)</string>
+	<string name="PREF_CATEGORY_PROXY">Proxy Setting</string>
+	<string name="PREF_TITLE_PROXY_HOST">Proxy Address</string>
+	<string name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172
 	</string>
-	<string
-		name="PREF_TITLE_PROXY_PORT">Port</string>
-	<string
-		name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
+	<string name="PREF_TITLE_PROXY_PORT">Port</string>
+	<string name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
 	</string>
-	<string
-		name="PREF_CATEGORY_DNS">DNS Setting</string>
-	<string
-		name="PREF_TITLE_DNS_ENABLE">DNS Proxy</string>
-	<string
-		name="PREF_SUMMARY_DNS_ENABLE">If your current connection has no DNS support,
+	<string name="PREF_CATEGORY_DNS">DNS Setting</string>
+	<string name="PREF_TITLE_DNS_ENABLE">DNS Proxy</string>
+	<string name="PREF_SUMMARY_DNS_ENABLE">If your current connection has no DNS support,
 		check this.
 	</string>
-	<string
-		name="PREF_TITLE_DNS">DNS Address</string>
-	<string
-		name="PREF_SUMMARY_DNS">DNS Server's Address, Default 8.8.8.8
+	<string name="PREF_TITLE_DNS">DNS Address</string>
+	<string name="PREF_SUMMARY_DNS">DNS Server's Address, Default 8.8.8.8
 	</string>
 	<!-- 设置界面文本结束 -->
-	<string
-		name="proxyServer">10.0.0.172</string>
-	<string
-		name="proxyPort">80</string>
-	<string
-		name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward
+	<string name="proxyServer">10.0.0.172</string>
+	<string name="proxyPort">80</string>
+	<string name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward
 	</string>
-	<string
-		name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward
+	<string name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward
 	</string>
-	<string
-		name="CMDiptablesDisable">iptables -t nat -F</string>
-	<string
-		name="CMDremount">mount -o rw,remount -t yaffs2
-		/dev/block/mtdblock3 /system
+	<string name="CMDiptablesDisable">iptables -t nat -F</string>
+	<string name="CMDremount">mount -o rw,remount -t yaffs2
+		/dev/block/mtdblock3
+		/system
 	</string>
 
-	<string
-		name="UserAgent">biAji's wap channel</string>
-	<string
-		name="BUTTON_ENABLE">OFF</string>
-	<string
-		name="BUTTON_DISABLE">ON</string>
-	<string
-		name="MENU_TEST">Environment Test</string>
-	<string
-		name="MENU_SETTING">Settings</string>
-	<string
-		name="MENU_ABOUT">About</string>
-	<string
-		name="TEST_ROOT">Test For Root Access</string>
-	<string
-		name="TEST_IPTABLES">Test For iptables Support</string>
-	<string
-		name="TEST_CMWAP">Test For Current Connection</string>
-	<string
-		name="TEST_HTTPS">Test For HTTPS Support</string>
-	<string
-		name="TEST_DNS">Test For DNS Support</string>
-	<string
-		name="TEST_OTHER">Test For Support For More Protocol</string>
-	<string
-		name="ERR_NO_ROOT">Sorry, this application depend heavy on ROOT access, but it
+	<string name="UserAgent">biAji's wap channel</string>
+	<string name="BUTTON_ENABLE">OFF</string>
+	<string name="BUTTON_DISABLE">ON</string>
+	<string name="MENU_TEST">Environment Test</string>
+	<string name="MENU_SETTING">Settings</string>
+	<string name="MENU_ABOUT">About</string>
+	<string name="TEST_ROOT">Test For Root Access</string>
+	<string name="TEST_IPTABLES">Test For iptables Support</string>
+	<string name="TEST_CMWAP">Test For Current Connection</string>
+	<string name="TEST_HTTPS">Test For HTTPS Support</string>
+	<string name="TEST_DNS">Test For DNS Support</string>
+	<string name="TEST_OTHER">Test For Support For More Protocol</string>
+	<string name="ERR_NO_ROOT">Sorry, this application depend heavy on ROOT
+		access, but it
 		seemed you don't have it. So it's useless for you.\n
 	</string>
-	<string
-		name="ERR_NO_IPTABLES">Sorry, this application depend on iptables support, but it seemed
+	<string name="ERR_NO_IPTABLES">Sorry, this application depend on iptables support,
+		but it seemed
 		you don't have it. So it's useless for you.\n
 	</string>
-	<string
-		name="ERR_NOT_CMWAP">Current Connection is not CMWAP.\n</string>
-	<string
-		name="ERR_UNSUPPORT_HTTPS">Current Connection doesn't support HTTPS proxy, you can't use
+	<string name="ERR_NOT_CMWAP">Current Connection is not CMWAP.\n</string>
+	<string name="ERR_UNSUPPORT_HTTPS">Current Connection doesn't support HTTPS proxy, you
+		can't use
 		some function such as gmail etc.\n
 	</string>
-	<string
-		name="ERR_UNSUPPORT_DNS">Your DNS server is unaccessible, or your proxy doesn't support
+	<string name="ERR_UNSUPPORT_DNS">Your DNS server is unaccessible, or your proxy
+		doesn't support
 		dns tunnel.\n</string>
-	<string
-		name="ERR_UNSUPPORT_OTHERS">Currenction Connection doesn't support proxy, you can't use some
+	<string name="ERR_UNSUPPORT_OTHERS">Currenction Connection doesn't support proxy, you
+		can't use some
 		function like gtalk.\n
 	</string>
-	<string
-		name="TEST_PASSED">......PASSED\n</string>
-	<string
-		name="LogLevel">5</string>
+	<string name="TEST_PASSED">......PASSED\n</string>
+	<string name="LogLevel">5</string>
 	<!-- 关于 -->
-	<string
-		name="ABOUT_VERSION">Version</string>
-	<string
-		name="ABOUT_HOMEPAGE">Homepage</string>
-	<string
-		name="HOMEPAGE">http://code.google.com/p/cmwrap/
+	<string name="ABOUT_VERSION">Version</string>
+	<string name="ABOUT_HOMEPAGE">Homepage</string>
+	<string name="HOMEPAGE">http://code.google.com/p/cmwrap/
 	</string>
-	<string
-		name="ABOUT_EMAIL">Email</string>
-	<string
-		name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
-	<string
-		name="OKOK">OK.</string>
+	<string name="ABOUT_EMAIL">Email</string>
+	<string name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
+	<string name="OKOK">OK.</string>
 	<!-- 文字提示 -->
-	<string
-		name="MSG_FISRT_TIME">Welcome to cmwrap, Please run the test from menu first! \n
+	<string name="MSG_FISRT_TIME">Welcome to cmwrap, Please run the test from menu
+		first! \n
 	</string>
-	<string
-		name="MSG_DNS_FILES_UPDATE">Update DNS resolv files...\n</string>
-	<string
-		name="MSG_INSTALL_COMPLETED">Install completed!\n</string>
-	<string
-		name="MSG_DNS_NONEED_UPDATE">Don't need a update. \n</string>
+	<string name="MSG_DNS_FILES_UPDATE">Update DNS resolv files...\n</string>
+	<string name="MSG_INSTALL_COMPLETED">Install completed!\n</string>
+	<string name="MSG_DNS_NONEED_UPDATE">Don't need a update. \n</string>
 </resources>
