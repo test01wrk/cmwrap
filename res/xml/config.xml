@@ -12,7 +12,7 @@
 			android:summary="@string/PREF_SUMMARY_ONLY_HTTP"
 			android:title="@string/PREF_TITLE_ONLY_HTTP"
 			android:key="ONLYHTTP"
-			android:defaultValue="false" />
+			android:defaultValue="true" />
 		<CheckBoxPreference
 			android:summary="@string/PREF_SUMMARY_ULTRA_MODE"
 			android:title="@string/PREF_TITLE_ULTRA_MODE"

@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * @author biaji
@@ -35,7 +36,8 @@ public class WrapService extends Service {
 
 	private final String TAG = "CMWRAP->Service";
 
-	private boolean inService = false, isUltraMode = false, dnsEnabled = true;
+	private boolean inService = false, isUltraMode = false, dnsEnabled = true,
+			httpOnly = true;
 
 	private String[] iptablesRules = new String[] {
 			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s",
@@ -84,6 +86,7 @@ public class WrapService extends Service {
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
+		httpOnly = pref.getBoolean("ONLYHTTP", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
 
@@ -121,6 +124,8 @@ public class WrapService extends Service {
 		super.onStart(intent, startId);
 
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
+		if (httpOnly)
+			level = SERVER_LEVEL_BASE;
 		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
 

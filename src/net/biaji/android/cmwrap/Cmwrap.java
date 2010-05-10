@@ -102,7 +102,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		// logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
 		// }
 		// }
-		
+
 		if (appStatus == APP_STATUS_NEW)
 			logWindow.append(getString(R.string.MSG_FISRT_TIME));
 
@@ -130,46 +130,29 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 		switch (v.getId()) {
 
-//		case R.id.Switch:
-//
-//			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
-//				stopService(serviceIn);
-//				Logger.i(TAG, "禁用服务");
-//				// Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-//				Toast.makeText(this, R.string.serviceTagDown,
-//						Toast.LENGTH_SHORT).show();
-//				serviceLevel = WrapService.SERVER_LEVEL_NULL;
-//				Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-//				Config.saveServiceLevel(this, serviceLevel);
-//				Config.setIptableStatus(this, false);
-//				redrawButton();
-//				return;
-//			} else {
-//				serviceLevel = WrapService.SERVER_LEVEL_BASE;
-//			}
-//			break;
-
 		case R.id.BaseService:
-			if (serviceLevel == WrapService.SERVER_LEVEL_BASE) {
 
-				if (PreferenceManager.getDefaultSharedPreferences(this)
-						.getBoolean("ULTRAMODE", false) == true)
-					serviceLevel = WrapService.SERVER_LEVEL_FROGROUND_SERVICE;
-				else
-					serviceLevel = WrapService.SERVER_LEVEL_APPS;
-				message = R.string.serviceTagApp;
+			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
+				stopService(serviceIn);
+				Logger.i(TAG, "禁用服务");
+				serviceLevel = WrapService.SERVER_LEVEL_NULL;
+				Config.saveServiceLevel(this, serviceLevel);
+				Config.setIptableStatus(this, false);
+				message = R.string.serviceTagDown;
 			} else {
-				serviceLevel = WrapService.SERVER_LEVEL_BASE;
+				Logger.i(TAG, "启用服务");
+				serviceLevel = WrapService.SERVER_LEVEL_APPS;
+				serviceIn.putExtra("SERVERLEVEL", serviceLevel);
+				startService(serviceIn);
+				message = R.string.serviceTagApp;
 			}
+
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+			redrawButton();
 
 			break;
 		}
 
-		serviceIn.putExtra("SERVERLEVEL", serviceLevel);
-		Logger.i(TAG, "启用服务");
-		startService(serviceIn);
-		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-		redrawButton();
 	}
 
 	@Override
@@ -178,15 +161,13 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case DIALOG_ABOUT_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setView(
-					LayoutInflater.from(this).inflate(R.layout.about, null))
-					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
-					.setPositiveButton(R.string.OKOK,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
+					LayoutInflater.from(this).inflate(R.layout.about, null)).setIcon(
+					R.drawable.icon).setTitle(R.string.MENU_ABOUT).setPositiveButton(
+					R.string.OKOK, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
 
 			AlertDialog dialog = builder.create();
 			return dialog;
@@ -270,8 +251,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int firsTime = APP_STATUS_NEW;
 		// 判断状态
 		try {
-			SharedPreferences pref = PreferenceManager
-					.getDefaultSharedPreferences(this);
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 			int ver = pref.getInt("VERSION", APP_STATUS_NEW);
 			PackageManager pm = getPackageManager();
 			PackageInfo pi;
@@ -363,8 +343,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private void redrawButton() {
 
-//		ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
-//		switcher.setOnClickListener(this);
+		// ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
+		// switcher.setOnClickListener(this);
 
 		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
 		baseServiceSwitcher.setOnClickListener(this);
@@ -372,26 +352,26 @@ public class Cmwrap extends Activity implements OnClickListener {
 		switch (serviceLevel) {
 
 		case WrapService.SERVER_LEVEL_BASE:
-			//switcher.setChecked(true);
+			// switcher.setChecked(true);
 			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(false);
 			break;
 
 		case WrapService.SERVER_LEVEL_APPS:
 		case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
-		//	switcher.setChecked(true);
+			// switcher.setChecked(true);
 			baseServiceSwitcher.setEnabled(true);
 			baseServiceSwitcher.setChecked(true);
 			break;
 
 		case WrapService.SERVER_LEVEL_NULL:
-			baseServiceSwitcher.setEnabled(false);
+			// baseServiceSwitcher.setEnabled(false);
 			baseServiceSwitcher.setChecked(false);
 			break;
 
 		default:
 			baseServiceSwitcher.setEnabled(false);
-		//	switcher.setEnabled(false);
+			// switcher.setEnabled(false);
 		}
 	}
 
@@ -399,8 +379,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 	 * 更新版本号
 	 */
 	private void tag(int newVer) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("VERSION", newVer);
 		editor.commit();
