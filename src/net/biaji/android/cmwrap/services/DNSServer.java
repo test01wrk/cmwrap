@@ -42,8 +42,8 @@ public class DNSServer implements WrapServer {
 	private int srvPort = 7442;
 
 	private String name;
-	private String proxyHost;
-	private int proxyPort;
+	private String proxyHost, dnsHost;
+	private int proxyPort, dnsPort;
 
 	private boolean inService = false;
 
@@ -51,16 +51,24 @@ public class DNSServer implements WrapServer {
 
 	private String target = "8.8.8.8:53";
 
-	public DNSServer(String name, int port, String proxyHost, int proxyPort) {
+	public DNSServer(String name, int port, String proxyHost, int proxyPort,
+			String dnsHost, int dnsPort) {
 		try {
 
 			this.name = name;
 			this.srvPort = port;
 			this.proxyHost = proxyHost;
 			this.proxyPort = proxyPort;
+			this.dnsHost = dnsHost;
+			this.dnsPort = dnsPort;
 
-			srvSocket = new DatagramSocket(srvPort, InetAddress
-					.getByName("127.0.0.1"));
+			if (dnsHost != null && !dnsHost.equals(""))
+				target = dnsHost + ":" + dnsPort;
+
+			Utils.flushDns(dnsHost);
+
+			srvSocket = new DatagramSocket(srvPort,
+					InetAddress.getByName("127.0.0.1"));
 			inService = true;
 
 			Logger.d(TAG, this.name + "启动于端口： " + port);
@@ -357,6 +365,12 @@ public class DNSServer implements WrapServer {
 
 }
 
+/**
+ * 此类封装了一个Dns回应
+ * 
+ * @author biaji
+ * 
+ */
 class DnsResponse implements Serializable {
 
 	private static final long serialVersionUID = -6693216674221293274L;

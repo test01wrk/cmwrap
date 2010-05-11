@@ -21,8 +21,7 @@ public class Utils {
 
 	private final static String TAG = "CMWRAP->Utils";
 
-	private final static String LINEBREAK = System
-			.getProperty("line.separator");
+	private final static String LINEBREAK = System.getProperty("line.separator");
 
 	public static String errMsg = "";
 
@@ -63,8 +62,7 @@ public class Utils {
 
 		// -------------------
 
-		ConnectivityManager manager = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
@@ -95,12 +93,9 @@ public class Utils {
 	 * 重新设置DNS服务器地址
 	 * 
 	 * @param dns
-	 *            服务器地址 如无定义则从配置读取
-	 * @param context
+	 *            服务器地址
 	 */
-	public static void flushDns(String dns, Context context) {
-		if (dns == null || dns.equals(""))
-			dns = Config.getDNServer(context);
+	public static void flushDns(String dns) {
 		String setcmd;
 		setcmd = "setprop net.dns1 ";
 		rootCMD(setcmd + dns);

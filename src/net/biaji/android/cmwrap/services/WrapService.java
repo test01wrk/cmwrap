@@ -78,8 +78,7 @@ public class WrapService extends Service {
 		Logger.d(TAG, "创建wrap服务");
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		proxyHost = pref
-				.getString("PROXYHOST", getString(R.string.proxyServer));
+		proxyHost = pref.getString("PROXYHOST", getString(R.string.proxyServer));
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
@@ -87,8 +86,6 @@ public class WrapService extends Service {
 		httpOnly = pref.getBoolean("ONLYHTTP", true);
 
 		DNSServer = pref.getString("DNSADD", "8.8.8.8");
-
-		Utils.flushDns(DNSServer, this);
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -124,7 +121,7 @@ public class WrapService extends Service {
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 		if (httpOnly)
 			level = SERVER_LEVEL_BASE;
-		
+
 		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
 
@@ -181,8 +178,8 @@ public class WrapService extends Service {
 			break;
 		}
 
-		Notification note = new Notification(icon, notifyText, System
-				.currentTimeMillis());
+		Notification note = new Notification(icon, notifyText,
+				System.currentTimeMillis());
 		if (isUltraMode)
 			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
@@ -202,8 +199,7 @@ public class WrapService extends Service {
 
 		if (dnsEnabled) {
 			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
-					proxyPort);
-			dnsSer.setTarget(DNSServer + ":53");
+					proxyPort, DNSServer, 53);
 			dnsSer.setBasePath(this.getFilesDir().getParent());
 			new Thread(dnsSer).start();
 			servers.add(dnsSer);

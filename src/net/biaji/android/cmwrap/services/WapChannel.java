@@ -17,6 +17,8 @@ public class WapChannel implements Runnable {
 
 	private Socket innerSocket;
 
+	private int srcPort;
+
 	private final String TAG = "CMWRAP->WapChannel";
 
 	/**
@@ -46,6 +48,7 @@ public class WapChannel implements Runnable {
 	public WapChannel(Socket socket, String target, String proxyHost,
 			int proxyPort) {
 		this.orgSocket = socket;
+		srcPort = socket.getPort();
 
 		InnerSocketBuilder builder = new InnerSocketBuilder(proxyHost,
 				proxyPort, target);
@@ -156,8 +159,8 @@ public class WapChannel implements Runnable {
 						// Logger.v(TAG, "方向" + direction
 						// + Utils.bytesToHexString(buff, 0, count));
 						if (orgSocket != null)
-							Logger.v(TAG, orgSocket.getPort() + ": "
-									+ direction + "--" + count);
+							Logger.v(TAG, srcPort + ": " + direction + "--"
+									+ count);
 						out.write(buff, 0, count);
 					} else if (count < 0) {
 						break;
@@ -167,11 +170,11 @@ public class WapChannel implements Runnable {
 			} catch (IOException e) {
 
 				Logger.e(TAG, direction
-						+ (System.currentTimeMillis() - starTime) / 1000
-						+ " 管道通讯失败：" + e.getLocalizedMessage());
+						+ (System.currentTimeMillis() - starTime) / 1000 + " "
+						+ srcPort + " 管道通讯失败：" + e.getLocalizedMessage());
 				if (orgSocket != null && !orgSocket.isClosed()) {
 					try {
-						Logger.d(TAG, orgSocket.getPort() + " closed!");
+						Logger.d(TAG, srcPort + " closed!");
 						orgSocket.close();
 						orgSocket = null;
 					} catch (Exception e2) {

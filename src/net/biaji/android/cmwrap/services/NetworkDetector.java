@@ -79,7 +79,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
 
-			Utils.flushDns("", context);
+			Utils.flushDns(Config.getDNServer(context));
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()
