@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * @author biaji
@@ -44,8 +43,6 @@ public class WrapService extends Service {
 			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442",
 			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
 			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
-
-	// public final static int SERVER_LEVEL_NO_NETWORK = -100;
 
 	/**
 	 * 服务状态未设定
@@ -81,7 +78,8 @@ public class WrapService extends Service {
 		Logger.d(TAG, "创建wrap服务");
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		proxyHost = pref.getString("PROXYHOST", getString(R.string.proxyServer));
+		proxyHost = pref
+				.getString("PROXYHOST", getString(R.string.proxyServer));
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
@@ -126,6 +124,7 @@ public class WrapService extends Service {
 		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 		if (httpOnly)
 			level = SERVER_LEVEL_BASE;
+		
 		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
 
@@ -182,8 +181,8 @@ public class WrapService extends Service {
 			break;
 		}
 
-		Notification note = new Notification(icon, notifyText,
-				System.currentTimeMillis());
+		Notification note = new Notification(icon, notifyText, System
+				.currentTimeMillis());
 		if (isUltraMode)
 			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
@@ -234,6 +233,9 @@ public class WrapService extends Service {
 		startSubDaemon();
 	}
 
+	/**
+	 * 根据当前设置，启用iptables
+	 */
 	private void forward() {
 
 		// 如果iptables处于已执行状态，则啥都不干

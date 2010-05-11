@@ -39,7 +39,7 @@ public class DNSServer implements WrapServer {
 
 	private DatagramSocket srvSocket;
 
-	private int srvPort;
+	private int srvPort = 7442;
 
 	private String name;
 	private String proxyHost;
