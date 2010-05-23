@@ -51,6 +51,8 @@ public class DNSServer implements WrapServer {
 
 	private String target = "8.8.8.8:53";
 
+	private final String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442" };
+
 	public DNSServer(String name, int port, String proxyHost, int proxyPort,
 			String dnsHost, int dnsPort) {
 		try {
@@ -361,6 +363,10 @@ public class DNSServer implements WrapServer {
 
 	public void setBasePath(String path) {
 		this.homePath = path;
+	}
+
+	public String[] getRules() {
+		return iptablesRules;
 	}
 
 }

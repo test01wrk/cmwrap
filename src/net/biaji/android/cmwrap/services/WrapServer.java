@@ -20,4 +20,6 @@ public interface WrapServer extends Runnable {
 	 * @param target
 	 */
 	public abstract void setTarget(String target);
+	
+	public String[] getRules();
 }
