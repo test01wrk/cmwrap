@@ -17,7 +17,7 @@ public class WapChannel implements Runnable {
 
 	private Socket innerSocket;
 
-	private int srcPort;
+	private int srcPort = 0;
 
 	private final String TAG = "CMWRAP->WapChannel";
 
@@ -48,7 +48,8 @@ public class WapChannel implements Runnable {
 	public WapChannel(Socket socket, String target, String proxyHost,
 			int proxyPort) {
 		this.orgSocket = socket;
-		srcPort = socket.getPort();
+		if (socket != null)
+			srcPort = socket.getPort();
 
 		InnerSocketBuilder builder = new InnerSocketBuilder(proxyHost,
 				proxyPort, target);
