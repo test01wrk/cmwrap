@@ -122,7 +122,9 @@ public class WrapService extends Service {
 		if (httpOnly)
 			level = SERVER_LEVEL_BASE;
 
-		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
+		Logger.d(TAG, "Level Change from "
+				+ serverLevel
+				+ " to Intent:"
 				+ level);
 
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
@@ -249,7 +251,8 @@ public class WrapService extends Service {
 
 		for (String rule : iptablesRules) {
 			try {
-				rule = String.format(rule, inface, this.proxyHost + ":"
+				rule = String.format(rule, inface, this.proxyHost
+						+ ":"
 						+ this.proxyPort);
 				Utils.rootCMD(rule);
 
@@ -264,6 +267,7 @@ public class WrapService extends Service {
 
 	private void cleanForward() {
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+		Config.setIptableStatus(this, false);
 	}
 
 }

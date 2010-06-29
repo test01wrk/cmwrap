@@ -137,7 +137,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 				Logger.i(TAG, "禁用服务");
 				serviceLevel = WrapService.SERVER_LEVEL_NULL;
 				Config.saveServiceLevel(this, serviceLevel);
-				Config.setIptableStatus(this, false);
+				// Config.setIptableStatus(this, false);
 				message = R.string.serviceTagDown;
 			} else {
 				Logger.i(TAG, "启用服务");
