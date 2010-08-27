@@ -42,8 +42,8 @@ public class DNSServer implements WrapServer {
 	private int srvPort = 7442;
 
 	private String name;
-	private String proxyHost, dnsHost;
-	private int proxyPort, dnsPort;
+	protected String proxyHost, dnsHost;
+	protected int proxyPort, dnsPort;
 
 	private boolean inService = false;
 
@@ -51,7 +51,9 @@ public class DNSServer implements WrapServer {
 
 	private String target = "8.8.8.8:53";
 
-	private final String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442" };
+	private final String[] iptablesRules = new String[] {
+			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442"
+			};
 
 	public DNSServer(String name, int port, String proxyHost, int proxyPort,
 			String dnsHost, int dnsPort) {
@@ -148,7 +150,7 @@ public class DNSServer implements WrapServer {
 	 * @param quest
 	 * @return
 	 */
-	private byte[] fetchAnswer(byte[] quest) {
+	protected byte[] fetchAnswer(byte[] quest) {
 
 		Socket innerSocket = new InnerSocketBuilder(proxyHost, proxyPort,
 				target).getSocket();
@@ -222,7 +224,7 @@ public class DNSServer implements WrapServer {
 	 *            dns udp包
 	 * @return 请求的域名
 	 */
-	private String getRequestDomain(byte[] request) {
+	protected String getRequestDomain(byte[] request) {
 		String requestDomain = "";
 		int reqLength = request.length;
 		if (reqLength > 13) { // 包含包体
