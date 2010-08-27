@@ -38,8 +38,8 @@ public class NormalTcpServer implements WrapServer {
 	private static Hashtable<String, String> connReq = new Hashtable<String, String>();
 
 	private final String[] iptablesRules = new String[] {
-			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
-			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
+			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
 
 	public NormalTcpServer(String name) {
 		this(name, "10.0.0.172", 80);
@@ -69,12 +69,17 @@ public class NormalTcpServer implements WrapServer {
 	}
 
 	public boolean isClosed() {
-		return serSocket.isClosed();
+		return (serSocket != null && serSocket.isClosed());
 	}
 
 	public void close() {
 		inService = false;
 		serv.shutdownNow();
+		
+		if (serSocket == null) {
+			return;
+		}
+		
 		try {
 			serSocket.close();
 		} catch (IOException e) {
@@ -107,6 +112,11 @@ public class NormalTcpServer implements WrapServer {
 
 	public void run() {
 
+		if (serSocket == null) {
+			Logger.d(TAG, "Server socket NOT initilized yet.");
+			return;
+		}
+		
 		while (inService) {
 			try {
 				Logger.v(TAG, "等待客户端请求……");
