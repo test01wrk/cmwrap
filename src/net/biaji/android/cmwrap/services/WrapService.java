@@ -36,11 +36,9 @@ public class WrapService extends Service {
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false, isUltraMode = false, dnsEnabled = true,
-			httpOnly = true;
+			dnsHttpEnabled = false, httpOnly = true;
 
-	private String[] iptablesRules = new String[] {
-			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s"
-			};
+	private String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s" };
 
 	/**
 	 * 服务状态未设定
@@ -81,9 +79,9 @@ public class WrapService extends Service {
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
+		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", false);
 		httpOnly = pref.getBoolean("ONLYHTTP", true);
-
-		DNSServer = pref.getString("DNSADD", "8.8.8.8");
+		DNSServer = pref.getString("DNSADD", "8.8.4.4");
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -91,9 +89,9 @@ public class WrapService extends Service {
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
 		serverLevel = Config.getServiceLevel(this);
-		
+
 		Logger.d(TAG, "Server level: " + serverLevel);
-		
+
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
 			if (Utils.isCmwap(this)) {
@@ -101,10 +99,10 @@ public class WrapService extends Service {
 					serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
 					setForeground(true);
 				}
-				
+
 				// 启用iptables转向
 				forward();
-				
+
 				startSubDaemon();
 				inService = true;
 				showNotify();
@@ -201,20 +199,21 @@ public class WrapService extends Service {
 			return;
 
 		if (dnsEnabled) {
-			/*
-			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
-					proxyPort, DNSServer, 53);
-					*/
-			
-			DNSServerHttp dnsSer = new DNSServerHttp ("DNS HTTP Proxy", 7442,
-					"http://dn5r3l4y.appspot.com", 80);
-			
+
+			DNSServer dnsSer;
+
+			if (dnsHttpEnabled)
+				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442,
+						"http://dn5r3l4y.appspot.com", 80);
+			else
+				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
+						DNSServer, 53);
+
 			Logger.d(TAG, "Start DNS server");
-			
+
 			dnsSer.setBasePath(this.getFilesDir().getParent());
 			new Thread(dnsSer).start();
 			servers.add(dnsSer);
-			
 			iptables(dnsSer.getRules());
 		}
 
@@ -222,14 +221,14 @@ public class WrapService extends Service {
 				proxyPort);
 		new Thread(tcpSer).start();
 		servers.add(tcpSer);
-		
+
 		iptables(tcpSer.getRules());
 	}
 
 	private void stopSubDaemon() {
 
 		cleanForward();
-		
+
 		for (WrapServer server : servers)
 			if (!server.isClosed()) {
 				try {
@@ -244,7 +243,7 @@ public class WrapService extends Service {
 	private void refreshSubDaemon() {
 		cleanForward();
 		stopSubDaemon();
-		
+
 		forward();
 		startSubDaemon();
 	}
@@ -262,19 +261,19 @@ public class WrapService extends Service {
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
 		iptables(iptablesRules);
-		
+
 		Config.setIptableStatus(this, true);
 	}
-	
+
 	private void iptables(String[] rules) {
 		String inface = " ";
 		boolean onlyCmwap = false;
-		
+
 		if (rules.length == 0) {
 			Logger.d(TAG, "Iptables: No rule to apply");
 			return;
 		}
-		
+
 		onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
 
 		if (onlyCmwap) {

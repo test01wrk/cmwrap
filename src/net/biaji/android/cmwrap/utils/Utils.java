@@ -93,8 +93,8 @@ public class Utils {
 	 *            服务器地址
 	 */
 	public static void flushDns(String dns) {
-		String setcmd;
-		setcmd = "setprop net.dns1 ";
+		//String getdns = "getprop | grep net.dns1";
+		String setcmd = "setprop net.dns1 ";
 		rootCMD(setcmd + dns);
 	}
 

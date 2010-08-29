@@ -2,6 +2,7 @@ package net.biaji.android.cmwrap.services;
 
 import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -79,7 +80,7 @@ public class NetworkDetector extends BroadcastReceiver {
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
 
-			Utils.flushDns(Config.getDNServer(context));
+			Utils.flushDns(context.getString(R.string.DNSIPADD));
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()
