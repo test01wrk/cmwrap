@@ -49,11 +49,15 @@ public class DNSServer implements WrapServer {
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
 
+	/**
+	 * 内建自定义缓存
+	 * 
+	 */
+	private Hashtable<String, String> orgCache = new Hashtable<String, String>();
+
 	private String target = "8.8.4.4:53";
 
-	private final String[] iptablesRules = new String[] {
-			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442"
-			};
+	private final String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442" };
 
 	public DNSServer(String name, int port, String proxyHost, int proxyPort,
 			String dnsHost, int dnsPort) {
@@ -70,9 +74,10 @@ public class DNSServer implements WrapServer {
 				target = dnsHost + ":" + dnsPort;
 
 			Utils.flushDns(dnsHost);
+			initOrgCache();
 
-			srvSocket = new DatagramSocket(srvPort,
-					InetAddress.getByName("127.0.0.1"));
+			srvSocket = new DatagramSocket(srvPort, InetAddress
+					.getByName("127.0.0.1"));
 			inService = true;
 
 			Logger.d(TAG, this.name + "启动于端口： " + port);
@@ -115,6 +120,15 @@ public class DNSServer implements WrapServer {
 
 					Logger.d(TAG, "命中缓存");
 
+				} else if (orgCache.containsKey(questDomain)) { // 如果为自定义域名解析
+					byte[] answer = createDNSResponse(udpreq, orgCache
+							.get(questDomain));
+					DnsResponse response = new DnsResponse(questDomain);
+					response.setDnsResponse(answer);
+					dnsCache.put(questDomain, response);
+					sendDns(answer, dnsq, srvSocket);
+
+					Logger.d(TAG, "自定义解析");
 				} else {
 					starTime = System.currentTimeMillis();
 					byte[] answer = fetchAnswer(udpreq);
@@ -148,6 +162,7 @@ public class DNSServer implements WrapServer {
 	 * 由上级DNS通过TCP取得解析
 	 * 
 	 * @param quest
+	 *            原始DNS请求
 	 * @return
 	 */
 	protected byte[] fetchAnswer(byte[] quest) {
@@ -230,11 +245,69 @@ public class DNSServer implements WrapServer {
 		if (reqLength > 13) { // 包含包体
 			byte[] question = new byte[reqLength - 12];
 			System.arraycopy(request, 12, question, 0, reqLength - 12);
-			requestDomain = getPartialDomain(question);
+			requestDomain = parseDomain(question);
 			requestDomain = requestDomain.substring(0,
 					requestDomain.length() - 1);
 		}
 		return requestDomain;
+	}
+
+	/*
+	 * Create a DNS response packet, which will send back to application.
+	 * 
+	 * @author yanghong
+	 * 
+	 * Reference to:
+	 * 
+	 * Mini Fake DNS server (Python)
+	 * http://code.activestate.com/recipes/491264-mini-fake-dns-server/
+	 * 
+	 * DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION
+	 * http://www.ietf.org/rfc/rfc1035.txt
+	 */
+	protected byte[] createDNSResponse(byte[] quest, String ip) {
+		byte[] response = null;
+		int[] b1 = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
+		int[] b2 = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00,
+				0x3c, 0x00, 0x04 };
+		int start = 0;
+
+		response = new byte[128];
+
+		for (int val : b1) {
+			response[start] = (byte) val;
+			start++;
+		}
+
+		System.arraycopy(quest, 0, response, 0, 2); /* 0:2 */
+		System.arraycopy(quest, 4, response, 4, 2); /* 4:6 -> 4:6 */
+		System.arraycopy(quest, 4, response, 6, 2); /* 4:6 -> 7:9 */
+
+		System.arraycopy(quest, 12, response, start, quest.length - 12); /*
+																		 * 12:
+																		 * ->
+																		 * 15:
+																		 */
+		start += quest.length - 12;
+
+		for (int val : b2) {
+			response[start] = (byte) val;
+			start++;
+		}
+
+		String[] ips = ip.split("\\.");
+		Logger.d(TAG, "Start parse ip string: " + ip + ", Sectons: "
+				+ ips.length);
+		for (String section : ips) {
+			response[start] = (byte) Integer.parseInt(section);
+			start++;
+		}
+
+		byte[] result = new byte[start];
+		System.arraycopy(response, 0, result, 0, start);
+		Logger.d(TAG, "DNS Response package size: " + start);
+
+		return result;
 	}
 
 	/**
@@ -243,7 +316,7 @@ public class DNSServer implements WrapServer {
 	 * @param request
 	 * @return
 	 */
-	private String getPartialDomain(byte[] request) {
+	private String parseDomain(byte[] request) {
 
 		String result = "";
 		int length = request.length;
@@ -255,7 +328,7 @@ public class DNSServer implements WrapServer {
 			System.arraycopy(request, partLength + 1, left, 0, length
 					- partLength - 1);
 			result = new String(request, 1, partLength) + ".";
-			result += getPartialDomain(left);
+			result += parseDomain(left);
 		} catch (Exception e) {
 			Logger.e(TAG, e.getLocalizedMessage());
 		}
@@ -371,6 +444,13 @@ public class DNSServer implements WrapServer {
 		return iptablesRules;
 	}
 
+	private void initOrgCache() {
+		// TODO: 由Preference读取
+		// TODO: 重构
+		orgCache.put("dn5r3l4y.appspot.com", "74.125.153.141");
+
+	}
+
 }
 
 /**
@@ -415,7 +495,6 @@ class DnsResponse implements Serializable {
 	 */
 	public byte[] getDnsResponse() {
 		this.reqTimes++;
-		// this.timestamp = System.currentTimeMillis();
 		return dnsResponse;
 	}
 

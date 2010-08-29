@@ -204,7 +204,7 @@ public class WrapService extends Service {
 
 			if (dnsHttpEnabled)
 				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442,
-						"http://dn5r3l4y.appspot.com", 80);
+						DNSServer, 80);
 			else
 				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
 						DNSServer, 53);

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * 此类用于探查网络设置改变并决定隧道应用的开启与否以及手机启动后自动重启服务
@@ -79,7 +80,7 @@ public class NetworkDetector extends BroadcastReceiver {
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
-
+			Logger.d(TAG, context.getString(R.string.DNSIPADD));
 			Utils.flushDns(context.getString(R.string.DNSIPADD));
 
 			try {
