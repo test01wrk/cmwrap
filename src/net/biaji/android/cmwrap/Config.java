@@ -113,7 +113,6 @@ public class Config extends PreferenceActivity implements
 		return result;
 	}
 
-	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (preference.getKey().equals("HTTPDNSENABLED")) {
 			if (newValue.equals(true)) {
