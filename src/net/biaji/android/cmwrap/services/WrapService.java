@@ -203,7 +203,7 @@ public class WrapService extends Service {
 			DNSServer dnsSer;
 
 			if (dnsHttpEnabled)
-				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442,
+				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
 						DNSServer, 80);
 			else
 				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,

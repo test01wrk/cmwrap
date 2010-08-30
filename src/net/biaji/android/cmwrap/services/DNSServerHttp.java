@@ -8,10 +8,13 @@ import java.io.IOException;
 import net.biaji.android.cmwrap.Logger;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
 
 /**
  * @author yanghong
@@ -22,9 +25,15 @@ public class DNSServerHttp extends DNSServer {
 	private final String TAG = "CMWRAP->DNSServerHttp";
 	private final String CANT_RESOLVE = "-";
 	final private int MAX_IP_LEN = 16;
+	private DefaultHttpClient httpClient = null;
+	
+	public DNSServerHttp(String name, int port, String proxyHost, int proxyPort,
+			String httpAPI, int httpPort) {
+		super(name, port, proxyHost, proxyPort, httpAPI, httpPort);
 
-	public DNSServerHttp(String name, int port, String httpAPI, int httpPort) {
-		super(name, port, httpAPI, httpPort, "", 53);
+		httpClient = new DefaultHttpClient();
+		
+		updateHttpProxySetting();
 	}
 
 	/*
@@ -76,10 +85,9 @@ public class DNSServerHttp extends DNSServer {
 		byte[] ips = null;
 		int len = 0;
 
-		String uri = proxyHost + ":" + "/?" + shake(domain);
+		String uri = dnsHost + ":" + "/?" + shake(domain);
 		HttpResponse response = null;
 		HttpUriRequest request = new HttpGet(uri);
-		DefaultHttpClient httpClient = new DefaultHttpClient();
 
 		try {
 			response = httpClient.execute(request);
@@ -133,4 +141,32 @@ public class DNSServerHttp extends DNSServer {
 
 		return shaked;
 	}
+	
+
+	@Override
+	public void setProxyHost(String host) {
+		this.proxyHost = host;
+		
+		updateHttpProxySetting();
+	}
+
+	@Override
+	public void setProxyPort(int port) {
+		this.proxyPort = port;
+		
+		updateHttpProxySetting();
+	}
+	
+	private void updateHttpProxySetting() {
+		HttpHost proxy = null;
+		HttpParams params = null;
+
+		proxy = new HttpHost(proxyHost, proxyPort);
+		params = httpClient.getParams();
+		
+		if (params != null) {
+			params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		}
+	}
+
 }
