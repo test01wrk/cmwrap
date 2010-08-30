@@ -67,7 +67,7 @@
 				android:key="HTTPDNSENABLED"
 				android:title="@string/PREF_TITLE_HTTP_DNS_ENABLE"
 				android:summary="@string/PREF_SUMMARY_HTTP_DNS_ENABLE"
-				android:defaultValue="false" />
+				android:defaultValue="true" />
 			<EditTextPreference
 				android:summary="@string/PREF_SUMMARY_DNS"
 				android:title="@string/PREF_TITLE_DNS"

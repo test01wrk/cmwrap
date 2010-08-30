@@ -36,7 +36,7 @@ public class WrapService extends Service {
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false, isUltraMode = false, dnsEnabled = true,
-			dnsHttpEnabled = false, httpOnly = true;
+			dnsHttpEnabled = false, httpOnly = false;
 
 	private String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s" };
 
@@ -80,7 +80,7 @@ public class WrapService extends Service {
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", false);
-		httpOnly = pref.getBoolean("ONLYHTTP", true);
+		httpOnly = pref.getBoolean("ONLYHTTP", false);
 		DNSServer = pref.getString("DNSADD", "8.8.4.4");
 
 		// 初始化通知管理器
