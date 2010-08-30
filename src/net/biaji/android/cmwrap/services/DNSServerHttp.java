@@ -40,6 +40,11 @@ public class DNSServerHttp extends DNSServer {
 		String ips = null;
 
 		ips = resolveDomainName(domain);
+		
+		if (ips == null) {
+			Logger.e(TAG, "Failed to resolve domain name: " + domain);
+			return null;
+		}
 
 		/* FIXME: BJ's wap gateway return a wml page at first access */
 		if (ips.startsWith("<?xml")) {
