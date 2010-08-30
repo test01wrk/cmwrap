@@ -44,6 +44,10 @@ public class DNSServer implements WrapServer {
 	private String name;
 	protected String proxyHost, dnsHost;
 	protected int proxyPort, dnsPort;
+	public final int DNS_PKG_HEADER_LEN = 12;
+	final private int[] DNS_HEADERS = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
+	final private int[] DNS_PAYLOAD = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00,
+			0x3c, 0x00, 0x04 };
 
 	private boolean inService = false;
 
@@ -61,33 +65,29 @@ public class DNSServer implements WrapServer {
 
 	public DNSServer(String name, int port, String proxyHost, int proxyPort,
 			String dnsHost, int dnsPort) {
+		this.name = name;
+		this.srvPort = port;
+		this.proxyHost = proxyHost;
+		this.proxyPort = proxyPort;
+		this.dnsHost = dnsHost;
+		this.dnsPort = dnsPort;
+
+		if (dnsHost != null && !dnsHost.equals(""))
+			target = dnsHost + ":" + dnsPort;
+
+		Utils.flushDns(dnsHost);
+		initOrgCache();
+
 		try {
-
-			this.name = name;
-			this.srvPort = port;
-			this.proxyHost = proxyHost;
-			this.proxyPort = proxyPort;
-			this.dnsHost = dnsHost;
-			this.dnsPort = dnsPort;
-
-			if (dnsHost != null && !dnsHost.equals(""))
-				target = dnsHost + ":" + dnsPort;
-
-			Utils.flushDns(dnsHost);
-			initOrgCache();
-
 			srvSocket = new DatagramSocket(srvPort, InetAddress
 					.getByName("127.0.0.1"));
 			inService = true;
-
 			Logger.d(TAG, this.name + "启动于端口： " + port);
-
 		} catch (SocketException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		} catch (UnknownHostException e) {
 			Logger.e(TAG, "DNSServer初始化错误，端口号" + port, e);
 		}
-
 	}
 
 	public void run() {
@@ -96,6 +96,7 @@ public class DNSServer implements WrapServer {
 
 		byte[] qbuffer = new byte[576];
 		long starTime = System.currentTimeMillis();
+		
 		while (true) {
 			try {
 				DatagramPacket dnsq = new DatagramPacket(qbuffer,
@@ -267,14 +268,11 @@ public class DNSServer implements WrapServer {
 	 */
 	protected byte[] createDNSResponse(byte[] quest, String ip) {
 		byte[] response = null;
-		int[] b1 = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
-		int[] b2 = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00,
-				0x3c, 0x00, 0x04 };
 		int start = 0;
 
 		response = new byte[128];
 
-		for (int val : b1) {
+		for (int val : DNS_HEADERS) {
 			response[start] = (byte) val;
 			start++;
 		}
@@ -282,27 +280,28 @@ public class DNSServer implements WrapServer {
 		System.arraycopy(quest, 0, response, 0, 2); /* 0:2 */
 		System.arraycopy(quest, 4, response, 4, 2); /* 4:6 -> 4:6 */
 		System.arraycopy(quest, 4, response, 6, 2); /* 4:6 -> 7:9 */
+		System.arraycopy(quest, DNS_PKG_HEADER_LEN,
+				response, start, quest.length - DNS_PKG_HEADER_LEN); /* 12:~ -> 15:~ */
+		start += quest.length - DNS_PKG_HEADER_LEN;
 
-		System.arraycopy(quest, 12, response, start, quest.length - 12); /*
-																		 * 12:
-																		 * ->
-																		 * 15:
-																		 */
-		start += quest.length - 12;
-
-		for (int val : b2) {
+		for (int val : DNS_PAYLOAD) {
 			response[start] = (byte) val;
 			start++;
 		}
 
+		/* IP address in response */
 		String[] ips = ip.split("\\.");
 		Logger.d(TAG, "Start parse ip string: " + ip + ", Sectons: "
 				+ ips.length);
 		for (String section : ips) {
-			response[start] = (byte) Integer.parseInt(section);
-			start++;
+			try {
+				response[start] = (byte) Integer.parseInt(section);
+				start++;
+			} catch (NumberFormatException e) {
+				Logger.e(TAG, "Malformed IP string section: " + section);
+			}
 		}
-
+		
 		byte[] result = new byte[start];
 		System.arraycopy(response, 0, result, 0, start);
 		Logger.d(TAG, "DNS Response package size: " + start);

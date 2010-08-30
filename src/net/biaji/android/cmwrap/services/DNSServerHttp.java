@@ -4,12 +4,14 @@
 package net.biaji.android.cmwrap.services;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 import net.biaji.android.cmwrap.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -85,7 +87,7 @@ public class DNSServerHttp extends DNSServer {
 		byte[] ips = null;
 		int len = 0;
 
-		String uri = dnsHost + ":" + "/?" + shake(domain);
+		String uri = dnsHost + ":" + dnsPort + "/?" + shake(domain);
 		HttpResponse response = null;
 		HttpUriRequest request = new HttpGet(uri);
 
@@ -99,8 +101,12 @@ public class DNSServerHttp extends DNSServer {
 				entity.getContent().read(ips, 0, len);
 				ip = new String(ips);
 			}
+		} catch (ClientProtocolException e) {
+			Logger.e(TAG, "Failed to request URI: " + uri, e);
+		} catch (SocketException e) {
+			Logger.e(TAG, "Failed to request URI: " + uri, e);
 		} catch (IOException e) {
-			Logger.e(TAG, "Failed to request URI: " + uri);
+			Logger.e(TAG, "Failed to request URI: " + uri, e);
 		}
 
 		return ip;
