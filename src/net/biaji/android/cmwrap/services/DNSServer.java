@@ -45,9 +45,10 @@ public class DNSServer implements WrapServer {
 	protected String proxyHost, dnsHost;
 	protected int proxyPort, dnsPort;
 	public final int DNS_PKG_HEADER_LEN = 12;
-	final private int[] DNS_HEADERS = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
-	final private int[] DNS_PAYLOAD = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x3c, 0x00, 0x04 };
+	final private int[] DNS_HEADERS = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0,
+			0 };
+	final private int[] DNS_PAYLOAD = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01,
+			0x00, 0x00, 0x00, 0x3c, 0x00, 0x04 };
 
 	private boolean inService = false;
 
@@ -96,7 +97,7 @@ public class DNSServer implements WrapServer {
 
 		byte[] qbuffer = new byte[576];
 		long starTime = System.currentTimeMillis();
-		
+
 		while (true) {
 			try {
 				DatagramPacket dnsq = new DatagramPacket(qbuffer,
@@ -124,23 +125,17 @@ public class DNSServer implements WrapServer {
 				} else if (orgCache.containsKey(questDomain)) { // 如果为自定义域名解析
 					byte[] answer = createDNSResponse(udpreq, orgCache
 							.get(questDomain));
-					DnsResponse response = new DnsResponse(questDomain);
-					response.setDnsResponse(answer);
-					dnsCache.put(questDomain, response);
+					addToCache(questDomain, answer);
 					sendDns(answer, dnsq, srvSocket);
-
-					Logger.d(TAG, "自定义解析");
+					Logger.d(TAG, "自定义解析" + orgCache);
 				} else {
 					starTime = System.currentTimeMillis();
 					byte[] answer = fetchAnswer(udpreq);
 					if (answer != null && answer.length != 0) {
-						DnsResponse response = new DnsResponse(questDomain);
-						response.setDnsResponse(answer);
-						dnsCache.put(questDomain, response);
+						addToCache(questDomain, answer);
 						sendDns(answer, dnsq, srvSocket);
-						saveCache();
 						Logger.d(TAG, "正确返回DNS解析，长度："
-								+ response.getDnsResponse().length + "  耗时："
+								+ answer.length + "  耗时："
 								+ (System.currentTimeMillis() - starTime)
 								/ 1000 + "s");
 					} else {
@@ -280,8 +275,8 @@ public class DNSServer implements WrapServer {
 		System.arraycopy(quest, 0, response, 0, 2); /* 0:2 */
 		System.arraycopy(quest, 4, response, 4, 2); /* 4:6 -> 4:6 */
 		System.arraycopy(quest, 4, response, 6, 2); /* 4:6 -> 7:9 */
-		System.arraycopy(quest, DNS_PKG_HEADER_LEN,
-				response, start, quest.length - DNS_PKG_HEADER_LEN); /* 12:~ -> 15:~ */
+		System.arraycopy(quest, DNS_PKG_HEADER_LEN, response, start,
+				quest.length - DNS_PKG_HEADER_LEN); /* 12:~ -> 15:~ */
 		start += quest.length - DNS_PKG_HEADER_LEN;
 
 		for (int val : DNS_PAYLOAD) {
@@ -301,7 +296,7 @@ public class DNSServer implements WrapServer {
 				Logger.e(TAG, "Malformed IP string section: " + section);
 			}
 		}
-		
+
 		byte[] result = new byte[start];
 		System.arraycopy(response, 0, result, 0, start);
 		Logger.d(TAG, "DNS Response package size: " + start);
@@ -405,6 +400,21 @@ public class DNSServer implements WrapServer {
 			} catch (IOException e) {
 			}
 		}
+	}
+
+	/**
+	 * 在缓存中添加一个域名解析
+	 * 
+	 * @param questDomainName
+	 *            域名
+	 * @param answer
+	 *            解析结果
+	 */
+	private void addToCache(String questDomainName, byte[] answer) {
+		DnsResponse response = new DnsResponse(questDomainName);
+		response.setDnsResponse(answer);
+		dnsCache.put(questDomainName, response);
+		saveCache();
 	}
 
 	public void close() throws IOException {
