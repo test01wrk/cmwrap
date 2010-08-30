@@ -161,13 +161,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 		case DIALOG_ABOUT_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setView(
-					LayoutInflater.from(this).inflate(R.layout.about, null)).setIcon(
-					R.drawable.icon).setTitle(R.string.MENU_ABOUT).setPositiveButton(
-					R.string.OKOK, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
-						}
-					});
+					LayoutInflater.from(this).inflate(R.layout.about, null))
+					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
+					.setPositiveButton(R.string.OKOK,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
 
 			AlertDialog dialog = builder.create();
 			return dialog;
@@ -251,7 +253,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 		int firsTime = APP_STATUS_NEW;
 		// 判断状态
 		try {
-			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(this);
 			int ver = pref.getInt("VERSION", APP_STATUS_NEW);
 			PackageManager pm = getPackageManager();
 			PackageInfo pi;
@@ -379,7 +382,8 @@ public class Cmwrap extends Activity implements OnClickListener {
 	 * 更新版本号
 	 */
 	private void tag(int newVer) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("VERSION", newVer);
 		editor.commit();
@@ -417,7 +421,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 			// 测试iptables是否存在
 			msg = handler.obtainMessage();
 			bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
-			if (result == 127) { // 没有iptables
+			if (result == 127 || result == 126) { // 没有iptables， 或权限不对
 				bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
 				bundle.putInt("PROGRESS", 100);
 				msg.setData(bundle);
