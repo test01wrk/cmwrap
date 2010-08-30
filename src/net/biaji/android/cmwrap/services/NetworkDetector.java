@@ -2,12 +2,14 @@ package net.biaji.android.cmwrap.services;
 
 import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * 此类用于探查网络设置改变并决定隧道应用的开启与否以及手机启动后自动重启服务
@@ -78,8 +80,8 @@ public class NetworkDetector extends BroadcastReceiver {
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
-
-			Utils.flushDns(Config.getDNServer(context));
+			Logger.d(TAG, context.getString(R.string.DNSIPADD));
+			Utils.flushDns(context.getString(R.string.DNSIPADD));
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()

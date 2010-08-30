@@ -36,13 +36,9 @@ public class WrapService extends Service {
 	private final String TAG = "CMWRAP->Service";
 
 	private boolean inService = false, isUltraMode = false, dnsEnabled = true,
-			httpOnly = true;
+			dnsHttpEnabled = false, httpOnly = false;
 
-	private String[] iptablesRules = new String[] {
-			"iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s",
-			"iptables -t nat -A OUTPUT %1$s -p udp  --dport 53  -j DNAT  --to-destination 127.0.0.1:7442",
-			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j LOG --log-level info --log-prefix \"CMWRAP \"",
-			"iptables -t nat -A OUTPUT %1$s -p tcp -m multiport --destination-port ! 80,7442,7443 -j DNAT  --to-destination 127.0.0.1:7443" };
+	private String[] iptablesRules = new String[] { "iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s" };
 
 	/**
 	 * 服务状态未设定
@@ -83,19 +79,18 @@ public class WrapService extends Service {
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
-		httpOnly = pref.getBoolean("ONLYHTTP", true);
-
-		DNSServer = pref.getString("DNSADD", "8.8.8.8");
+		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", false);
+		httpOnly = pref.getBoolean("ONLYHTTP", false);
+		DNSServer = pref.getString("DNSADD", "8.8.4.4");
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-		// 启用iptables转向
-		forward();
-
 		// 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
 
 		serverLevel = Config.getServiceLevel(this);
+
+		Logger.d(TAG, "Server level: " + serverLevel);
 
 		if (serverLevel != SERVER_LEVEL_NULL) {
 
@@ -104,6 +99,10 @@ public class WrapService extends Service {
 					serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
 					setForeground(true);
 				}
+
+				// 启用iptables转向
+				forward();
+
 				startSubDaemon();
 				inService = true;
 				showNotify();
@@ -200,20 +199,35 @@ public class WrapService extends Service {
 			return;
 
 		if (dnsEnabled) {
-			DNSServer dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost,
-					proxyPort, DNSServer, 53);
+
+			DNSServer dnsSer;
+
+			if (dnsHttpEnabled)
+				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
+						DNSServer, 80);
+			else
+				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
+						DNSServer, 53);
+
+			Logger.d(TAG, "Start DNS server");
+
 			dnsSer.setBasePath(this.getFilesDir().getParent());
 			new Thread(dnsSer).start();
 			servers.add(dnsSer);
+			iptables(dnsSer.getRules());
 		}
-		//
+
 		NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost,
 				proxyPort);
 		new Thread(tcpSer).start();
 		servers.add(tcpSer);
+
+		iptables(tcpSer.getRules());
 	}
 
 	private void stopSubDaemon() {
+
+		cleanForward();
 
 		for (WrapServer server : servers)
 			if (!server.isClosed()) {
@@ -227,7 +241,10 @@ public class WrapService extends Service {
 	}
 
 	private void refreshSubDaemon() {
+		cleanForward();
 		stopSubDaemon();
+
+		forward();
 		startSubDaemon();
 	}
 
@@ -243,13 +260,27 @@ public class WrapService extends Service {
 		Utils.rootCMD(getString(R.string.CMDipForwardEnable));
 		Utils.rootCMD(getString(R.string.CMDiptablesDisable));
 
+		iptables(iptablesRules);
+
+		Config.setIptableStatus(this, true);
+	}
+
+	private void iptables(String[] rules) {
 		String inface = " ";
-		boolean onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
+		boolean onlyCmwap = false;
 
-		if (onlyCmwap)
+		if (rules.length == 0) {
+			Logger.d(TAG, "Iptables: No rule to apply");
+			return;
+		}
+
+		onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
+
+		if (onlyCmwap) {
 			inface = " -o rmnet0 ";
+		}
 
-		for (String rule : iptablesRules) {
+		for (String rule : rules) {
 			try {
 				rule = String.format(rule, inface, this.proxyHost
 						+ ":"
@@ -260,9 +291,6 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
-
-		Config.setIptableStatus(this, true);
-
 	}
 
 	private void cleanForward() {

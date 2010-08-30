@@ -8,7 +8,7 @@
 			android:title="@string/PREF_TITLE_AUTO_BOOT"
 			android:key="AUTOBOOT"
 			android:defaultValue="false" />
-					<CheckBoxPreference
+		<CheckBoxPreference
 			android:summary="@string/PREF_SUMMARY_ONLY_HTTP"
 			android:title="@string/PREF_TITLE_ONLY_HTTP"
 			android:key="ONLYHTTP"
@@ -58,13 +58,22 @@
 			android:summary="@string/PREF_SUMMARY_DNS_ENABLE"
 			android:title="@string/PREF_TITLE_DNS_ENABLE"
 			android:key="DNSENABLED"
-			android:defaultValue="true"/>
-		<EditTextPreference
-			android:summary="@string/PREF_SUMMARY_DNS"
-			android:title="@string/PREF_TITLE_DNS"
-			android:key="DNSADD"
-			android:defaultValue="8.8.8.8"
+			android:defaultValue="true" />
+		<!-- Advanced DNS Settings -->
+		<PreferenceScreen
 			android:dependency="DNSENABLED"
-			android:inputType="phone" />
+			android:title="@string/PREF_ADV_DNSSETTING">
+			<CheckBoxPreference
+				android:key="HTTPDNSENABLED"
+				android:title="@string/PREF_TITLE_HTTP_DNS_ENABLE"
+				android:summary="@string/PREF_SUMMARY_HTTP_DNS_ENABLE"
+				android:defaultValue="true" />
+			<EditTextPreference
+				android:summary="@string/PREF_SUMMARY_DNS"
+				android:title="@string/PREF_TITLE_DNS"
+				android:key="DNSADD"
+				android:defaultValue="8.8.4.4" />
+		</PreferenceScreen>
+
 	</PreferenceCategory>
 </PreferenceScreen>
