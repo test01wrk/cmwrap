@@ -16,9 +16,9 @@ public class Config extends PreferenceActivity implements
 
 	private final static String TAG = "CMWRAP->Config";
 
-	private final String DEFAULT_DNS_ADD = "8.8.4.4";
+	public static final String DEFAULT_DNS_ADD = "8.8.4.4";
 
-	private final String DEFAULT_HTTP_DNS_ADD = "http://dn5r3l4y.appspot.com";
+	public static final String DEFAULT_HTTP_DNS_ADD = "http://dn5r3l4y.appspot.com";
 
 	private EditTextPreference dnsadd;
 

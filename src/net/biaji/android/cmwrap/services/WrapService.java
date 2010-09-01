@@ -76,15 +76,20 @@ public class WrapService extends Service {
 		Logger.d(TAG, "创建wrap服务");
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		proxyHost = pref.getString("PROXYHOST", getString(R.string.proxyServer));
+		proxyHost = pref
+				.getString("PROXYHOST", getString(R.string.proxyServer));
 		proxyPort = Integer.parseInt(pref.getString("PROXYPORT",
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
 		httpOnly = pref.getBoolean("ONLYHTTP", false);
-		DNSServer = pref.getString("DNSADD", "8.8.4.4");
-		DNSServerHttp = pref.getString("DNSADD", "http://dn5r3l4y.appspot.com");
+		
+		//TODO: 厘清关系
+		DNSServer = pref.getString("DNSADD", Config.DEFAULT_DNS_ADD);
+		DNSServerHttp = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
+		if (!DNSServerHttp.toLowerCase().startsWith("http"))
+			DNSServerHttp = Config.DEFAULT_HTTP_DNS_ADD;
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -124,9 +129,7 @@ public class WrapService extends Service {
 		if (httpOnly)
 			level = SERVER_LEVEL_BASE;
 
-		Logger.d(TAG, "Level Change from "
-				+ serverLevel
-				+ " to Intent:"
+		Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:"
 				+ level);
 
 		if (level != SERVER_LEVEL_NULL && level != serverLevel) {
@@ -182,8 +185,8 @@ public class WrapService extends Service {
 			break;
 		}
 
-		Notification note = new Notification(icon, notifyText,
-				System.currentTimeMillis());
+		Notification note = new Notification(icon, notifyText, System
+				.currentTimeMillis());
 		if (isUltraMode)
 			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
@@ -206,8 +209,8 @@ public class WrapService extends Service {
 			DNSServer dnsSer;
 
 			if (dnsHttpEnabled)
-				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
-						DNSServerHttp, 80);
+				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost,
+						proxyPort, DNSServerHttp, 80);
 			else
 				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
 						DNSServer, 53);
@@ -285,8 +288,7 @@ public class WrapService extends Service {
 
 		for (String rule : rules) {
 			try {
-				rule = String.format(rule, inface, this.proxyHost
-						+ ":"
+				rule = String.format(rule, inface, this.proxyHost + ":"
 						+ this.proxyPort);
 				Utils.rootCMD(rule);
 
