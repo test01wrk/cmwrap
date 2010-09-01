@@ -29,19 +29,21 @@ public class DNSServerHttp extends DNSServer {
 	final private int MAX_IP_LEN = 16;
 
 	private DefaultHttpClient httpClient = null;
-	
-	public DNSServerHttp(String name, int port, String proxyHost, int proxyPort,
-			String httpAPI, int httpPort) {
-		/* Initial DNSServer with a default DNS server, the dnsHost
-		 * address has been used for set net.dns1 */
+
+	public DNSServerHttp(String name, int port, String proxyHost,
+			int proxyPort, String httpAPI, int httpPort) {
+		/*
+		 * Initial DNSServer with a default DNS server, the dnsHost address has
+		 * been used for set net.dns1
+		 */
 		super(name, port, proxyHost, proxyPort, "8.8.4.4", 53);
 
 		/* Set it again while we actually use the httpAPI */
 		this.dnsHost = httpAPI;
 		this.dnsPort = httpPort;
-		
+
 		httpClient = new DefaultHttpClient();
-		
+
 		updateHttpProxySetting();
 	}
 
@@ -61,9 +63,9 @@ public class DNSServerHttp extends DNSServer {
 		if (domain.endsWith("in-addr.arpa")) {
 			return null;
 		}
-		
+
 		ip = resolveDomainName(domain);
-		
+
 		if (ip == null) {
 			Logger.e(TAG, "Failed to resolve domain name: " + domain);
 			return null;
@@ -75,11 +77,11 @@ public class DNSServerHttp extends DNSServer {
 					"Malformed content, some wap gateway sucks, query again");
 			ip = resolveDomainName(domain);
 		}
-		
+
 		if (ip == CANT_RESOLVE) {
 			return null;
 		}
-		
+
 		byte[] ips = parseIPString(ip);
 		if (ips != null) {
 			result = createDNSResponse(quest, ips);
@@ -107,7 +109,7 @@ public class DNSServerHttp extends DNSServer {
 		String uri = dnsHost + ":" + dnsPort + "/?" + shake(domain);
 		HttpResponse response = null;
 		HttpUriRequest request = null;
-		
+
 		try {
 			request = new HttpGet(uri);
 		} catch (IllegalArgumentException e) {
@@ -116,12 +118,14 @@ public class DNSServerHttp extends DNSServer {
 		}
 
 		Logger.d(TAG, "Query: " + uri);
-		
+
 		try {
 			response = httpClient.execute(request);
 			entity = response.getEntity();
 			if (entity != null) {
 				len = (int) entity.getContentLength();
+				if (len < 0)
+					len = 0;
 				len = len < MAX_IP_LEN ? len : MAX_IP_LEN;
 				ips = new byte[len];
 				entity.getContent().read(ips, 0, len);
@@ -177,24 +181,24 @@ public class DNSServerHttp extends DNSServer {
 	@Override
 	public void setProxyHost(String host) {
 		this.proxyHost = host;
-		
+
 		updateHttpProxySetting();
 	}
 
 	@Override
 	public void setProxyPort(int port) {
 		this.proxyPort = port;
-		
+
 		updateHttpProxySetting();
 	}
-	
+
 	private void updateHttpProxySetting() {
 		HttpHost proxy = null;
 		HttpParams params = null;
 
 		proxy = new HttpHost(proxyHost, proxyPort);
 		params = httpClient.getParams();
-		
+
 		if (params != null) {
 			params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		}
