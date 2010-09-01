@@ -44,12 +44,13 @@ public class DNSServer implements WrapServer {
 	private String name;
 	protected String proxyHost, dnsHost;
 	protected int proxyPort, dnsPort;
-	public final int DNS_PKG_HEADER_LEN = 12;
+	final protected int DNS_PKG_HEADER_LEN = 12;
 	final private int[] DNS_HEADERS = { 0, 0, 0x81, 0x80, 0, 0, 0, 0, 0, 0, 0,
 			0 };
 	final private int[] DNS_PAYLOAD = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01,
 			0x00, 0x00, 0x00, 0x3c, 0x00, 0x04 };
-
+	final private int IP_SECTION_LEN = 4;
+	
 	private boolean inService = false;
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
@@ -123,8 +124,8 @@ public class DNSServer implements WrapServer {
 					Logger.d(TAG, "命中缓存");
 
 				} else if (orgCache.containsKey(questDomain)) { // 如果为自定义域名解析
-					byte[] answer = createDNSResponse(udpreq, orgCache
-							.get(questDomain));
+					byte[] ips = parseIPString (orgCache.get(questDomain));
+					byte[] answer = createDNSResponse(udpreq, ips);
 					addToCache(questDomain, answer);
 					sendDns(answer, dnsq, srvSocket);
 					Logger.d(TAG, "自定义解析" + orgCache);
@@ -261,7 +262,7 @@ public class DNSServer implements WrapServer {
 	 * DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION
 	 * http://www.ietf.org/rfc/rfc1035.txt
 	 */
-	protected byte[] createDNSResponse(byte[] quest, String ip) {
+	protected byte[] createDNSResponse(byte[] quest, byte[] ips) {
 		byte[] response = null;
 		int start = 0;
 
@@ -285,21 +286,60 @@ public class DNSServer implements WrapServer {
 		}
 
 		/* IP address in response */
-		String[] ips = ip.split("\\.");
-		Logger.d(TAG, "Start parse ip string: " + ip + ", Sectons: "
-				+ ips.length);
-		for (String section : ips) {
-			try {
-				response[start] = (byte) Integer.parseInt(section);
-				start++;
-			} catch (NumberFormatException e) {
-				Logger.e(TAG, "Malformed IP string section: " + section);
-			}
+		for (byte ip : ips) {
+			response[start] = ip;
+			start++;
 		}
-
+		
 		byte[] result = new byte[start];
 		System.arraycopy(response, 0, result, 0, start);
 		Logger.d(TAG, "DNS Response package size: " + start);
+
+		return result;
+	}
+	
+	/*
+	 * Parse IP string into byte, do validation.
+	 * 
+	 * @param ip
+	 * 			IP string
+	 * @return
+	 * 			IP in byte array
+	 */
+	protected byte[] parseIPString(String ip) {
+		byte[] result = null;
+		int value;
+		int i = 0;
+		String[] ips = null;
+		
+		ips = ip.split("\\.");
+		
+		Logger.d(TAG, "Start parse ip string: " + ip + ", Sectons: "
+				+ ips.length);
+		
+		if (ips.length != IP_SECTION_LEN) {
+			Logger.e(TAG, "Malformed IP string number of sections is: " + ips.length);
+			return null;
+		}
+		
+		result = new byte[IP_SECTION_LEN];
+		
+		for (String section : ips) {
+			try {
+				value = Integer.parseInt(section);
+				
+				/* 0.*.*.* and *.*.*.0 is invalid */
+				if ((i == 0 || i == 3) && value == 0) {
+					return null;
+				}
+				
+				result[i] = (byte) value;
+				i++;
+			} catch (NumberFormatException e) {
+				Logger.e(TAG, "Malformed IP string section: " + section);
+				return null;
+			}
+		}
 
 		return result;
 	}

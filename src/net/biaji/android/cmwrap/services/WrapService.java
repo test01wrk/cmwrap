@@ -25,6 +25,8 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
+	private String DNSServerHttp;
+
 	private String DNSServer;
 
 	private String proxyHost;
@@ -79,9 +81,10 @@ public class WrapService extends Service {
 				getString(R.string.proxyPort)));
 		isUltraMode = pref.getBoolean("ULTRAMODE", false);
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
-		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", false);
+		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
 		httpOnly = pref.getBoolean("ONLYHTTP", false);
 		DNSServer = pref.getString("DNSADD", "8.8.4.4");
+		DNSServerHttp = pref.getString("DNSADD", "http://dn5r3l4y.appspot.com");
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -204,7 +207,7 @@ public class WrapService extends Service {
 
 			if (dnsHttpEnabled)
 				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
-						DNSServer, 80);
+						DNSServerHttp, 80);
 			else
 				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
 						DNSServer, 53);

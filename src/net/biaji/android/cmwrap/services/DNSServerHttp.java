@@ -25,14 +25,21 @@ import org.apache.http.params.HttpParams;
 public class DNSServerHttp extends DNSServer {
 
 	private final String TAG = "CMWRAP->DNSServerHttp";
-	private final String CANT_RESOLVE = "-";
+	final private String CANT_RESOLVE = "-";
 	final private int MAX_IP_LEN = 16;
+
 	private DefaultHttpClient httpClient = null;
 	
 	public DNSServerHttp(String name, int port, String proxyHost, int proxyPort,
 			String httpAPI, int httpPort) {
-		super(name, port, proxyHost, proxyPort, httpAPI, httpPort);
+		/* Initial DNSServer with a default DNS server, the dnsHost
+		 * address has been used for set net.dns1 */
+		super(name, port, proxyHost, proxyPort, "8.8.4.4", 53);
 
+		/* Set it again while we actually use the httpAPI */
+		this.dnsHost = httpAPI;
+		this.dnsPort = httpPort;
+		
 		httpClient = new DefaultHttpClient();
 		
 		updateHttpProxySetting();
@@ -48,23 +55,33 @@ public class DNSServerHttp extends DNSServer {
 	public byte[] fetchAnswer(byte[] quest) {
 		byte[] result = null;
 		String domain = getRequestDomain(quest);
-		String ips = null;
+		String ip = null;
 
-		ips = resolveDomainName(domain);
+		/* Not support reverse domain name query */
+		if (domain.endsWith("in-addr.arpa")) {
+			return null;
+		}
 		
-		if (ips == null) {
+		ip = resolveDomainName(domain);
+		
+		if (ip == null) {
 			Logger.e(TAG, "Failed to resolve domain name: " + domain);
 			return null;
 		}
 
 		/* FIXME: BJ's wap gateway return a wml page at first access */
-		if (ips.startsWith("<?xml")) {
+		if (ip.startsWith("<?xml")) {
 			Logger.d(TAG,
 					"Malformed content, some wap gateway sucks, query again");
-			ips = resolveDomainName(domain);
+			ip = resolveDomainName(domain);
 		}
-
-		if (ips != CANT_RESOLVE) {
+		
+		if (ip == CANT_RESOLVE) {
+			return null;
+		}
+		
+		byte[] ips = parseIPString(ip);
+		if (ips != null) {
 			result = createDNSResponse(quest, ips);
 		}
 
@@ -89,8 +106,17 @@ public class DNSServerHttp extends DNSServer {
 
 		String uri = dnsHost + ":" + dnsPort + "/?" + shake(domain);
 		HttpResponse response = null;
-		HttpUriRequest request = new HttpGet(uri);
+		HttpUriRequest request = null;
+		
+		try {
+			request = new HttpGet(uri);
+		} catch (IllegalArgumentException e) {
+			Logger.e(TAG, "Failed to create request for URI: " + uri, e);
+			return null;
+		}
 
+		Logger.d(TAG, "Query: " + uri);
+		
 		try {
 			response = httpClient.execute(request);
 			entity = response.getEntity();
@@ -147,7 +173,6 @@ public class DNSServerHttp extends DNSServer {
 
 		return shaked;
 	}
-	
 
 	@Override
 	public void setProxyHost(String host) {
