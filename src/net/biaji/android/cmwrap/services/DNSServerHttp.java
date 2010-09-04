@@ -6,6 +6,7 @@ package net.biaji.android.cmwrap.services;
 import java.io.IOException;
 import java.net.SocketException;
 
+import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 
 import org.apache.http.HttpEntity;
@@ -36,7 +37,7 @@ public class DNSServerHttp extends DNSServer {
 		 * Initial DNSServer with a default DNS server, the dnsHost address has
 		 * been used for set net.dns1
 		 */
-		super(name, port, proxyHost, proxyPort, "8.8.4.4", 53);
+		super(name, port, proxyHost, proxyPort, Config.DEFAULT_DNS_ADD, 53);
 
 		/* Set it again while we actually use the httpAPI */
 		this.dnsHost = httpAPI;
@@ -136,6 +137,8 @@ public class DNSServerHttp extends DNSServer {
 		} catch (SocketException e) {
 			Logger.e(TAG, "Failed to request URI: " + uri, e);
 		} catch (IOException e) {
+			Logger.e(TAG, "Failed to request URI: " + uri, e);
+		} catch (NullPointerException e) {
 			Logger.e(TAG, "Failed to request URI: " + uri, e);
 		}
 

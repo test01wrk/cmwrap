@@ -25,8 +25,6 @@ public class WrapService extends Service {
 
 	private NotificationManager nm;
 
-	private String DNSServerHttp;
-
 	private String DNSServer;
 
 	private String proxyHost;
@@ -84,12 +82,7 @@ public class WrapService extends Service {
 		dnsEnabled = pref.getBoolean("DNSENABLED", true);
 		dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
 		httpOnly = pref.getBoolean("ONLYHTTP", false);
-		
-		//TODO: 厘清关系
-		DNSServer = pref.getString("DNSADD", Config.DEFAULT_DNS_ADD);
-		DNSServerHttp = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
-		if (!DNSServerHttp.toLowerCase().startsWith("http"))
-			DNSServerHttp = Config.DEFAULT_HTTP_DNS_ADD;
+		DNSServer = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
 
 		// 初始化通知管理器
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -210,7 +203,7 @@ public class WrapService extends Service {
 
 			if (dnsHttpEnabled)
 				dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost,
-						proxyPort, DNSServerHttp, 80);
+						proxyPort, DNSServer, 80);
 			else
 				dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort,
 						DNSServer, 53);

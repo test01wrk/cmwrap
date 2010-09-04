@@ -80,8 +80,8 @@ public class NetworkDetector extends BroadcastReceiver {
 					.getDefaultSharedPreferences(context);
 			long latency = Long.parseLong(pref.getString("LATENCY", INTERVAL
 					+ "")) * 1000;
-			Logger.d(TAG, context.getString(R.string.DNSIPADD));
-			Utils.flushDns(context.getString(R.string.DNSIPADD));
+
+			Utils.flushDns(Config.DEFAULT_DNS_ADD);
 
 			try {
 				Logger.v(TAG, "进程" + inArray + "于" + System.currentTimeMillis()

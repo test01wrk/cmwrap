@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 
+import net.biaji.android.cmwrap.Config;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;
 
@@ -77,7 +78,7 @@ public class DNSServer implements WrapServer {
 		if (dnsHost != null && !dnsHost.equals(""))
 			target = dnsHost + ":" + dnsPort;
 
-		Utils.flushDns(dnsHost);
+		Utils.flushDns(Config.DEFAULT_DNS_ADD);
 		initOrgCache();
 
 		try {

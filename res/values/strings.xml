@@ -89,8 +89,6 @@
 	<string
 		name="PREF_SUMMARY_DNS">DNS Server's Address, Default 
 	</string>
-	<string
-		name="DNSIPADD">8.8.4.4</string>
 
 
 	<!-- 设置界面文本结束 -->

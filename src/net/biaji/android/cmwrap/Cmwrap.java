@@ -86,23 +86,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 		// 判断是否需要更新hosts文件
 		int appStatus = appStatus();
 
-		// if (appStatus == APP_STATUS_REPEAT && hasFile("/system/etc/hosts",
-		// 200)) {
-		// logWindow.append(getString(R.string.MSG_DNS_NONEED_UPDATE));
-		// } else {
-		// if (appStatus == APP_STATUS_NEW)
-		// logWindow.append(getString(R.string.MSG_FISRT_TIME));
-		//
-		// logWindow.append(getString(R.string.MSG_DNS_FILES_UPDATE));
-		// int result = Utils.rootCMD(getString(R.string.CMDremount));
-		// if (result != 0) {
-		// logWindow.append(getString(R.string.ERR_NO_ROOT));
-		// } else {
-		// installFiles("/system/etc/hosts", R.raw.basichosts, null);
-		// logWindow.append(getString(R.string.MSG_INSTALL_COMPLETED));
-		// }
-		// }
-
 		if (appStatus == APP_STATUS_NEW)
 			logWindow.append(getString(R.string.MSG_FISRT_TIME));
 
