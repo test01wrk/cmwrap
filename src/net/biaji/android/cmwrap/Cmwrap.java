@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -74,10 +75,14 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private Handler handler;
 
+	private Context context = null;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+
+		context = this;
 
 		setContentView(R.layout.main);
 
@@ -211,7 +216,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 			proxyHost = Config.getStringPref(this, "PROXYHOST", "10.0.0.172");
 			proxyPort = Integer.parseInt(Config.getStringPref(this,
 					"PROXYPORT", "80"));
-			DNSServer = Config.getStringPref(this, "DNSADD", "");
 			showDialog(DIALOG_TEST_ID);
 			return true;
 
@@ -446,20 +450,28 @@ public class Cmwrap extends Activity implements OnClickListener {
 			handler.sendMessage(msg);
 
 			// 测试DNS
-			msg = handler.obtainMessage();
-			bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
-			channel = new WapChannel(null, DNSServer + ":53", proxyHost,
-					proxyPort);
-			testSleep(5000);
-			if (!channel.isConnected()) {
-				bundle.putString("ERRMSG",
-						getString(R.string.ERR_UNSUPPORT_DNS));
+
+			boolean httpDnsEnabled = Config.getBooleanPref(context,
+					"HTTPDNSENABLED", true);
+			// 启用http dns之后暂时不进行此项检测
+			// TODO 检测http DNS可用性
+			if (!httpDnsEnabled) {
+				DNSServer = Config.getStringPref(context, "DNSADD", "");
+				msg = handler.obtainMessage();
+				bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
+				channel = new WapChannel(null, DNSServer + ":53", proxyHost,
+						proxyPort);
+				testSleep(5000);
+				if (!channel.isConnected()) {
+					bundle.putString("ERRMSG",
+							getString(R.string.ERR_UNSUPPORT_DNS));
+				}
+				channel.destory();
+				bundle.putInt("PROGRESS", 80);
+				bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
+				msg.setData(bundle);
+				handler.sendMessage(msg);
 			}
-			channel.destory();
-			bundle.putInt("PROGRESS", 80);
-			bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
-			msg.setData(bundle);
-			handler.sendMessage(msg);
 
 			// 测试Gtalk
 			msg = handler.obtainMessage();

@@ -48,7 +48,8 @@ public class Config extends PreferenceActivity implements
 	 */
 	public static boolean isCmwapOnly(Context context) {
 		boolean result = true;
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getBoolean("ONLYCMWAP", true);
 		return result;
 	}
@@ -60,7 +61,8 @@ public class Config extends PreferenceActivity implements
 	 * @param iptables
 	 */
 	public static void setIptableStatus(Context context, boolean iptables) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putBoolean("IPTABLES", iptables);
 		editor.commit();
@@ -75,7 +77,8 @@ public class Config extends PreferenceActivity implements
 	public static boolean isIptablesEnabled(Context context) {
 		boolean result = false;
 		Logger.v(TAG, "读取iptables");
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getBoolean("IPTABLES", false);
 		Logger.v(TAG, "读取结束");
 		return result;
@@ -85,7 +88,8 @@ public class Config extends PreferenceActivity implements
 	 * 记录当前服务状态
 	 */
 	public static void saveServiceLevel(Context context, int level) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putInt("SERVERLEVEL", level);
 		editor.commit();
@@ -97,7 +101,8 @@ public class Config extends PreferenceActivity implements
 	public static int getServiceLevel(Context context) {
 		int result = WrapService.SERVER_LEVEL_NULL;
 		Logger.v(TAG, "读取记录");
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
 		Logger.v(TAG, "读取结束");
 		return result;
@@ -107,9 +112,29 @@ public class Config extends PreferenceActivity implements
 			String defValue) {
 		String result = "";
 		Logger.v(TAG, "读取记录");
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		result = pref.getString(key, defValue);
 		Logger.v(TAG, "读取结束");
+		return result;
+	}
+
+	/**
+	 * 由配置文件读取布尔型配置
+	 * 
+	 * @param context
+	 * @param key
+	 *            配置的名称
+	 * @param defValue
+	 *            默认值
+	 * @return 指定配置的值
+	 */
+	public static boolean getBooleanPref(Context context, String key,
+			boolean defValue) {
+		boolean result = false;
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		result = pref.getBoolean(key, defValue);
 		return result;
 	}
 
@@ -117,13 +142,11 @@ public class Config extends PreferenceActivity implements
 		if (preference.getKey().equals("HTTPDNSENABLED")) {
 			if (newValue.equals(true)) {
 				dnsadd.setText(DEFAULT_HTTP_DNS_ADD);
-				dnsadd.setSummary(getString(R.string.PREF_SUMMARY_DNS)
-						+ " "
+				dnsadd.setSummary(getString(R.string.PREF_SUMMARY_DNS) + " "
 						+ this.DEFAULT_HTTP_DNS_ADD);
 			} else {
 				dnsadd.setText(DEFAULT_DNS_ADD);
-				dnsadd.setSummary(getString(R.string.PREF_SUMMARY_DNS)
-						+ " "
+				dnsadd.setSummary(getString(R.string.PREF_SUMMARY_DNS) + " "
 						+ this.DEFAULT_DNS_ADD);
 			}
 		}
