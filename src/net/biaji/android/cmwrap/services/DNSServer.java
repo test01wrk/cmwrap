@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Config;
@@ -145,7 +146,22 @@ public class DNSServer implements WrapServer {
 					}
 
 				}
+				
+				/* For test, validate dnsCache */
+				/*
+				if (dnsCache.size() > 0) {
+					Logger.d(TAG, "Domains in cache:");
 
+					Enumeration<String> enu = dnsCache.keys();
+					while (enu.hasMoreElements()) {
+						String domain = (String) enu.nextElement();
+						DnsResponse resp = dnsCache.get(domain);
+						
+						Logger.d(TAG, domain + " : " + resp.getIPString());
+					}
+				}
+				*/
+				
 			} catch (SocketException e) {
 				Logger.e(TAG, e.getLocalizedMessage());
 				break;
@@ -500,6 +516,14 @@ public class DNSServer implements WrapServer {
 		orgCache.put("dn5r3l4y.appspot.com", "74.125.153.141");
 
 	}
+	
+	public boolean test(String domain, String ip) {
+		boolean ret = true;
+		
+		// TODO: Implement test case
+		
+		return ret;
+	}
 
 }
 
@@ -513,10 +537,10 @@ class DnsResponse implements Serializable {
 
 	private static final long serialVersionUID = -6693216674221293274L;
 
-	private String request;
+	private String request = null;
 	private long timestamp = System.currentTimeMillis();;
-	private int reqTimes;
-	private byte[] dnsResponse;
+	private int reqTimes = 0;
+	private byte[] dnsResponse = null;
 
 	public DnsResponse(String request) {
 		this.request = request;
@@ -556,4 +580,29 @@ class DnsResponse implements Serializable {
 		this.dnsResponse = dnsResponse;
 	}
 
+	/**
+	 * @return IP string
+	 */
+	public String getIPString() {
+		String ip = null;
+		int i;
+		
+		if (dnsResponse == null) {
+			return null;
+		}
+		
+		i = dnsResponse.length - 4;
+		
+		if (i < 0) {
+			return null;
+		}
+		
+		ip = "" + (int) (dnsResponse[i] & 0xFF); /* Unsigned byte to int */
+		
+		for (i++; i < dnsResponse.length; i++) {
+			ip += "." + (int) (dnsResponse[i] & 0xFF);
+		}
+		
+		return ip;
+	}
 }

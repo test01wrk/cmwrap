@@ -206,5 +206,13 @@ public class DNSServerHttp extends DNSServer {
 			params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		}
 	}
+	
+	@Override
+	public boolean test(String domain, String ip) {
+		String resolved = null;
+		
+		resolved = resolveDomainName(domain);
+		return ip == resolved;
+	}
 
 }
