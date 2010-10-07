@@ -17,8 +17,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ConcurrentModificationException;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import net.biaji.android.cmwrap.Config;
@@ -52,7 +50,7 @@ public class DNSServer implements WrapServer {
 	final private int[] DNS_PAYLOAD = { 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01,
 			0x00, 0x00, 0x00, 0x3c, 0x00, 0x04 };
 	final private int IP_SECTION_LEN = 4;
-	
+
 	private boolean inService = false;
 
 	private Hashtable<String, DnsResponse> dnsCache = new Hashtable<String, DnsResponse>();
@@ -126,7 +124,7 @@ public class DNSServer implements WrapServer {
 					Logger.d(TAG, "命中缓存");
 
 				} else if (orgCache.containsKey(questDomain)) { // 如果为自定义域名解析
-					byte[] ips = parseIPString (orgCache.get(questDomain));
+					byte[] ips = parseIPString(orgCache.get(questDomain));
 					byte[] answer = createDNSResponse(udpreq, ips);
 					addToCache(questDomain, answer);
 					sendDns(answer, dnsq, srvSocket);
@@ -137,8 +135,7 @@ public class DNSServer implements WrapServer {
 					if (answer != null && answer.length != 0) {
 						addToCache(questDomain, answer);
 						sendDns(answer, dnsq, srvSocket);
-						Logger.d(TAG, "正确返回DNS解析，长度："
-								+ answer.length + "  耗时："
+						Logger.d(TAG, "正确返回DNS解析，长度：" + answer.length + "  耗时："
 								+ (System.currentTimeMillis() - starTime)
 								/ 1000 + "s");
 					} else {
@@ -146,22 +143,19 @@ public class DNSServer implements WrapServer {
 					}
 
 				}
-				
+
 				/* For test, validate dnsCache */
 				/*
-				if (dnsCache.size() > 0) {
-					Logger.d(TAG, "Domains in cache:");
+				 * if (dnsCache.size() > 0) { Logger.d(TAG,
+				 * "Domains in cache:");
+				 * 
+				 * Enumeration<String> enu = dnsCache.keys(); while
+				 * (enu.hasMoreElements()) { String domain = (String)
+				 * enu.nextElement(); DnsResponse resp = dnsCache.get(domain);
+				 * 
+				 * Logger.d(TAG, domain + " : " + resp.getIPString()); } }
+				 */
 
-					Enumeration<String> enu = dnsCache.keys();
-					while (enu.hasMoreElements()) {
-						String domain = (String) enu.nextElement();
-						DnsResponse resp = dnsCache.get(domain);
-						
-						Logger.d(TAG, domain + " : " + resp.getIPString());
-					}
-				}
-				*/
-				
 			} catch (SocketException e) {
 				Logger.e(TAG, e.getLocalizedMessage());
 				break;
@@ -307,49 +301,49 @@ public class DNSServer implements WrapServer {
 			response[start] = ip;
 			start++;
 		}
-		
+
 		byte[] result = new byte[start];
 		System.arraycopy(response, 0, result, 0, start);
 		Logger.d(TAG, "DNS Response package size: " + start);
 
 		return result;
 	}
-	
+
 	/*
 	 * Parse IP string into byte, do validation.
 	 * 
-	 * @param ip
-	 * 			IP string
-	 * @return
-	 * 			IP in byte array
+	 * @param ip IP string
+	 * 
+	 * @return IP in byte array
 	 */
 	protected byte[] parseIPString(String ip) {
 		byte[] result = null;
 		int value;
 		int i = 0;
 		String[] ips = null;
-		
+
 		ips = ip.split("\\.");
-		
+
 		Logger.d(TAG, "Start parse ip string: " + ip + ", Sectons: "
 				+ ips.length);
-		
+
 		if (ips.length != IP_SECTION_LEN) {
-			Logger.e(TAG, "Malformed IP string number of sections is: " + ips.length);
+			Logger.e(TAG, "Malformed IP string number of sections is: "
+					+ ips.length);
 			return null;
 		}
-		
+
 		result = new byte[IP_SECTION_LEN];
-		
+
 		for (String section : ips) {
 			try {
 				value = Integer.parseInt(section);
-				
+
 				/* 0.*.*.* and *.*.*.0 is invalid */
 				if ((i == 0 || i == 3) && value == 0) {
 					return null;
 				}
-				
+
 				result[i] = (byte) value;
 				i++;
 			} catch (NumberFormatException e) {
@@ -400,13 +394,17 @@ public class DNSServer implements WrapServer {
 			ois.close();
 			ois = null;
 
+			Hashtable<String, DnsResponse> tmpCache =  (Hashtable<String, DnsResponse>) dnsCache.clone();
 			for (DnsResponse resp : dnsCache.values()) {
 				// 检查缓存时效(十天)
 				if ((System.currentTimeMillis() - resp.getTimestamp()) > 864000000L) {
 					Logger.d(TAG, "删除" + resp.getRequest() + "记录");
-					dnsCache.remove(resp.getRequest());
+					tmpCache.remove(resp.getRequest());
 				}
 			}
+
+			dnsCache = tmpCache;
+			tmpCache = null;
 
 		} catch (ClassCastException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
@@ -415,8 +413,6 @@ public class DNSServer implements WrapServer {
 		} catch (IOException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
 		} catch (ClassNotFoundException e) {
-			Logger.e(TAG, e.getLocalizedMessage(), e);
-		} catch (ConcurrentModificationException e) {
 			Logger.e(TAG, e.getLocalizedMessage(), e);
 		} finally {
 			try {
@@ -516,12 +512,12 @@ public class DNSServer implements WrapServer {
 		orgCache.put("dn5r3l4y.appspot.com", "74.125.153.141");
 
 	}
-	
+
 	public boolean test(String domain, String ip) {
 		boolean ret = true;
-		
+
 		// TODO: Implement test case
-		
+
 		return ret;
 	}
 
@@ -586,23 +582,23 @@ class DnsResponse implements Serializable {
 	public String getIPString() {
 		String ip = null;
 		int i;
-		
+
 		if (dnsResponse == null) {
 			return null;
 		}
-		
+
 		i = dnsResponse.length - 4;
-		
+
 		if (i < 0) {
 			return null;
 		}
-		
+
 		ip = "" + (int) (dnsResponse[i] & 0xFF); /* Unsigned byte to int */
-		
+
 		for (i++; i < dnsResponse.length; i++) {
 			ip += "." + (int) (dnsResponse[i] & 0xFF);
 		}
-		
+
 		return ip;
 	}
 }
