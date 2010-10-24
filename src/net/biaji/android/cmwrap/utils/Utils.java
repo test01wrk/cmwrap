@@ -104,7 +104,7 @@ public class Utils {
 	 * @param 需要执行的指令
 	 * @return -1 执行失败； 0 执行正常
 	 */
-	public static synchronized int rootCMD(String cmd) {
+	public static int rootCMD(String cmd) {
 		int result = -1;
 		DataOutputStream os = null;
 		InputStream err = null, out = null;
