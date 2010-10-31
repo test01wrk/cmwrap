@@ -61,7 +61,7 @@ public class NormalTcpServer implements WrapServer {
 		this.proxyPort = proxyPort;
 		try {
 			serSocket = new ServerSocket();
-			serSocket.setReuseAddress(false);
+			serSocket.setReuseAddress(true);
 			serSocket.bind(new InetSocketAddress(servPort));
 			inService = true;
 		} catch (IOException e) {
