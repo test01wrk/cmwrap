@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
@@ -59,7 +60,9 @@ public class NormalTcpServer implements WrapServer {
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
 		try {
-			serSocket = new ServerSocket(servPort);
+			serSocket = new ServerSocket();
+			serSocket.setReuseAddress(false);
+			serSocket.bind(new InetSocketAddress(servPort));
 			inService = true;
 		} catch (IOException e) {
 			Logger.e(TAG, "Server初始化错误，端口号" + servPort, e);
@@ -75,11 +78,11 @@ public class NormalTcpServer implements WrapServer {
 	public void close() {
 		inService = false;
 		serv.shutdownNow();
-		
+
 		if (serSocket == null) {
 			return;
 		}
-		
+
 		try {
 			serSocket.close();
 		} catch (IOException e) {
@@ -116,7 +119,7 @@ public class NormalTcpServer implements WrapServer {
 			Logger.d(TAG, "Server socket NOT initilized yet.");
 			return;
 		}
-		
+
 		while (inService) {
 			try {
 				Logger.v(TAG, "等待客户端请求……");
