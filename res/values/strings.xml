@@ -52,7 +52,7 @@
 	<string
 		name="PREF_TITLE_ONLY_CMWAP">Only proxy cmwap</string>
 	<string
-		name="PREF_SUMMARY_ONLY_CMWAP">Only Effect on ChinaMobile's cmwap APN</string>
+		name="PREF_SUMMARY_ONLY_CMWAP">Only Effect on ChinaMobile cmwap APN</string>
 	<string
 		name="PREF_TITLE_LATENCY">Latency</string>
 	<string
@@ -63,12 +63,12 @@
 	<string
 		name="PREF_TITLE_PROXY_HOST">Proxy Address</string>
 	<string
-		name="PREF_SUMMARY_PROXY_HOST">The Proxy's IP Address, Default 10.0.0.172
+		name="PREF_SUMMARY_PROXY_HOST">The Proxy IP Address, Default 10.0.0.172
 	</string>
 	<string
 		name="PREF_TITLE_PROXY_PORT">Port</string>
 	<string
-		name="PREF_SUMMARY_PROXY_PORT">The Proxy's Port Number, Default 80
+		name="PREF_SUMMARY_PROXY_PORT">The Proxy\'s Port Number, Default 80
 	</string>
 	<string
 		name="PREF_CATEGORY_DNS">DNS Setting</string>
@@ -87,7 +87,7 @@
 	<string
 		name="PREF_TITLE_DNS">DNS Address</string>
 	<string
-		name="PREF_SUMMARY_DNS">DNS Server's Address, Default 
+		name="PREF_SUMMARY_DNS">DNS Server Address, Default 
 	</string>
 
 
@@ -111,7 +111,7 @@
 	</string>
 
 	<string
-		name="UserAgent">biAji's wap channel</string>
+		name="UserAgent">biAji wap channel</string>
 	<string
 		name="BUTTON_ENABLE">OFF</string>
 	<string
@@ -137,28 +137,28 @@
 	<string
 		name="ERR_NO_ROOT">Sorry, this application depend heavy on ROOT
 		access, but it seemed
-		you don't have it. So it's useless for you.\n
+		you don\'t have it. So it\'s useless for you.\n
 	</string>
 	<string
 		name="ERR_NO_IPTABLES">Sorry, this application depend on iptables support,
 		but it seemed
-		you don't have it. So it's useless for you.\n
+		you don\'t have it. So it\'s useless for you.\n
 	</string>
 	<string
 		name="ERR_NOT_CMWAP">Current Connection is not CMWAP.\n</string>
 	<string
-		name="ERR_UNSUPPORT_HTTPS">Current Connection doesn't support HTTPS proxy, you
-		can't use some
+		name="ERR_UNSUPPORT_HTTPS">Current Connection doesn\'t support HTTPS proxy, you
+		can\'t use some
 		function such as gmail etc.\n
 	</string>
 	<string
 		name="ERR_UNSUPPORT_DNS">Your DNS server is unaccessible, or your proxy
-		doesn't support
+		doesn\'t support
 		dns
 		tunnel.\n</string>
 	<string
-		name="ERR_UNSUPPORT_OTHERS">Currenction Connection doesn't support proxy, you
-		can't use some
+		name="ERR_UNSUPPORT_OTHERS">Currenction Connection doesn\'t support proxy, you
+		can\'t use some
 		function like gtalk.\n
 	</string>
 	<string
@@ -189,5 +189,5 @@
 	<string
 		name="MSG_INSTALL_COMPLETED">Install completed!\n</string>
 	<string
-		name="MSG_DNS_NONEED_UPDATE">Don't need a update. \n</string>
+		name="MSG_DNS_NONEED_UPDATE">Don\'t need a update. \n</string>
 </resources>
