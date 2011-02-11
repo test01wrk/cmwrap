@@ -1,7 +1,10 @@
 package net.biaji.android.cmwrap.services;
 
 import java.io.IOException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Config;
@@ -16,6 +19,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * @author biaji
@@ -118,7 +122,11 @@ public class WrapService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 
-		int level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
+		int level = SERVER_LEVEL_NULL;
+
+		if (intent != null)
+			level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
+
 		if (httpOnly)
 			level = SERVER_LEVEL_BASE;
 
@@ -178,8 +186,8 @@ public class WrapService extends Service {
 			break;
 		}
 
-		Notification note = new Notification(icon, notifyText, System
-				.currentTimeMillis());
+		Notification note = new Notification(icon, notifyText,
+				System.currentTimeMillis());
 		if (isUltraMode)
 			note.flags = Notification.FLAG_ONGOING_EVENT;
 		PendingIntent reviewIntent = PendingIntent.getActivity(this, 0,
@@ -276,7 +284,7 @@ public class WrapService extends Service {
 		onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
 
 		if (onlyCmwap) {
-			inface = " -o rmnet0 ";
+			inface = " -o " + getInterfaceName();
 		}
 
 		for (String rule : rules) {
@@ -289,6 +297,30 @@ public class WrapService extends Service {
 				Logger.e(TAG, e.getLocalizedMessage());
 			}
 		}
+	}
+
+	/**
+	 * 获取网络名称
+	 * 
+	 * @return 当前移动网络界面名称
+	 */
+	private String getInterfaceName() {
+		String result = "rmnet0";
+		try {
+			for (Enumeration<NetworkInterface> interfaces = NetworkInterface
+					.getNetworkInterfaces(); interfaces.hasMoreElements();) {
+				String interfacename = interfaces.nextElement().getName();
+				if (!interfacename.contains("lo")
+						&& !interfacename.contains("usb")
+						&& !interfacename.contains("wifi")) {
+					// 如果不是lo，也不是usb，也不是wifi，就假定是移动网络 >.<
+					return interfacename;
+				}
+			}
+		} catch (SocketException e) {
+			Log.e(TAG, e.getLocalizedMessage());
+		}
+		return result;
 	}
 
 	private void cleanForward() {
