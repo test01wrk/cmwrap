@@ -14,11 +14,6 @@
 
 package net.biaji.android.cmwrap;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import net.biaji.android.cmwrap.services.WapChannel;
@@ -59,7 +54,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
 	private int proxyPort;
 
-	private final String TAG = "CMWRAP->";
+	public final String TAG = "CMWRAP->";
 
 	private final int DIALOG_ABOUT_ID = 0;
 
@@ -261,74 +256,6 @@ public class Cmwrap extends Activity implements OnClickListener {
 			Logger.e(TAG, e.getLocalizedMessage());
 		}
 		return firsTime;
-	}
-
-	/**
-	 * 安装文件
-	 * 
-	 * @param dest
-	 *            安装路径
-	 * @param resId
-	 *            资源文件id
-	 * @param mod
-	 *            文件属性
-	 * @return
-	 */
-	private int installFiles(String dest, int resId, String mod) {
-		int result = -1;
-		BufferedInputStream bin = null;
-		FileOutputStream fo = null;
-		try {
-			bin = new BufferedInputStream(getResources().openRawResource(resId));
-
-			if (mod == null)
-				mod = "644";
-
-			File destF = new File(dest);
-
-			// 如果文件不存在，则随便touch一个先
-			if (!destF.exists())
-				Utils.rootCMD("busybox touch " + dest);
-
-			Utils.rootCMD("chmod 666 " + dest);
-
-			fo = new FileOutputStream(destF);
-			int length;
-			byte[] content = new byte[1024];
-
-			while ((length = bin.read(content)) > 0) {
-				fo.write(content, 0, length);
-			}
-
-			fo.close();
-			bin.close();
-			Utils.rootCMD("chmod " + mod + "  " + dest);
-			result = 0;
-
-		} catch (FileNotFoundException e) {
-			Logger.e(TAG, "未发现目的路径", e);
-		} catch (IOException e) {
-			Logger.e(TAG, "安装文件错误", e);
-		}
-		return result;
-	}
-
-	/**
-	 * 判断是否存在指定文件
-	 * 
-	 * @param file
-	 *            文件绝对路径名
-	 * @param length
-	 *            指定文件长度
-	 * @return
-	 */
-	private boolean hasFile(String file, int length) {
-		boolean result = false;
-		File dstFile = new File(file);
-		if (dstFile.length() > length)
-			result = true;
-
-		return result;
 	}
 
 	private void redrawButton() {

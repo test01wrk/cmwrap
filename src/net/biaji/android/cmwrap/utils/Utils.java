@@ -1,7 +1,11 @@
 package net.biaji.android.cmwrap.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,7 +22,8 @@ public class Utils {
 
 	private final static String TAG = "CMWRAP->Utils";
 
-	private final static String LINEBREAK = System.getProperty("line.separator");
+	private final static String LINEBREAK = System
+			.getProperty("line.separator");
 
 	public static String errMsg = "";
 
@@ -59,7 +64,8 @@ public class Utils {
 
 		// -------------------
 
-		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo == null
 				|| networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
@@ -93,7 +99,7 @@ public class Utils {
 	 *            服务器地址
 	 */
 	public static void flushDns(String dns) {
-		//String getdns = "getprop | grep net.dns1";
+		// String getdns = "getprop | grep net.dns1";
 		String setcmd = "setprop net.dns1 ";
 		rootCMD(setcmd + dns);
 	}
@@ -164,5 +170,75 @@ public class Utils {
 		targets[2] = (byte) ((res >> 16) & 0xff);// 次高位
 		targets[3] = (byte) (res >>> 24);// 最高位,无符号右移。
 		return targets;
+	}
+
+	/**
+	 * 判断是否存在指定文件
+	 * 
+	 * @param file
+	 *            文件绝对路径名
+	 * @param length
+	 *            指定文件长度
+	 * @return
+	 */
+	public static boolean hasFile(String file, int length) {
+		boolean result = false;
+		File dstFile = new File(file);
+		if (dstFile.length() > length)
+			result = true;
+
+		return result;
+	}
+
+	/**
+	 * 安装文件
+	 * 
+	 * @param dest
+	 *            安装路径
+	 * @param resId
+	 *            资源文件id
+	 * @param mod
+	 *            文件属性
+	 * @return
+	 */
+	public static int installFiles(Context context, String dest, int resId,
+			String mod) {
+		int result = -1;
+		BufferedInputStream bin = null;
+		FileOutputStream fo = null;
+		try {
+			bin = new BufferedInputStream(context.getResources()
+					.openRawResource(resId));
+
+			if (mod == null)
+				mod = "644";
+
+			File destF = new File(dest);
+
+			// 如果文件不存在，则随便touch一个先
+			if (!destF.exists())
+				rootCMD("busybox touch " + dest);
+
+			rootCMD("chmod 666 " + dest);
+
+			fo = new FileOutputStream(destF);
+			int length;
+			byte[] content = new byte[1024];
+
+			while ((length = bin.read(content)) > 0) {
+				fo.write(content, 0, length);
+			}
+
+			fo.close();
+			bin.close();
+			rootCMD("chmod " + mod + "  " + dest);
+			result = 0;
+
+		} catch (FileNotFoundException e) {
+			Logger.e(TAG, "未发现目的路径", e);
+		} catch (IOException e) {
+			Logger.e(TAG, "安装文件错误", e);
+		}
+		return result;
 	}
 }
