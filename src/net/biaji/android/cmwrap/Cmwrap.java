@@ -14,16 +14,12 @@
 
 package net.biaji.android.cmwrap;
 
-import java.util.concurrent.TimeUnit;
-
-import net.biaji.android.cmwrap.services.WapChannel;
 import net.biaji.android.cmwrap.services.WrapService;
 import net.biaji.android.cmwrap.utils.Utils;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,8 +27,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,383 +40,205 @@ import android.widget.ToggleButton;
 
 public class Cmwrap extends Activity implements OnClickListener {
 
-	private TextView logWindow;
+    private TextView logWindow;
 
-	private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
+    private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
 
-	private String proxyHost, DNSServer;
+    private final String TAG = "CMWRAP->";
 
-	private int proxyPort;
+    private final int DIALOG_ABOUT_ID = 0;
 
-	public final String TAG = "CMWRAP->";
+    private final int APP_STATUS_NEW = -1;
 
-	private final int DIALOG_ABOUT_ID = 0;
+    private final int APP_STATUS_UPDATE = 0;
 
-	private final int DIALOG_TEST_ID = 1;
+    private final int APP_STATUS_REPEAT = 1;
 
-	private final int APP_STATUS_NEW = -1;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
-	private final int APP_STATUS_UPDATE = 0;
+        super.onCreate(savedInstanceState);
 
-	private final int APP_STATUS_REPEAT = 1;
+        setContentView(R.layout.main);
 
-	private ProgressDialog diagDialog; // TODO
+        logWindow = (TextView) findViewById(R.id.logwindow);
 
-	private Handler handler;
+        // 判断是否需要更新hosts文件
+        int appStatus = appStatus();
 
-	private Context context = null;
+        if (appStatus == APP_STATUS_NEW)
+            logWindow.append(getString(R.string.MSG_FISRT_TIME));
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    }
 
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-		context = this;
+        if (Utils.isCmwap(this))
+            serviceLevel = Config.getServiceLevel(this);
+        else
+            serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
-		setContentView(R.layout.main);
+        Logger.d(TAG, "服务级别为：" + serviceLevel);
 
-		logWindow = (TextView) findViewById(R.id.logwindow);
+        redrawButton();
+    }
 
-		// 判断是否需要更新hosts文件
-		int appStatus = appStatus();
+    public void onClick(View v) {
 
-		if (appStatus == APP_STATUS_NEW)
-			logWindow.append(getString(R.string.MSG_FISRT_TIME));
+        Intent serviceIn = new Intent(this, WrapService.class);
 
-	}
+        int message = R.string.serviceTagUp;
 
-	@Override
-	protected void onStart() {
-		super.onStart();
+        switch (v.getId()) {
 
-		if (Utils.isCmwap(this))
-			serviceLevel = Config.getServiceLevel(this);
-		else
-			serviceLevel = WrapService.SERVER_LEVEL_STOP;
+            case R.id.BaseService:
 
-		Logger.d(TAG, "服务级别为：" + serviceLevel);
+                if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
+                    stopService(serviceIn);
+                    Logger.i(TAG, "禁用服务");
+                    serviceLevel = WrapService.SERVER_LEVEL_NULL;
+                    Config.saveServiceLevel(this, serviceLevel);
+                    // Config.setIptableStatus(this, false);
+                    message = R.string.serviceTagDown;
+                } else {
+                    Logger.i(TAG, "启用服务");
+                    serviceLevel = WrapService.SERVER_LEVEL_APPS;
+                    serviceIn.putExtra("SERVERLEVEL", serviceLevel);
+                    startService(serviceIn);
+                    message = R.string.serviceTagApp;
+                }
 
-		redrawButton();
-	}
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                redrawButton();
 
-	public void onClick(View v) {
+                break;
+        }
 
-		Intent serviceIn = new Intent(this, WrapService.class);
+    }
 
-		int message = R.string.serviceTagUp;
-
-		switch (v.getId()) {
-
-		case R.id.BaseService:
-
-			if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
-				stopService(serviceIn);
-				Logger.i(TAG, "禁用服务");
-				serviceLevel = WrapService.SERVER_LEVEL_NULL;
-				Config.saveServiceLevel(this, serviceLevel);
-				// Config.setIptableStatus(this, false);
-				message = R.string.serviceTagDown;
-			} else {
-				Logger.i(TAG, "启用服务");
-				serviceLevel = WrapService.SERVER_LEVEL_APPS;
-				serviceIn.putExtra("SERVERLEVEL", serviceLevel);
-				startService(serviceIn);
-				message = R.string.serviceTagApp;
-			}
-
-			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-			redrawButton();
-
-			break;
-		}
-
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DIALOG_ABOUT_ID:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setView(
-					LayoutInflater.from(this).inflate(R.layout.about, null))
-					.setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
-					.setPositiveButton(R.string.OKOK,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-
-			AlertDialog dialog = builder.create();
-			return dialog;
-		case DIALOG_TEST_ID:
-			diagDialog = new ProgressDialog(this);
-			diagDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			diagDialog.setMessage("测试中……");
-			TestManager manager = new TestManager(handler);
-			manager.start();
-			return diagDialog;
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.options_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		switch (item.getItemId()) {
-		case R.id.TEST:
-			logWindow.setText("");
-
-			handler = new Handler() {
-				int progress = 0;
-
-				@Override
-				public void handleMessage(Message msg) {
-					progress = msg.getData().getInt("PROGRESS");
-					if (progress >= 100) {
-						diagDialog.setProgress(0);
-						dismissDialog(DIALOG_TEST_ID);
-					} else {
-						diagDialog.setProgress(progress);
-					}
-					String testName = msg.getData().getString("TESTNAME");
-					String diaMsg = msg.getData().getString("MESSAGE");
-					String errMsg = msg.getData().getString("ERRMSG");
-					Logger.d(TAG, "testName: " + testName);
-					diagDialog.setMessage(diaMsg);
-					if (errMsg != null) {
-						logWindow.append(errMsg);
-					} else {
-						logWindow.append(testName
-								+ getString(R.string.TEST_PASSED));
-					}
-				}
-			};
-			proxyHost = Config.getStringPref(this, "PROXYHOST", "10.0.0.172");
-			proxyPort = Integer.parseInt(Config.getStringPref(this,
-					"PROXYPORT", "80"));
-			showDialog(DIALOG_TEST_ID);
-			return true;
-
-		case R.id.SETTING:
-			startActivityForResult(new Intent(this, Config.class), 0);
-			return true;
-
-		case R.id.ABOUT:
-			showDialog(DIALOG_ABOUT_ID);
-			return true;
-
-		}
-		return false;
-	}
-
-	/**
-	 * 判断程序安装状态
-	 * 
-	 * @return -1 初次安装 0 升级安装 1 同版本再次安装
-	 */
-	private int appStatus() {
-		int firsTime = APP_STATUS_NEW;
-		// 判断状态
-		try {
-			SharedPreferences pref = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			int ver = pref.getInt("VERSION", APP_STATUS_NEW);
-			PackageManager pm = getPackageManager();
-			PackageInfo pi;
-
-			pi = pm.getPackageInfo(getPackageName(), APP_STATUS_UPDATE);
-			int newVer = pi.versionCode;
-
-			if (ver == newVer) {
-				firsTime = APP_STATUS_REPEAT;
-			} else {
-				if (ver != APP_STATUS_NEW)
-					firsTime = APP_STATUS_UPDATE;
-				tag(newVer);
-			}
-
-		} catch (NameNotFoundException e) {
-			Logger.e(TAG, e.getLocalizedMessage());
-		}
-		return firsTime;
-	}
-
-	private void redrawButton() {
-
-		// ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
-		// switcher.setOnClickListener(this);
-
-		ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
-		baseServiceSwitcher.setOnClickListener(this);
-
-		switch (serviceLevel) {
-
-		case WrapService.SERVER_LEVEL_BASE:
-			// switcher.setChecked(true);
-			baseServiceSwitcher.setEnabled(true);
-			baseServiceSwitcher.setChecked(false);
-			break;
-
-		case WrapService.SERVER_LEVEL_APPS:
-		case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
-			// switcher.setChecked(true);
-			baseServiceSwitcher.setEnabled(true);
-			baseServiceSwitcher.setChecked(true);
-			break;
-
-		case WrapService.SERVER_LEVEL_NULL:
-			// baseServiceSwitcher.setEnabled(false);
-			baseServiceSwitcher.setChecked(false);
-			break;
-
-		default:
-			baseServiceSwitcher.setEnabled(false);
-			// switcher.setEnabled(false);
-		}
-	}
-
-	/**
-	 * 更新版本号
-	 */
-	private void tag(int newVer) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putInt("VERSION", newVer);
-		editor.commit();
-	}
-
-	private class TestManager extends Thread {
-
-		Handler handler = null;
-
-		TestManager(Handler handler) {
-			this.handler = handler;
-
-		}
-
-		@Override
-		public void run() {
-			Message msg = handler.obtainMessage();
-			Bundle bundle = new Bundle();
-
-			int result = Utils.rootCMD("iptables -L -t nat");
-			bundle.putString("TESTNAME", getString(R.string.TEST_ROOT));
-			if (result == 1 || result == -1) { // 没有root权限
-				bundle.putString("ERRMSG", getString(R.string.ERR_NO_ROOT));
-				bundle.putInt("PROGRESS", 100);
-				msg.setData(bundle);
-				handler.sendMessage(msg);
-				return;
-			}
-			bundle.putInt("PROGRESS", 10);
-			bundle.putString("MESSAGE", getString(R.string.TEST_IPTABLES));
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-			testSleep(1000);
-
-			// 测试iptables是否存在
-			msg = handler.obtainMessage();
-			bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
-			if (result == 127 || result == 126) { // 没有iptables， 或权限不对
-				bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
-				bundle.putInt("PROGRESS", 100);
-				msg.setData(bundle);
-				handler.sendMessage(msg);
-				return;
-			}
-			bundle.putInt("PROGRESS", 20);
-			bundle.putString("MESSAGE", getString(R.string.TEST_CMWAP));
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-			testSleep(1000);
-
-			// 测试连接方式是否为cmwap
-			msg = handler.obtainMessage();
-			bundle.putString("TESTNAME", getString(R.string.TEST_CMWAP));
-			if (serviceLevel == WrapService.SERVER_LEVEL_STOP) {
-				bundle.putString("ERRMSG", getString(R.string.ERR_NOT_CMWAP));
-				bundle.putInt("PROGRESS", 100);
-			}
-			bundle.putInt("PROGRESS", 40);
-			bundle.putString("MESSAGE", getString(R.string.TEST_HTTPS));
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-			testSleep(1000);
-
-			// 测试https
-			msg = handler.obtainMessage();
-			bundle.putString("TESTNAME", getString(R.string.TEST_HTTPS));
-			WapChannel channel = new WapChannel(null, proxyHost, proxyPort);
-			testSleep(5000);
-			if (!channel.isConnected()) {
-				bundle.putString("ERRMSG",
-						getString(R.string.ERR_UNSUPPORT_HTTPS));
-			}
-			channel.destory();
-			bundle.putInt("PROGRESS", 60);
-			bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-
-			// 测试DNS
-
-			boolean httpDnsEnabled = Config.getBooleanPref(context,
-					"HTTPDNSENABLED", true);
-			// 启用http dns之后暂时不进行此项检测
-			// TODO 检测http DNS可用性
-			if (!httpDnsEnabled) {
-				DNSServer = Config.getStringPref(context, "DNSADD", "");
-				msg = handler.obtainMessage();
-				bundle.putString("TESTNAME", getString(R.string.TEST_DNS));
-				channel = new WapChannel(null, DNSServer + ":53", proxyHost,
-						proxyPort);
-				testSleep(5000);
-				if (!channel.isConnected()) {
-					bundle.putString("ERRMSG",
-							getString(R.string.ERR_UNSUPPORT_DNS));
-				}
-				channel.destory();
-				bundle.putInt("PROGRESS", 80);
-				bundle.putString("MESSAGE", getString(R.string.TEST_OTHER));
-				msg.setData(bundle);
-				handler.sendMessage(msg);
-			}
-
-			// 测试Gtalk
-			msg = handler.obtainMessage();
-			bundle.putString("TESTNAME", getString(R.string.TEST_OTHER));
-			channel = new WapChannel(null, "mtalk.google.com:5228", proxyHost,
-					proxyPort);
-			testSleep(5000);
-			if (!channel.isConnected()) {
-				bundle.putString("ERRMSG",
-						getString(R.string.ERR_UNSUPPORT_OTHERS));
-			}
-			channel.destory();
-			bundle.putInt("PROGRESS", 100);
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-
-		}
-
-		private void testSleep(long time) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(time);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_ABOUT_ID:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(LayoutInflater.from(this).inflate(R.layout.about, null))
+                        .setIcon(R.drawable.icon).setTitle(R.string.MENU_ABOUT)
+                        .setPositiveButton(R.string.OKOK, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                return dialog;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.TEST:
+                startActivity(new Intent(this, TestActivity.class));
+                return true;
+
+            case R.id.SETTING:
+                startActivityForResult(new Intent(this, Config.class), 0);
+                return true;
+
+            case R.id.ABOUT:
+                showDialog(DIALOG_ABOUT_ID);
+                return true;
+
+        }
+        return false;
+    }
+
+    /**
+     * 判断程序安装状态
+     * 
+     * @return -1 初次安装 0 升级安装 1 同版本再次安装
+     */
+    private int appStatus() {
+        int firsTime = APP_STATUS_NEW;
+        // 判断状态
+        try {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            int ver = pref.getInt("VERSION", APP_STATUS_NEW);
+            PackageManager pm = getPackageManager();
+            PackageInfo pi;
+
+            pi = pm.getPackageInfo(getPackageName(), APP_STATUS_UPDATE);
+            int newVer = pi.versionCode;
+
+            if (ver == newVer) {
+                firsTime = APP_STATUS_REPEAT;
+            } else {
+                if (ver != APP_STATUS_NEW)
+                    firsTime = APP_STATUS_UPDATE;
+                tag(newVer);
+            }
+
+        } catch (NameNotFoundException e) {
+            Logger.e(TAG, e.getLocalizedMessage());
+        }
+        return firsTime;
+    }
+
+    private void redrawButton() {
+
+        // ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
+        // switcher.setOnClickListener(this);
+
+        ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
+        baseServiceSwitcher.setOnClickListener(this);
+
+        switch (serviceLevel) {
+
+            case WrapService.SERVER_LEVEL_BASE:
+                // switcher.setChecked(true);
+                baseServiceSwitcher.setEnabled(true);
+                baseServiceSwitcher.setChecked(false);
+                break;
+
+            case WrapService.SERVER_LEVEL_APPS:
+            case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
+                // switcher.setChecked(true);
+                baseServiceSwitcher.setEnabled(true);
+                baseServiceSwitcher.setChecked(true);
+                break;
+
+            case WrapService.SERVER_LEVEL_NULL:
+                // baseServiceSwitcher.setEnabled(false);
+                baseServiceSwitcher.setChecked(false);
+                break;
+
+            default:
+                baseServiceSwitcher.setEnabled(false);
+                // switcher.setEnabled(false);
+        }
+    }
+
+    /**
+     * 更新版本号
+     */
+    private void tag(int newVer) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("VERSION", newVer);
+        editor.commit();
+    }
 
 }

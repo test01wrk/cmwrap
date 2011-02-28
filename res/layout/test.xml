@@ -5,26 +5,34 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 	<ProgressBar
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/TestProgress"
-		style="@android:style/Widget.ProgressBar.Horizontal" />
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:layout_margin="10sp"
+		android:layout_gravity="center_horizontal" />
+	<TextView
+		android:text=""
+		android:id="@+id/progressDescribe"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" />
 	<ScrollView
 		android:id="@+id/ScrollView01"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:padding="5sp"
+		android:layout_gravity="center_horizontal">
 		<TextView
-			android:text="@+id/TextView01"
-			android:id="@+id/TextView01"
-			android:layout_width="wrap_content"
+			android:text=""
+			android:id="@+id/logOut"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
 	</ScrollView>
 	<Button
 		android:text="@+id/Button01"
 		android:id="@+id/Button01"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
-
-
-
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" />
 </LinearLayout>

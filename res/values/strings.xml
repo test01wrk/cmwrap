@@ -90,8 +90,8 @@
 		name="PREF_SUMMARY_DNS">DNS Server Address, Default 
 	</string>
 
-
 	<!-- 设置界面文本结束 -->
+
 	<string
 		name="proxyServer">10.0.0.172</string>
 	<string
@@ -109,7 +109,10 @@
 		/dev/block/mtdblock3
 		/system
 	</string>
-
+	<string
+		name="iptables_test_str">iptables -t nat -A OUTPUT -o rmnet0 -p tcp -m multiport !
+		--destination-port 80,7442,7443,8040 -j LOG --log-level info
+		--log-prefix "CMWRAP "</string>
 	<string
 		name="UserAgent">biAji wap channel</string>
 	<string
@@ -148,7 +151,8 @@
 		name="ERR_NOT_CMWAP">Current Connection is not CMWAP.\n</string>
 	<string
 		name="ERR_UNSUPPORT_HTTPS">Current Connection doesn\'t support HTTPS proxy, you
-		can\'t use some
+		can\'t use
+		some
 		function such as gmail etc.\n
 	</string>
 	<string
