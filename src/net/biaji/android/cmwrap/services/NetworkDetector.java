@@ -18,7 +18,7 @@ import android.preference.PreferenceManager;
  */
 public class NetworkDetector extends BroadcastReceiver {
 
-	private final String TAG = "CMWRAP->NetworkDetector";
+	private final String TAG = "NetworkDetector";
 
 	/**
 	 * 时间间隔，短于此间隔的变化不予实施,单位为秒

@@ -20,7 +20,7 @@ public class InnerSocketBuilder {
 	private boolean isConnected = false;
 
 	private long starTime = System.currentTimeMillis();
-	private final String TAG = "CMWRAP->InnerSocketBuilder";
+	private final String TAG = "InnerSocketBuilder";
 	private final String UA = "biAji's wap channel";
 
 	public InnerSocketBuilder(String target) {

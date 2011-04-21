@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class TestActivity extends Activity {
 
-    private final String TAG = "CMWRAP->Test";
+    private final String TAG = "Test";
 
     private ProgressBar progressBar = null;
 

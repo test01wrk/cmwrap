@@ -19,7 +19,7 @@ public class WapChannel implements Runnable {
 
 	private int srcPort = 0;
 
-	private final String TAG = "CMWRAP->WapChannel";
+	private final String TAG = "WapChannel";
 
 	/**
 	 * 

@@ -25,7 +25,7 @@ import org.apache.http.params.HttpParams;
  */
 public class DNSServerHttp extends DNSServer {
 
-	private final String TAG = "CMWRAP->DNSServerHttp";
+	private final String TAG = "DNSServerHttp";
 	final private String CANT_RESOLVE = "-";
 	final private int MAX_IP_LEN = 16;
 

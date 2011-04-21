@@ -30,7 +30,7 @@ public class NormalTcpServer implements WrapServer {
 
 	private int proxyPort;
 
-	private final String TAG = "CMWRAP->TCPServer";
+	private final String TAG = "TCPServer";
 
 	private boolean inService = false;
 

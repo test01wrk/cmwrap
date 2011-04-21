@@ -27,7 +27,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 
 public class Config extends PreferenceActivity implements OnPreferenceChangeListener {
 
-    private final static String TAG = "CMWRAP->Config";
+    private final static String TAG = "Config";
 
     public static final String DEFAULT_DNS_ADD = "8.8.4.4";
 

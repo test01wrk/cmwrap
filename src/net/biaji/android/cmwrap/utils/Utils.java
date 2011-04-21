@@ -1,3 +1,4 @@
+
 package net.biaji.android.cmwrap.utils;
 
 import java.io.BufferedInputStream;
@@ -20,7 +21,7 @@ import android.net.Uri;
 
 public class Utils {
 
-    private final static String TAG = "CMWRAP->Utils";
+    private final static String TAG = "Utils";
 
     private final static String LINEBREAK = System.getProperty("line.separator");
 
@@ -120,7 +121,7 @@ public class Utils {
      * 
      * @param 需要执行的指令
      * @return -1 执行失败<br>
-     *  0 执行正常
+     *         0 执行正常
      */
     public static int rootCMD(String cmd) {
         int result = -1;

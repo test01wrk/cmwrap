@@ -1,34 +1,37 @@
+
 package net.biaji.android.cmwrap;
 
 import android.util.Log;
 
 public class Logger {
 
-	private static int debugLevel = Log.DEBUG;
+    private static int debugLevel = Log.DEBUG;
 
-	public static void v(String TAG, String msg) {
-		if (debugLevel <= Log.VERBOSE)
-			Log.v(TAG, msg);
-	}
+    private static final String TAG = "CMWRAP";
 
-	public static void d(String TAG, String msg) {
-		if (debugLevel <= Log.DEBUG)
-			Log.d(TAG, msg);
-	}
+    public static void v(String subTag, String msg) {
+        if (debugLevel <= Log.VERBOSE)
+            Log.v(TAG, subTag + "-->" + msg);
+    }
 
-	public static void i(String TAG, String msg) {
-		if (debugLevel <= Log.INFO)
-			Log.i(TAG, msg);
-	}
+    public static void d(String subTag, String msg) {
+        if (debugLevel <= Log.DEBUG)
+            Log.d(TAG, subTag + "-->" + msg);
+    }
 
-	public static void e(String TAG, String msg) {
-		if (debugLevel <= Log.ERROR)
-			Log.e(TAG, msg);
-	}
+    public static void i(String subTag, String msg) {
+        if (debugLevel <= Log.INFO)
+            Log.i(TAG, subTag + "-->" + msg);
+    }
 
-	public static void e(String TAG, String msg, Throwable e) {
-		if (debugLevel <= Log.ERROR)
-			Log.e(TAG, msg, e);
-	}
+    public static void e(String subTag, String msg) {
+        if (debugLevel <= Log.ERROR)
+            Log.e(TAG, subTag + "-->" + msg);
+    }
+
+    public static void e(String subTag, String msg, Throwable e) {
+        if (debugLevel <= Log.ERROR)
+            Log.e(TAG, subTag + "-->" + msg, e);
+    }
 
 }

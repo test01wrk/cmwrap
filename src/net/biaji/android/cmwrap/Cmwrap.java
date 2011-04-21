@@ -44,7 +44,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
     private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
 
-    private final String TAG = "CMWRAP->";
+    private final String TAG = "CMWRAP";
 
     private final int DIALOG_ABOUT_ID = 0;
 
