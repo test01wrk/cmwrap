@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import net.biaji.android.cmwrap.Cmwrap;
@@ -23,8 +24,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
+ * 穿越服务总控制 </n>
+ * 
  * @author biaji
  */
+// @TODO 仅启用HTTP的时候iptables转向逻辑
 public class WrapService extends Service {
 
     private NotificationManager nm;
@@ -42,9 +46,7 @@ public class WrapService extends Service {
     private boolean inService = false, isUltraMode = false, dnsEnabled = true,
             dnsHttpEnabled = false, httpOnly = false;
 
-    private String[] iptablesRules = new String[] {
-        "iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s"
-    };
+    private ArrayList<String> iptablesRules = new ArrayList<String>();
 
     /**
      * 服务状态未设定
@@ -87,6 +89,8 @@ public class WrapService extends Service {
         dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
         httpOnly = pref.getBoolean("ONLYHTTP", false);
         DNSServer = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
+        iptablesRules
+                .add("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
 
         // 初始化通知管理器
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -104,9 +108,6 @@ public class WrapService extends Service {
                     serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
                     setForeground(true);
                 }
-
-                // 启用iptables转向
-                forward();
 
                 startSubDaemon();
                 inService = true;
@@ -152,7 +153,6 @@ public class WrapService extends Service {
     @Override
     public void onDestroy() {
         stopSubDaemon();
-        cleanForward();
         serverLevel = SERVER_LEVEL_NULL;
         Config.saveServiceLevel(this, serverLevel);
         nm.cancel(R.string.serviceTagUp);
@@ -217,14 +217,16 @@ public class WrapService extends Service {
             dnsSer.setBasePath(this.getFilesDir().getParent());
             new Thread(dnsSer).start();
             servers.add(dnsSer);
-            iptables(dnsSer.getRules());
+            iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
         }
 
         NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
         new Thread(tcpSer).start();
         servers.add(tcpSer);
 
-        iptables(tcpSer.getRules());
+        iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
+
+        forward();
     }
 
     private void stopSubDaemon() {
@@ -243,10 +245,7 @@ public class WrapService extends Service {
     }
 
     private void refreshSubDaemon() {
-        cleanForward();
         stopSubDaemon();
-
-        forward();
         startSubDaemon();
     }
 
@@ -267,11 +266,12 @@ public class WrapService extends Service {
         Config.setIptableStatus(this, true);
     }
 
-    private void iptables(String[] rules) {
+    private void iptables(ArrayList<String> rules) {
+
         String inface = " ";
         boolean onlyCmwap = false;
 
-        if (rules.length == 0) {
+        if (rules.isEmpty()) {
             Logger.d(TAG, "Iptables: No rule to apply");
             return;
         }

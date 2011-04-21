@@ -85,10 +85,10 @@ public class Config extends PreferenceActivity implements OnPreferenceChangeList
      */
     public static boolean isIptablesEnabled(Context context) {
         boolean result = false;
-        Logger.v(TAG, "读取iptables");
+        Logger.i(TAG, "读取iptables");
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         result = pref.getBoolean("IPTABLES", false);
-        Logger.v(TAG, "读取结束");
+        Logger.i(TAG, "读取结束, 结果为：" + result);
         return result;
     }
 

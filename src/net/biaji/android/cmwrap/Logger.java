@@ -11,27 +11,27 @@ public class Logger {
 
     public static void v(String subTag, String msg) {
         if (debugLevel <= Log.VERBOSE)
-            Log.v(TAG, subTag + "-->" + msg);
+            Log.v(TAG, subTag + "-> " + msg);
     }
 
     public static void d(String subTag, String msg) {
         if (debugLevel <= Log.DEBUG)
-            Log.d(TAG, subTag + "-->" + msg);
+            Log.d(TAG, subTag + "-> " + msg);
     }
 
     public static void i(String subTag, String msg) {
         if (debugLevel <= Log.INFO)
-            Log.i(TAG, subTag + "-->" + msg);
+            Log.i(TAG, subTag + "-> " + msg);
     }
 
     public static void e(String subTag, String msg) {
         if (debugLevel <= Log.ERROR)
-            Log.e(TAG, subTag + "-->" + msg);
+            Log.e(TAG, subTag + "-> " + msg);
     }
 
     public static void e(String subTag, String msg, Throwable e) {
         if (debugLevel <= Log.ERROR)
-            Log.e(TAG, subTag + "-->" + msg, e);
+            Log.e(TAG, subTag + "-> " + msg, e);
     }
 
 }
