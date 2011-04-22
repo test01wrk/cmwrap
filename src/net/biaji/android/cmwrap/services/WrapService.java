@@ -28,7 +28,6 @@ import android.util.Log;
  * 
  * @author biaji
  */
-// @TODO 仅启用HTTP的时候iptables转向逻辑
 public class WrapService extends Service {
 
     private NotificationManager nm;
@@ -199,32 +198,32 @@ public class WrapService extends Service {
      */
     private void startSubDaemon() {
 
-        if (serverLevel <= SERVER_LEVEL_BASE)
-            return;
+        if (serverLevel > SERVER_LEVEL_BASE) {
 
-        if (dnsEnabled) {
+            if (dnsEnabled) {
 
-            DNSServer dnsSer;
+                DNSServer dnsSer;
 
-            if (dnsHttpEnabled)
-                dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort, DNSServer,
-                        80);
-            else
-                dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort, DNSServer, 53);
+                if (dnsHttpEnabled)
+                    dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
+                            DNSServer, 80);
+                else
+                    dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort, DNSServer, 53);
 
-            Logger.d(TAG, "Start DNS server");
+                Logger.d(TAG, "Start DNS server");
 
-            dnsSer.setBasePath(this.getFilesDir().getParent());
-            new Thread(dnsSer).start();
-            servers.add(dnsSer);
-            iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
+                dnsSer.setBasePath(this.getFilesDir().getParent());
+                new Thread(dnsSer).start();
+                servers.add(dnsSer);
+                iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
+            }
+
+            NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
+            new Thread(tcpSer).start();
+            servers.add(tcpSer);
+
+            iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
         }
-
-        NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
-        new Thread(tcpSer).start();
-        servers.add(tcpSer);
-
-        iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
 
         forward();
     }
