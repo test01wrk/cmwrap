@@ -25,6 +25,8 @@ public class Utils {
 
     private final static String LINEBREAK = System.getProperty("line.separator");
 
+    private final static String PREFER_APN_URI = "content://telephony/carriers/preferapn";
+
     public static String errMsg = "";
 
     public static String getErr() {
@@ -87,19 +89,18 @@ public class Utils {
     public static String getCurrentDataConn(Context context) {
         String dataConn = "";
 
-        Cursor mCursor = context.getContentResolver().query(
-                Uri.parse("content://telephony/carriers"), new String[] {
-                    "apn"
-                }, "current=1", null, null);
-        if (mCursor != null) {
+        Cursor cursor = context.getContentResolver().query(Uri.parse(PREFER_APN_URI), new String[] {
+            "apn"
+        }, null, null, null);
+        if (cursor.getCount() > 0) {
             try {
-                if (mCursor.moveToFirst()) {
-                    dataConn = mCursor.getString(0);
+                if (cursor.moveToFirst()) {
+                    dataConn = cursor.getString(0);
                 }
             } catch (Exception e) {
                 Logger.e(TAG, "Can not get Network info", e);
             } finally {
-                mCursor.close();
+                cursor.close();
             }
         }
         return dataConn;
