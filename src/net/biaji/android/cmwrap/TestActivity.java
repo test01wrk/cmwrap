@@ -22,6 +22,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -32,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author biAji<biaji@biaji.net>
  */
-public final class TestActivity extends Activity {
+public final class TestActivity extends Activity implements OnClickListener {
 
     private final String TAG = "Test";
 
@@ -204,5 +206,8 @@ public final class TestActivity extends Activity {
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    public void onClick(View v) {
     }
 }
