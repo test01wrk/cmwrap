@@ -304,7 +304,7 @@ public class WrapService extends Service {
                     .hasMoreElements();) {
                 String interfacename = interfaces.nextElement().getName();
                 if (!interfacename.contains("lo") && !interfacename.contains("usb")
-                        && !interfacename.contains("wifi")) {
+                        && !interfacename.contains("wifi") && !interfacename.contains("wlan")) {
                     // 如果不是lo，也不是usb，也不是wifi，就假定是移动网络 >.<
                     return interfacename;
                 }
