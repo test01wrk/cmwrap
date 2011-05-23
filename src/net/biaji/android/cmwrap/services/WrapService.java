@@ -48,7 +48,7 @@ public class WrapService extends Service {
     private ArrayList<String> iptablesRules = new ArrayList<String>();
 
     /**
-     * 服务状态未设定
+     * 服务状态未设定，主要用于由于网络变化而致的cmwrap不可用状态
      */
     public final static int SERVER_LEVEL_NULL = -1;
 
@@ -88,8 +88,6 @@ public class WrapService extends Service {
         dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
         httpOnly = pref.getBoolean("ONLYHTTP", false);
         DNSServer = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
-        iptablesRules
-                .add("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
 
         // 初始化通知管理器
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -130,17 +128,9 @@ public class WrapService extends Service {
         if (httpOnly)
             level = SERVER_LEVEL_BASE;
 
-        Logger.d(TAG, "Level Change from " + serverLevel + " to Intent:" + level);
+        Logger.d(TAG, "Level Change from " + serverLevel + " to:" + level);
 
-        if (level != SERVER_LEVEL_NULL && level != serverLevel) {
-            serverLevel = level;
-            refreshSubDaemon();
-        }
-
-        showNotify();
-        // 保存服务状态，以备被杀
-        if (serverLevel != SERVER_LEVEL_STOP)
-            Config.saveServiceLevel(this, serverLevel);
+        changeLevelTo(level);
 
     }
 
@@ -155,6 +145,23 @@ public class WrapService extends Service {
         serverLevel = SERVER_LEVEL_NULL;
         Config.saveServiceLevel(this, serverLevel);
         nm.cancel(R.string.serviceTagUp);
+    }
+
+    /**
+     * 将服务级别设置为新的级别
+     * 
+     * @param newLevel 欲设置的服务级别
+     */
+    private void changeLevelTo(int newLevel) {
+        if (newLevel != SERVER_LEVEL_NULL && this.serverLevel != newLevel) {
+            serverLevel = newLevel;
+            refreshSubDaemon();
+        }
+
+        showNotify();
+        // 保存服务状态，以备被杀
+        if (serverLevel != SERVER_LEVEL_STOP)
+            Config.saveServiceLevel(this, serverLevel);
     }
 
     private void showNotify() {
@@ -198,34 +205,38 @@ public class WrapService extends Service {
      */
     private void startSubDaemon() {
 
-        if (serverLevel > SERVER_LEVEL_BASE) {
+        if (serverLevel < SERVER_LEVEL_BASE)
+            return;
 
-            if (dnsEnabled) {
+        iptablesRules
+                .add("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
 
-                DNSServer dnsSer;
+        if (dnsEnabled) {
 
-                if (dnsHttpEnabled)
-                    dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort,
-                            DNSServer, 80);
-                else
-                    dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort, DNSServer, 53);
+            DNSServer dnsSer;
 
-                Logger.d(TAG, "Start DNS server");
+            if (dnsHttpEnabled)
+                dnsSer = new DNSServerHttp("DNS HTTP Proxy", 7442, proxyHost, proxyPort, DNSServer,
+                        80);
+            else
+                dnsSer = new DNSServer("DNS Proxy", 7442, proxyHost, proxyPort, DNSServer, 53);
 
-                dnsSer.setBasePath(this.getFilesDir().getParent());
-                new Thread(dnsSer).start();
-                servers.add(dnsSer);
-                iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
-            }
+            Logger.d(TAG, "Start DNS server");
 
-            NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
-            new Thread(tcpSer).start();
-            servers.add(tcpSer);
-
-            iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
+            dnsSer.setBasePath(this.getFilesDir().getParent());
+            new Thread(dnsSer).start();
+            servers.add(dnsSer);
+            iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
         }
 
+        NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
+        new Thread(tcpSer).start();
+        servers.add(tcpSer);
+
+        iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
+
         forward();
+
     }
 
     private void stopSubDaemon() {
@@ -317,6 +328,7 @@ public class WrapService extends Service {
 
     private void cleanForward() {
         Utils.rootCMD(getString(R.string.CMDiptablesDisable));
+        iptablesRules.clear();
         Config.setIptableStatus(this, false);
     }
 
