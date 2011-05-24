@@ -76,7 +76,7 @@ public class WrapService extends Service {
      */
     public final static int SERVER_LEVEL_FROGROUND_SERVICE = 3;
 
-    private int serverLevel = SERVER_LEVEL_BASE;
+    private int serverLevel = SERVER_LEVEL_NULL;
 
     private SharedPreferences pref;
 
@@ -133,8 +133,8 @@ public class WrapService extends Service {
             level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 
         Logger.d(TAG, "Level Change from " + serverLevel + " to:" + level);
-
-        changeLevelTo(level);
+        if (level == SERVER_LEVEL_STOP || level > serverLevel)
+            changeLevelTo(level);
 
     }
 
@@ -273,7 +273,6 @@ public class WrapService extends Service {
             return;
         iptablesManager.disable();
         iptablesManager.enable();
-
         Config.setIptableStatus(this, true);
     }
 

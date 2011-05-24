@@ -56,7 +56,7 @@ public class Utils {
      * 判断当前网络连接是否为cmwap
      * 
      * @param context
-     * @return true 当前为cmwap连接<br>
+     * @return true 当前为cmwap连接，或未要求进行连接检查<br>
      *         false 当前数据连接非cmwap
      */
     public static boolean isCmwap(Context context) {
