@@ -98,7 +98,29 @@ public class WrapService extends Service {
 
         // 初始化通知管理器
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        startService();
+
+        // 读取初始服务级别
+        int storedServerLevel = Config.getServiceLevel(this);
+        Logger.d(TAG, "Recovery from server level: " + storedServerLevel);
+
+        if (serverLevel == SERVER_LEVEL_NULL) {
+            if (isUltraMode) {
+                serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
+                if (VERSION.SDK_INT < VERSION_CODES.ECLAIR)
+                    setForeground(true);
+            } else if (httpOnly) {
+                serverLevel = SERVER_LEVEL_BASE;
+            }
+        }
+
+        // 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
+        if (Utils.isCmwap(this)) {
+            startSubDaemon();
+            showNotify();
+        } else {
+            serverLevel = SERVER_LEVEL_STOP;
+            cleanForward();
+        }
     }
 
     @Override
@@ -109,9 +131,6 @@ public class WrapService extends Service {
 
         if (intent != null)
             level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
-
-        if (httpOnly)
-            level = SERVER_LEVEL_BASE;
 
         Logger.d(TAG, "Level Change from " + serverLevel + " to:" + level);
 
@@ -130,31 +149,6 @@ public class WrapService extends Service {
         serverLevel = SERVER_LEVEL_NULL;
         Config.saveServiceLevel(this, serverLevel);
         nm.cancel(ONE_AND_ONLY_NOTIFY);
-    }
-
-    private void startService() {
-        // 读取初始服务级别
-        serverLevel = Config.getServiceLevel(this);
-        Logger.d(TAG, "Recovery from server level: " + serverLevel);
-
-        if (serverLevel == SERVER_LEVEL_NULL)
-            return;
-
-        // 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
-        if (Utils.isCmwap(this)) {
-            if (isUltraMode) {
-                serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
-
-                if (VERSION.SDK_INT < VERSION_CODES.ECLAIR)
-                    setForeground(true);
-            }
-
-            startSubDaemon();
-            showNotify();
-        } else {
-            serverLevel = SERVER_LEVEL_STOP;
-            cleanForward();
-        }
     }
 
     /**
