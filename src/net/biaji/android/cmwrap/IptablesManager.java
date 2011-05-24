@@ -7,9 +7,9 @@ import android.util.Log;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 /**
  * 用于管理iptables规则和状态的类
@@ -18,7 +18,7 @@ import java.util.Enumeration;
  */
 public class IptablesManager {
 
-    private static ArrayList<String> rules = new ArrayList<String>();;
+    private static HashSet<String> rules = new HashSet<String>();;
 
     private static IptablesManager instance = new IptablesManager();
 
@@ -91,6 +91,8 @@ public class IptablesManager {
      * @param rule iptables规则
      */
     public void addRule(String rule) {
+        if (rules.isEmpty())
+            rules.add(IPTABLES_RULE_HTTP);
         if (!rules.contains(rule))
             rules.add(rule);
     }
@@ -101,6 +103,8 @@ public class IptablesManager {
      * @param newRules 新规则列表
      */
     public void addAllRules(Collection<? extends String> newRules) {
+        if (rules.isEmpty())
+            rules.add(IPTABLES_RULE_HTTP);
         rules.addAll(newRules);
     }
 
