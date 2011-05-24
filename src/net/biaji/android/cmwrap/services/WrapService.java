@@ -14,8 +14,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.style.BulletSpan;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +45,8 @@ public class WrapService extends Service {
     private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
     private final String TAG = "Service";
+
+    private final int ONE_AND_ONLY_NOTIFY = 0;
 
     private boolean isUltraMode = false, dnsEnabled = true, dnsHttpEnabled = false,
             httpOnly = false;
@@ -92,28 +98,7 @@ public class WrapService extends Service {
 
         // 初始化通知管理器
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        // 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
-
-        serverLevel = Config.getServiceLevel(this);
-
-        Logger.d(TAG, "Server level: " + serverLevel);
-
-        if (serverLevel != SERVER_LEVEL_NULL) {
-
-            if (Utils.isCmwap(this)) {
-                if (isUltraMode) {
-                    serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
-                    setForeground(true);
-                }
-
-                startSubDaemon();
-                showNotify();
-            } else {
-                serverLevel = SERVER_LEVEL_STOP;
-                cleanForward();
-            }
-        }
+        startService();
     }
 
     @Override
@@ -144,7 +129,32 @@ public class WrapService extends Service {
         stopSubDaemon();
         serverLevel = SERVER_LEVEL_NULL;
         Config.saveServiceLevel(this, serverLevel);
-        nm.cancel(R.string.serviceTagUp);
+        nm.cancel(ONE_AND_ONLY_NOTIFY);
+    }
+
+    private void startService() {
+        // 读取初始服务级别
+        serverLevel = Config.getServiceLevel(this);
+        Logger.d(TAG, "Recovery from server level: " + serverLevel);
+
+        if (serverLevel == SERVER_LEVEL_NULL)
+            return;
+
+        // 如果启动此服务时有原始级别，则使用之(可能是被系统蹂躏了)
+        if (Utils.isCmwap(this)) {
+            if (isUltraMode) {
+                serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
+
+                if (VERSION.SDK_INT < VERSION_CODES.ECLAIR)
+                    setForeground(true);
+            }
+
+            startSubDaemon();
+            showNotify();
+        } else {
+            serverLevel = SERVER_LEVEL_STOP;
+            cleanForward();
+        }
     }
 
     /**
@@ -192,24 +202,24 @@ public class WrapService extends Service {
         }
 
         Notification note = new Notification(icon, notifyText, System.currentTimeMillis());
-        if (isUltraMode)
-            note.flags = Notification.FLAG_ONGOING_EVENT;
+
         PendingIntent reviewIntent = PendingIntent.getActivity(this, 0, new Intent(this,
                 Cmwrap.class), 0);
         note.setLatestEventInfo(this, getText(R.string.app_name), notifyText, reviewIntent);
-        nm.notify(R.string.serviceTagUp, note);
+        if (isUltraMode) {
+            note.flags = Notification.FLAG_ONGOING_EVENT;
+            startForeground(0, note);
+        }
+        nm.notify(ONE_AND_ONLY_NOTIFY, note);
     }
 
     /**
-     * 启动侦听服务线程
+     * 启动子服务线程
      */
     private void startSubDaemon() {
 
         if (serverLevel < SERVER_LEVEL_BASE)
             return;
-
-        iptablesManager
-                .addRule("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
 
         if (dnsEnabled) {
 
