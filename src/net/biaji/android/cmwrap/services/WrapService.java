@@ -1,18 +1,13 @@
 
 package net.biaji.android.cmwrap.services;
 
-import java.io.IOException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-
 import net.biaji.android.cmwrap.Cmwrap;
 import net.biaji.android.cmwrap.Config;
+import net.biaji.android.cmwrap.IptablesManager;
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.R;
 import net.biaji.android.cmwrap.utils.Utils;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,7 +16,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * 穿越服务总控制 </n>
@@ -38,17 +36,17 @@ public class WrapService extends Service {
 
     private int proxyPort;
 
+    private IptablesManager iptablesManager = IptablesManager.getInstance();
+
     private ArrayList<WrapServer> servers = new ArrayList<WrapServer>();
 
     private final String TAG = "Service";
 
-    private boolean inService = false, isUltraMode = false, dnsEnabled = true,
-            dnsHttpEnabled = false, httpOnly = false;
-
-    private ArrayList<String> iptablesRules = new ArrayList<String>();
+    private boolean isUltraMode = false, dnsEnabled = true, dnsHttpEnabled = false,
+            httpOnly = false;
 
     /**
-     * 服务状态未设定，主要用于由于网络变化而致的cmwrap不可用状态
+     * 服务状态未设定（禁用服务）
      */
     public final static int SERVER_LEVEL_NULL = -1;
 
@@ -89,6 +87,9 @@ public class WrapService extends Service {
         httpOnly = pref.getBoolean("ONLYHTTP", false);
         DNSServer = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
 
+        iptablesManager.setProxyHost(proxyHost);
+        iptablesManager.setProxyPort(proxyPort);
+
         // 初始化通知管理器
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -107,7 +108,6 @@ public class WrapService extends Service {
                 }
 
                 startSubDaemon();
-                inService = true;
                 showNotify();
             } else {
                 serverLevel = SERVER_LEVEL_STOP;
@@ -208,8 +208,8 @@ public class WrapService extends Service {
         if (serverLevel < SERVER_LEVEL_BASE)
             return;
 
-        iptablesRules
-                .add("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
+        iptablesManager
+                .addRule("iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s");
 
         if (dnsEnabled) {
 
@@ -226,14 +226,14 @@ public class WrapService extends Service {
             dnsSer.setBasePath(this.getFilesDir().getParent());
             new Thread(dnsSer).start();
             servers.add(dnsSer);
-            iptablesRules.addAll(Arrays.asList(dnsSer.getRules()));
+            iptablesManager.addAllRules(Arrays.asList(dnsSer.getRules()));
         }
 
         NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
         new Thread(tcpSer).start();
         servers.add(tcpSer);
 
-        iptablesRules.addAll(Arrays.asList(tcpSer.getRules()));
+        iptablesManager.addAllRules(Arrays.asList(tcpSer.getRules()));
 
         forward();
 
@@ -267,68 +267,15 @@ public class WrapService extends Service {
         // 如果iptables处于已执行状态，则啥都不干
         if (Config.isIptablesEnabled(this))
             return;
-
-        Utils.rootCMD(getString(R.string.CMDipForwardEnable));
-        Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-
-        iptables(iptablesRules);
+        iptablesManager.disable();
+        iptablesManager.enable();
 
         Config.setIptableStatus(this, true);
     }
 
-    private void iptables(ArrayList<String> rules) {
-
-        String inface = " ";
-        boolean onlyCmwap = false;
-
-        if (rules.isEmpty()) {
-            Logger.d(TAG, "Iptables: No rule to apply");
-            return;
-        }
-
-        onlyCmwap = pref.getBoolean("ONLYCMWAP", true);
-
-        if (onlyCmwap) {
-            inface = " -o " + getInterfaceName();
-        }
-
-        for (String rule : rules) {
-            try {
-                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort);
-                Utils.rootCMD(rule);
-
-            } catch (Exception e) {
-                Logger.e(TAG, e.getLocalizedMessage());
-            }
-        }
-    }
-
-    /**
-     * 获取网络名称
-     * 
-     * @return 当前移动网络界面名称
-     */
-    private String getInterfaceName() {
-        String result = "rmnet0";
-        try {
-            for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces(); interfaces
-                    .hasMoreElements();) {
-                String interfacename = interfaces.nextElement().getName();
-                if (!interfacename.contains("lo") && !interfacename.contains("usb")
-                        && !interfacename.contains("wifi") && !interfacename.contains("wlan")) {
-                    // 如果不是lo，也不是usb，也不是wifi，就假定是移动网络 >.<
-                    return interfacename;
-                }
-            }
-        } catch (SocketException e) {
-            Log.e(TAG, e.getLocalizedMessage());
-        }
-        return result;
-    }
-
     private void cleanForward() {
-        Utils.rootCMD(getString(R.string.CMDiptablesDisable));
-        iptablesRules.clear();
+        iptablesManager.clear();
+        iptablesManager.disable();
         Config.setIptableStatus(this, false);
     }
 

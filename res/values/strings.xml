@@ -97,14 +97,6 @@
 	<string
 		name="proxyPort">80</string>
 	<string
-		name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward
-	</string>
-	<string
-		name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward
-	</string>
-	<string
-		name="CMDiptablesDisable">iptables -t nat -F</string>
-	<string
 		name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3
 		/system

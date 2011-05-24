@@ -120,9 +120,8 @@ public class Utils {
     /**
      * 以root权限执行命令
      * 
-     * @param 需要执行的指令
-     * @return -1 执行失败<br>
-     *         0 执行正常
+     * @param cmd 需要执行的指令
+     * @return sh执行命令后的返回值。
      */
     public static int rootCMD(String cmd) {
         int result = -1;
