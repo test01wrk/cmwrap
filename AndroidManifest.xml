@@ -2,8 +2,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="net.biaji.android.cmwrap"
-	android:versionName="1.6"
-	android:versionCode="370">
+	android:versionCode="413" android:versionName="1.7a">
 	<uses-sdk
 		android:minSdkVersion="5" />
 	<application
