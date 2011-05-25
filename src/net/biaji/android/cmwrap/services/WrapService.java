@@ -14,12 +14,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.text.style.BulletSpan;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +65,7 @@ public class WrapService extends Service {
     public final static int SERVER_LEVEL_BASE = 1;
 
     /**
-     * 此级别加入需要HTTP隧道的基本G1应用（Gmail，Gtalk，普通认证）。
+     * 此级别加入需要HTTP隧道的应用（Gmail，Gtalk，普通认证）。
      */
     public final static int SERVER_LEVEL_APPS = 2;
 
@@ -100,9 +98,10 @@ public class WrapService extends Service {
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         // 读取初始服务级别
-        int storedServerLevel = Config.getServiceLevel(this);
-        Logger.d(TAG, "Recovery from server level: " + storedServerLevel);
+        serverLevel = Config.getServiceLevel(this);
+        Logger.d(TAG, "Recovery from server level: " + serverLevel);
 
+        // 如果无初始服务级别，则为启动过程，依据配置确定启动级别
         if (serverLevel == SERVER_LEVEL_NULL) {
             if (isUltraMode) {
                 serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
@@ -132,9 +131,7 @@ public class WrapService extends Service {
         if (intent != null)
             level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 
-        Logger.d(TAG, "Level Change from " + serverLevel + " to:" + level);
-        if (level == SERVER_LEVEL_STOP || level > serverLevel)
-            changeLevelTo(level);
+        changeLevelTo(level);
 
     }
 
@@ -157,7 +154,10 @@ public class WrapService extends Service {
      * @param newLevel 欲设置的服务级别
      */
     private void changeLevelTo(int newLevel) {
-        if (newLevel != SERVER_LEVEL_NULL && this.serverLevel != newLevel) {
+
+        Logger.d(TAG, "Level Change from " + serverLevel + " to:" + newLevel);
+
+        if (this.serverLevel != newLevel) {
             serverLevel = newLevel;
             refreshSubDaemon();
         }
