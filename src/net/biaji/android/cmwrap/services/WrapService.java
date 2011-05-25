@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * 穿越服务总控制 </n>
+ * 穿越服务总控制 <br>
  * 
- * @author biaji
+ * @author biaji<biaji@biaji.net>
  */
 public class WrapService extends Service {
 
@@ -50,14 +50,19 @@ public class WrapService extends Service {
             httpOnly = false;
 
     /**
-     * 服务状态未设定（禁用服务）
+     * 服务级别未设定
      */
-    public final static int SERVER_LEVEL_NULL = -1;
+    public final static int SERVER_LEVEL_NULL = -2;
 
     /**
-     * 非cmwap接入时，停止服务
+     * 禁用服务
      */
-    public final static int SERVER_LEVEL_STOP = 0;
+    public final static int SERVER_LEVEL_STOP = -1;
+
+    /**
+     * 非cmwap接入时，暂停服务
+     */
+    public final static int SERVER_LEVEL_PAUSE = 0;
 
     /**
      * 此级别仅保留iptables转向
@@ -74,7 +79,18 @@ public class WrapService extends Service {
      */
     public final static int SERVER_LEVEL_FROGROUND_SERVICE = 3;
 
-    private int serverLevel = SERVER_LEVEL_NULL;
+    /**
+     * 服务级别的确认原则如下：
+     * <ol>
+     * <li>如有intent传入，则使用intent指定的级别</li>
+     * <li>如有上次记录的服务级别，则服务为被强制关闭后重启，使用记录的服务级别</li>
+     * <li>否则依据配置确认服务级别</li>
+     * <ol>
+     * 其取值为{@link SERVER_LEVEL_NULL},{@link SERVER_LEVEL_STOP},
+     * {@link SERVER_LEVEL_BASE},{@link SERVER_LEVEL_APPS},
+     * {@link SERVER_LEVEL_FROGROUND_SERVICE}
+     */
+    private int serverLevel = SERVER_LEVEL_STOP;
 
     private SharedPreferences pref;
 
@@ -102,7 +118,7 @@ public class WrapService extends Service {
         Logger.d(TAG, "Recovery from server level: " + serverLevel);
 
         // 如果无初始服务级别，则为启动过程，依据配置确定启动级别
-        if (serverLevel == SERVER_LEVEL_NULL) {
+        if (serverLevel == SERVER_LEVEL_STOP) {
             if (isUltraMode) {
                 serverLevel = SERVER_LEVEL_FROGROUND_SERVICE;
                 if (VERSION.SDK_INT < VERSION_CODES.ECLAIR)
@@ -117,7 +133,7 @@ public class WrapService extends Service {
             startSubDaemon();
             showNotify();
         } else {
-            serverLevel = SERVER_LEVEL_STOP;
+            serverLevel = SERVER_LEVEL_PAUSE;
             cleanForward();
         }
     }
@@ -126,12 +142,13 @@ public class WrapService extends Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
 
-        int level = SERVER_LEVEL_NULL;
+        int level = SERVER_LEVEL_STOP;
 
         if (intent != null)
             level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
 
-        changeLevelTo(level);
+        if (level != SERVER_LEVEL_NULL)
+            changeLevelTo(level);
 
     }
 
@@ -143,7 +160,7 @@ public class WrapService extends Service {
     @Override
     public void onDestroy() {
         stopSubDaemon();
-        serverLevel = SERVER_LEVEL_NULL;
+        serverLevel = SERVER_LEVEL_STOP;
         Config.saveServiceLevel(this, serverLevel);
         nm.cancel(ONE_AND_ONLY_NOTIFY);
     }
@@ -160,21 +177,21 @@ public class WrapService extends Service {
         if (this.serverLevel != newLevel) {
             serverLevel = newLevel;
             refreshSubDaemon();
+            showNotify();
         }
 
-        showNotify();
-        // 保存服务状态，以备被杀
-        if (serverLevel != SERVER_LEVEL_STOP)
-            Config.saveServiceLevel(this, serverLevel);
     }
 
+    /**
+     * 显示提示
+     */
     private void showNotify() {
 
         CharSequence notifyText = getText(R.string.serviceTagUp);
 
         int icon = 0;
         switch (serverLevel) {
-            case SERVER_LEVEL_STOP:
+            case SERVER_LEVEL_PAUSE:
                 icon = R.drawable.notifyinva;
                 notifyText = getText(R.string.serviceTagDown);
                 break;
@@ -195,16 +212,17 @@ public class WrapService extends Service {
                 break;
         }
 
-        Notification note = new Notification(icon, notifyText, System.currentTimeMillis());
+        Notification notify = new Notification(icon, notifyText, System.currentTimeMillis());
 
         PendingIntent reviewIntent = PendingIntent.getActivity(this, 0, new Intent(this,
                 Cmwrap.class), 0);
-        note.setLatestEventInfo(this, getText(R.string.app_name), notifyText, reviewIntent);
-        if (isUltraMode) {
-            note.flags = Notification.FLAG_ONGOING_EVENT;
-            startForeground(0, note);
+        notify.setLatestEventInfo(this, getText(R.string.app_name), notifyText, reviewIntent);
+        if (isUltraMode) { // 处理前台服务
+            notify.flags = Notification.FLAG_ONGOING_EVENT;
+            if (VERSION.SDK_INT >= VERSION_CODES.ECLAIR)
+                startForeground(0, notify);
         }
-        nm.notify(ONE_AND_ONLY_NOTIFY, note);
+        nm.notify(ONE_AND_ONLY_NOTIFY, notify);
     }
 
     /**
@@ -240,6 +258,7 @@ public class WrapService extends Service {
         iptablesManager.addAllRules(Arrays.asList(tcpSer.getRules()));
 
         forward();
+        Config.saveServiceLevel(this, serverLevel);
 
     }
 

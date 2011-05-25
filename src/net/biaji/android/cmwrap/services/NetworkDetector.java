@@ -99,7 +99,7 @@ public class NetworkDetector extends BroadcastReceiver {
 
 			int level = Config.getServiceLevel(context);
 
-			if (level == WrapService.SERVER_LEVEL_NULL)
+			if (level == WrapService.SERVER_LEVEL_STOP)
 				return;
 
 			Logger.v(TAG, "Service Level: " + level);
@@ -107,10 +107,10 @@ public class NetworkDetector extends BroadcastReceiver {
 
 			// 在网络接入发生改变，而且当前链接非cmwap的情况下，暂停服务
 			if (!Utils.isCmwap(context)) {
-				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
+				intentS.putExtra("SERVERLEVEL", WrapService.SERVER_LEVEL_PAUSE);
 				Logger.v(TAG, "目前不是cmwap接入，暂停服务");
 			} else {
-				if (level != WrapService.SERVER_LEVEL_STOP) {
+				if (level != WrapService.SERVER_LEVEL_PAUSE) {
 					intentS.putExtra("SERVERLEVEL", level);
 				} else {
 					return;

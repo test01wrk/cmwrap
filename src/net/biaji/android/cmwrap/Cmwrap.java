@@ -42,7 +42,7 @@ public class Cmwrap extends Activity implements OnClickListener {
 
     private TextView logWindow;
 
-    private int serviceLevel = WrapService.SERVER_LEVEL_NULL;
+    private int serviceLevel = WrapService.SERVER_LEVEL_STOP;
 
     private final String TAG = "CMWRAP";
 
@@ -78,7 +78,7 @@ public class Cmwrap extends Activity implements OnClickListener {
         if (Utils.isCmwap(this))
             serviceLevel = Config.getServiceLevel(this);
         else
-            serviceLevel = WrapService.SERVER_LEVEL_STOP;
+            serviceLevel = WrapService.SERVER_LEVEL_PAUSE;
 
         Logger.d(TAG, "服务级别为：" + serviceLevel);
 
@@ -95,18 +95,15 @@ public class Cmwrap extends Activity implements OnClickListener {
 
             case R.id.BaseService:
 
-                if (serviceLevel != WrapService.SERVER_LEVEL_NULL) {
+                if (serviceLevel != WrapService.SERVER_LEVEL_STOP) {
                     stopService(serviceIn);
                     Logger.i(TAG, "禁用服务");
-                    serviceLevel = WrapService.SERVER_LEVEL_NULL;
-                    Config.saveServiceLevel(this, serviceLevel);
-                    // Config.setIptableStatus(this, false);
+                    serviceLevel = WrapService.SERVER_LEVEL_STOP;
                     message = R.string.serviceTagDown;
                 } else {
                     Logger.i(TAG, "启用服务");
-                    serviceLevel = WrapService.SERVER_LEVEL_APPS;
-                    serviceIn.putExtra("SERVERLEVEL", serviceLevel);
                     startService(serviceIn);
+                    serviceLevel = WrapService.SERVER_LEVEL_APPS;
                     message = R.string.serviceTagApp;
                 }
 
@@ -169,7 +166,9 @@ public class Cmwrap extends Activity implements OnClickListener {
     /**
      * 判断程序安装状态
      * 
-     * @return -1 初次安装 0 升级安装 1 同版本再次安装
+     * @return -1 初次安装<br>
+     *         0 升级安装<br>
+     *         1 同版本再次安装
      */
     private int appStatus() {
         int firsTime = APP_STATUS_NEW;
@@ -199,35 +198,28 @@ public class Cmwrap extends Activity implements OnClickListener {
 
     private void redrawButton() {
 
-        // ToggleButton switcher = (ToggleButton) findViewById(R.id.Switch);
-        // switcher.setOnClickListener(this);
-
         ToggleButton baseServiceSwitcher = (ToggleButton) findViewById(R.id.BaseService);
         baseServiceSwitcher.setOnClickListener(this);
 
         switch (serviceLevel) {
 
             case WrapService.SERVER_LEVEL_BASE:
-                // switcher.setChecked(true);
                 baseServiceSwitcher.setEnabled(true);
                 baseServiceSwitcher.setChecked(false);
                 break;
 
             case WrapService.SERVER_LEVEL_APPS:
             case WrapService.SERVER_LEVEL_FROGROUND_SERVICE:
-                // switcher.setChecked(true);
                 baseServiceSwitcher.setEnabled(true);
                 baseServiceSwitcher.setChecked(true);
                 break;
 
-            case WrapService.SERVER_LEVEL_NULL:
-                // baseServiceSwitcher.setEnabled(false);
+            case WrapService.SERVER_LEVEL_STOP:
                 baseServiceSwitcher.setChecked(false);
                 break;
 
             default:
                 baseServiceSwitcher.setEnabled(false);
-                // switcher.setEnabled(false);
         }
     }
 

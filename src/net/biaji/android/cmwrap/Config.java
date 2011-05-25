@@ -106,10 +106,10 @@ public class Config extends PreferenceActivity implements OnPreferenceChangeList
      * 获取当前服务状态
      */
     public static int getServiceLevel(Context context) {
-        int result = WrapService.SERVER_LEVEL_NULL;
+        int result = WrapService.SERVER_LEVEL_STOP;
         Logger.v(TAG, "读取记录");
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_NULL);
+        result = pref.getInt("SERVERLEVEL", WrapService.SERVER_LEVEL_STOP);
         Logger.v(TAG, "读取结束");
         return result;
     }
