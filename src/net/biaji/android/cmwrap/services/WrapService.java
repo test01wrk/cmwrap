@@ -125,6 +125,8 @@ public class WrapService extends Service {
                     setForeground(true);
             } else if (httpOnly) {
                 serverLevel = SERVER_LEVEL_BASE;
+            } else {
+                serverLevel = SERVER_LEVEL_APPS;
             }
         }
 
@@ -142,7 +144,7 @@ public class WrapService extends Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
 
-        int level = SERVER_LEVEL_STOP;
+        int level = SERVER_LEVEL_NULL;
 
         if (intent != null)
             level = intent.getIntExtra("SERVERLEVEL", SERVER_LEVEL_NULL);
