@@ -23,7 +23,7 @@ public class Utils {
 
     private final static String TAG = "Utils";
 
-    private final static String LINEBREAK = System.getProperty("line.separator");
+    public final static String LINEBREAK = System.getProperty("line.separator");
 
     private final static String PREFER_APN_URI = "content://telephony/carriers/preferapn";
 
@@ -126,14 +126,13 @@ public class Utils {
     public static int rootCMD(String cmd) {
         int result = -1;
         DataOutputStream os = null;
-        InputStream err = null, out = null;
+        InputStream out = null;
         Process process = null;
         try {
-            process = Runtime.getRuntime().exec("su");
-            err = process.getErrorStream();
-            BufferedReader bre = new BufferedReader(new InputStreamReader(err), 1024 * 8);
+            process = new ProcessBuilder().command("su").redirectErrorStream(true).start();
 
             out = process.getInputStream();
+            BufferedReader bro = new BufferedReader(new InputStreamReader(out), 1024 * 8);
 
             os = new DataOutputStream(process.getOutputStream());
 
@@ -143,7 +142,8 @@ public class Utils {
             os.flush();
 
             String resp;
-            while ((resp = bre.readLine()) != null) {
+
+            while ((resp = bro.readLine()) != null) {
                 Logger.d(TAG, resp);
                 errMsg = resp;
             }

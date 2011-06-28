@@ -24,6 +24,11 @@ public class Logger {
             Log.i(TAG, subTag + "-> " + msg);
     }
 
+    public static void w(String subTag, String msg) {
+        if (debugLevel <= Log.VERBOSE)
+            Log.w(TAG, subTag + "-> " + msg);
+    }
+
     public static void e(String subTag, String msg) {
         if (debugLevel <= Log.ERROR)
             Log.e(TAG, subTag + "-> " + msg);
