@@ -292,13 +292,11 @@ public class WrapService extends Service {
         // 如果iptables处于已执行状态，则啥都不干
         if (Config.isIptablesEnabled(this))
             return;
-        iptablesManager.disable();
         iptablesManager.enable();
         Config.setIptableStatus(this, true);
     }
 
     private void cleanForward() {
-        iptablesManager.clear();
         iptablesManager.disable();
         Config.setIptableStatus(this, false);
     }

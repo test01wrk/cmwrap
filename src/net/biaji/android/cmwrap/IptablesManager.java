@@ -26,9 +26,11 @@ public class IptablesManager {
 
     private final String IP_FORWARD_ENABLE = "echo 1 > /proc/sys/net/ipv4/ip_forward";
 
-    private final String IPTABLES_CMD_DISABLE = "iptables -t nat -F";
+    private final String IPTABLES_ADD = " -A ";
 
-    private final String IPTABLES_RULE_HTTP = "iptables -t nat -A OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s";
+    private final String IPTABLES_DEL = " -D ";
+
+    private final String IPTABLES_RULE_HTTP = "iptables -t nat %3$s OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s";
 
     private boolean onlyMobile = true;
 
@@ -69,7 +71,8 @@ public class IptablesManager {
 
         for (String rule : rules) {
             try {
-                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort);
+                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort,
+                        IPTABLES_ADD);
                 Utils.rootCMD(rule);
 
             } catch (Exception e) {
@@ -82,7 +85,28 @@ public class IptablesManager {
      * 禁用iptables
      */
     public void disable() {
-        Utils.rootCMD(IPTABLES_CMD_DISABLE);
+
+        String inface = " ";
+
+        if (rules.isEmpty()) {
+            Logger.d(TAG, "Iptables: No rule to delete");
+            return;
+        }
+
+        if (onlyMobile) {
+            inface = " -o " + getInterfaceName();
+        }
+
+        for (String rule : rules) {
+            try {
+                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort,
+                        IPTABLES_DEL);
+                Utils.rootCMD(rule);
+
+            } catch (Exception e) {
+                Logger.e(TAG, e.getLocalizedMessage());
+            }
+        }
     }
 
     /**
@@ -110,13 +134,6 @@ public class IptablesManager {
 
     public void removeRule(String rule) {
         rules.remove(rule);
-    }
-
-    /**
-     * 清理所有iptables规则
-     */
-    public void clear() {
-        rules.clear();
     }
 
     public boolean isOnlyMobile() {

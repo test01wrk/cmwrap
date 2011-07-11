@@ -41,8 +41,8 @@ public class NormalTcpServer implements WrapServer {
     private static Hashtable<String, String> connReq = new Hashtable<String, String>();
 
     private final String[] iptablesRules = new String[] {
-            "iptables -t nat -A OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8040 -j LOG --log-level info --log-prefix \"CMWRAP \"",
-            "iptables -t nat -A OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8040 -j DNAT  --to-destination 127.0.0.1:7443"
+            "iptables -t nat %3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8040 -j LOG --log-level info --log-prefix \"CMWRAP \"",
+            "iptables -t nat %3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8040 -j DNAT  --to-destination 127.0.0.1:7443"
     };
 
     public NormalTcpServer(String name) {
