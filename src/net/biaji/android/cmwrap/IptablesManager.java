@@ -26,7 +26,14 @@ public class IptablesManager {
 
     private final String IP_FORWARD_ENABLE = "echo 1 > /proc/sys/net/ipv4/ip_forward";
 
+    /**
+     * 添加命令
+     */
     private final String IPTABLES_ADD = " -A ";
+
+    /**
+     * 删除命令
+     */
 
     private final String IPTABLES_DEL = " -D ";
 
@@ -57,35 +64,22 @@ public class IptablesManager {
     public void enable() {
 
         Utils.rootCMD(IP_FORWARD_ENABLE);
-
-        String inface = " ";
-
-        if (rules.isEmpty()) {
-            Logger.d(TAG, "Iptables: No rule to apply");
-            return;
-        }
-
-        if (onlyMobile) {
-            inface = " -o " + getInterfaceName();
-        }
-
-        for (String rule : rules) {
-            try {
-                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort,
-                        IPTABLES_ADD);
-                Utils.rootCMD(rule);
-
-            } catch (Exception e) {
-                Logger.e(TAG, e.getLocalizedMessage());
-            }
-        }
+        execute(IPTABLES_ADD);
     }
 
     /**
      * 禁用iptables
      */
     public void disable() {
+        execute(IPTABLES_DEL);
+    }
 
+    /**
+     * 具体执行脚本操作
+     * 
+     * @param cmd 添加/删除，参见{@link#IPTABLES_ADD}，{@link#IPTABLES_DEL}
+     */
+    private void execute(String cmd) {
         String inface = " ";
 
         if (rules.isEmpty()) {
@@ -99,8 +93,7 @@ public class IptablesManager {
 
         for (String rule : rules) {
             try {
-                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort,
-                        IPTABLES_DEL);
+                rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort, cmd);
                 Utils.rootCMD(rule);
 
             } catch (Exception e) {
