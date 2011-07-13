@@ -19,12 +19,16 @@ import net.biaji.android.cmwrap.utils.Utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
@@ -40,7 +44,11 @@ public final class TestActivity extends Activity implements OnClickListener {
 
     private ProgressBar progressBar = null;
 
-    private TextView logWindow = null, progressDescribe = null;
+    private TableLayout logWindow;
+
+    private TextView progressDescribe = null;
+
+    private Button ok;
 
     private String proxyHost, DNSServer;
 
@@ -64,13 +72,25 @@ public final class TestActivity extends Activity implements OnClickListener {
             String errMsg = msg.getData().getString("ERRMSG");
             Logger.d(TAG, "testName: " + testName);
             progressDescribe.setText(stepMsg);
+
             if (errMsg != null) {
-                logWindow.append(errMsg);
+                TextView view = new TextView(context);
+                view.setTextColor(Color.RED);
+                view.setText(errMsg);
+                logWindow.addView(view);
             } else {
-                logWindow.append(testName + getString(R.string.TEST_PASSED));
+                TableRow row = new TableRow(context);
+                TextView testNameView = new TextView(context);
+                testNameView.setText(testName);
+                row.addView(testNameView);
+                TextView testResultView = new TextView(context);
+                testResultView.setTextColor(Color.GREEN);
+                testResultView.setText(getString(R.string.TEST_PASSED));
+                row.addView(testResultView);
+                logWindow.addView(row);
             }
         }
-    };;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +99,10 @@ public final class TestActivity extends Activity implements OnClickListener {
         proxyHost = Config.getStringPref(this, "PROXYHOST", "10.0.0.172");
         proxyPort = Integer.parseInt(Config.getStringPref(this, "PROXYPORT", "80"));
         progressBar = (ProgressBar) findViewById(R.id.TestProgress);
-        logWindow = (TextView) findViewById(R.id.logOut);
+        logWindow = (TableLayout) findViewById(R.id.logOut);
         progressDescribe = (TextView) findViewById(R.id.progressDescribe);
+        ok = (Button) findViewById(R.id.testOk);
+        ok.setOnClickListener(this);
         context = this;
         new TestManager(handler).start();
     }
@@ -209,5 +231,8 @@ public final class TestActivity extends Activity implements OnClickListener {
     }
 
     public void onClick(View v) {
+        if (v.getId() == R.id.testOk) {
+            finish();
+        }
     }
 }

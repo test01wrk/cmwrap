@@ -158,7 +158,7 @@
 		function like gtalk.\n
 	</string>
 	<string
-		name="TEST_PASSED">......PASSED\n</string>
+		name="TEST_PASSED">PASSED</string>
 	<string
 		name="LogLevel">5</string>
 	<!-- 关于 -->

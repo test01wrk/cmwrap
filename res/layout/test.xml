@@ -23,15 +23,14 @@
 		android:layout_height="wrap_content"
 		android:padding="5sp"
 		android:layout_gravity="center_horizontal">
-		<TextView
-			android:text=""
+		<TableLayout
 			android:id="@+id/logOut"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
 	</ScrollView>
 	<Button
 		android:text="@android:string/ok"
-		android:id="@+id/Button01"
+		android:id="@+id/testOk"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal" />
