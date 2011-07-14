@@ -209,7 +209,7 @@ public class NormalTcpServer implements WrapServer {
                 boolean match = false;
 
                 if (line.contains("CMWRAP")) {
-                    String addr = "", destPort = "";
+                    String addr = "", destPort = "", srcPort = "";
                     String[] parmArr = line.split(" ");
                     for (String parm : parmArr) {
                         String trimParm = parm.trim();
@@ -218,8 +218,11 @@ public class NormalTcpServer implements WrapServer {
                         }
 
                         if (trimParm.startsWith("SPT")) {
-                            if (sourcePort.equals(getValue(trimParm)))
+                            if (sourcePort.equals(getValue(trimParm))) {
                                 match = true;
+                            } else {
+                                srcPort = getValue(trimParm);
+                            }
                         }
 
                         if (trimParm.startsWith("DPT")) {
@@ -231,7 +234,7 @@ public class NormalTcpServer implements WrapServer {
                     if (match)
                         result = addr + ":" + destPort;
                     else
-                        connReq.put(addr, destPort);
+                        connReq.put(srcPort, addr + ":" + destPort);
 
                 }
             }
