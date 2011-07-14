@@ -103,7 +103,7 @@ public class WrapService extends Service {
         proxyPort = Integer.parseInt(pref.getString("PROXYPORT", getString(R.string.proxyPort)));
         isUltraMode = pref.getBoolean("ULTRAMODE", false);
         dnsEnabled = pref.getBoolean("DNSENABLED", true);
-        dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", true);
+        dnsHttpEnabled = pref.getBoolean("HTTPDNSENABLED", false);
         httpOnly = pref.getBoolean("ONLYHTTP", false);
         DNSServer = pref.getString("DNSADD", Config.DEFAULT_HTTP_DNS_ADD);
 
