@@ -144,7 +144,7 @@ public class Utils {
             String resp;
 
             while ((resp = bro.readLine()) != null) {
-                Logger.d(TAG, resp);
+                //Logger.d(TAG, resp);
                 errMsg = resp;
             }
             result = process.waitFor();
