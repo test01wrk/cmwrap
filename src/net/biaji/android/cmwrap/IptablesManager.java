@@ -9,7 +9,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 /**
  * 用于管理iptables规则和状态的类
@@ -18,7 +18,7 @@ import java.util.HashSet;
  */
 public class IptablesManager {
 
-    private static HashSet<String> rules = new HashSet<String>();;
+    private static TreeSet<String> rules = new TreeSet<String>();;
 
     private static IptablesManager instance = new IptablesManager();
 
@@ -29,15 +29,14 @@ public class IptablesManager {
     /**
      * 添加命令
      */
-    private final String IPTABLES_ADD = " -A ";
+    private final String IPTABLES_ADD = "A";
 
     /**
      * 删除命令
      */
+    private final String IPTABLES_DEL = "D";
 
-    private final String IPTABLES_DEL = " -D ";
-
-    private final String IPTABLES_RULE_HTTP = "iptables -t nat %3$s OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s";
+    private final String IPTABLES_RULE_HTTP = "iptables -t nat -%3$s OUTPUT %1$s -p tcp  --dport 80  -j DNAT  --to-destination %2$s";
 
     private boolean onlyMobile = true;
 
@@ -95,7 +94,6 @@ public class IptablesManager {
             try {
                 rule = String.format(rule, inface, this.proxyHost + ":" + this.proxyPort, cmd);
                 Utils.rootCMD(rule);
-
             } catch (Exception e) {
                 Logger.e(TAG, e.getLocalizedMessage());
             }
