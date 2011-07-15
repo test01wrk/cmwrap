@@ -192,13 +192,6 @@ public class NormalTcpServer implements WrapServer {
             os.writeBytes("exit" + Utils.LINEBREAK);
             os.flush();
 
-            int execResult = process.waitFor();
-            if (execResult == 0)
-                Logger.d(TAG, command + " exec success");
-            else {
-                Logger.d(TAG, command + " exec with result " + execResult);
-            }
-
             out = process.getInputStream();
             BufferedReader outR = new BufferedReader(new InputStreamReader(out));
             String line = "";
@@ -237,6 +230,13 @@ public class NormalTcpServer implements WrapServer {
                         connReq.put(srcPort, addr + ":" + destPort);
 
                 }
+            }
+
+            int execResult = process.waitFor();
+            if (execResult == 0)
+                Logger.d(TAG, command + " exec success");
+            else {
+                Logger.d(TAG, command + " exec with result " + execResult);
             }
 
             os.close();
