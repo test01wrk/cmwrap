@@ -129,7 +129,7 @@ public final class TestActivity extends Activity implements OnClickListener {
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
 
-            int result = Utils.rootCMD(getString(R.string.iptables_test_str));
+            int result = Utils.rootCMD("iptables -L");
             bundle.putString("TESTNAME", getString(R.string.TEST_ROOT));
             if (result == 1 || result == -1) { // 没有root权限
                 bundle.putString("ERRMSG", getString(R.string.ERR_NO_ROOT));
@@ -146,6 +146,7 @@ public final class TestActivity extends Activity implements OnClickListener {
 
             // 测试iptables是否存在
             msg = handler.obtainMessage();
+            result = Utils.rootCMD(getString(R.string.iptables_test_str));
             bundle.putString("TESTNAME", getString(R.string.TEST_IPTABLES));
             if (result == 127 || result == 126) { // 没有iptables， 或权限不对
                 bundle.putString("ERRMSG", getString(R.string.ERR_NO_IPTABLES));
