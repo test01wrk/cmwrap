@@ -1,172 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string
-		name="app_name">Cmwrap</string>
-	<string
-		name="serviceTagUp">启用CMWAP穿越</string>
-	<string
-		name="serviceTagDown">禁用CMWAP穿越</string>
-	<string
-		name="serviceBaseTitle">切换基本运行状态</string>
-	<string
-		name="serviceBaseComment">此状态下可使用浏览器、Google
-		Map等HTTP协议的应用，耗电量与未打开时几乎没有差别
-	</string>
-	<string
-		name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
-	<string
-		name="serviceAppTitle">切换基本服务状态</string>
-	<string
-		name="serviceAppComment">
-		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态
-	</string>
-	<string
-		name="serviceTagSuper">服务运行于增强模式</string>
-	<!-- 设置界面文本 -->
-	<string
-		name="PREF_CATEGORY_BASE">基础设置</string>
-	<string
-		name="PREF_TITLE_AUTO_BOOT">自动开启</string>
-	<string
-		name="PREF_SUMMARY_AUTO_BOOT">是否在启动时自动启动服务</string>
-	<string
-		name="PREF_TITLE_ONLY_HTTP">限于HTTP</string>
-	<string
-		name="PREF_SUMMARY_ONLY_HTTP">仅启用HTTP转向代理，有助于节省电量，但很多服务无法使用</string>
-	<string
-		name="PREF_TITLE_ULTRA_MODE">增强模式</string>
-	<string
-		name="PREF_SUMMARY_ULTRA_MODE">是否使用增强模式运行（注意：此模式会降低系统效率）
-	</string>
-	<string
-		name="PREF_TITLE_AUTO_CHANGE">智能切换</string>
-	<string
-		name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
-	<string
-		name="PREF_TITLE_ONLY_CMWAP">代理仅作用于CMWAP</string>
-	<string
-		name="PREF_SUMMARY_ONLY_CMWAP">仅对中国移动cmwap数据进行代理</string>
-	<string
-		name="PREF_TITLE_LATENCY">延时</string>
-	<string
-		name="PREF_SUMMARY_LATENCY">数据连接改变后状态改变的延时（以秒为单位）</string>
-	<string
-		name="PREF_CATEGORY_PROXY">代理服务器设置</string>
-	<string
-		name="PREF_TITLE_PROXY_HOST">代理服务器地址</string>
-	<string
-		name="PREF_SUMMARY_PROXY_HOST">设置计划使用的HTTP代理服务器地址，默认10.0.0.172
-	</string>
-	<string
-		name="PREF_TITLE_PROXY_PORT">代理服务器端口</string>
-	<string
-		name="PREF_SUMMARY_PROXY_PORT">设置计划使用的HTTP代理服务器端口，默认80
-	</string>
-	<string
-		name="PREF_CATEGORY_DNS">DNS服务器设置</string>
-	<string
-		name="PREF_TITLE_DNS_ENABLE">是否启用DNS穿越</string>
-	<string
-		name="PREF_SUMMARY_DNS_ENABLE">如果您目前的连接方式无法提供DNS解析，可使用此功能。
-	</string>
-	<string
-		name="PREF_ADV_DNSSETTING">高级DNS设置</string>
-	<string
-		name="PREF_TITLE_HTTP_DNS_ENABLE">启用HTTP DNS解析</string>
-	<string
-		name="PREF_SUMMARY_HTTP_DNS_ENABLE"></string>
-	<string
-		name="PREF_TITLE_DNS">DNS服务器地址</string>
-	<string
-		name="PREF_SUMMARY_DNS">设置计划使用的DNS服务器地址，默认 
-	</string>
-	<!-- 设置界面文本结束 -->
-	<string
-		name="proxyServer">10.0.0.172</string>
-	<string
-		name="proxyPort">80</string>
-	<string
-		name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward
-	</string>
-	<string
-		name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward
-	</string>
-	<string
-		name="CMDiptablesDisable">iptables -t nat -F</string>
-	<string
-		name="CMDremount">mount -o rw,remount -t yaffs2
+    <string name="app_name">Cmwrap</string>
+    <string name="serviceTagUp">启用CMWAP穿越</string>
+    <string name="serviceTagDown">禁用CMWAP穿越</string>
+    <string name="serviceBaseTitle">切换基本运行状态</string>
+    <string name="serviceBaseComment">此状态下可使用浏览器、Google
+		Map等HTTP协议的应用，耗电量与未打开时几乎没有差别</string>
+    <string name="serviceTagApp">启用CMWAP穿越+基础Google服务</string>
+    <string name="serviceAppTitle">切换基本服务状态</string>
+    <string name="serviceAppComment">		此状态将启用Gmail、Gtalk、Market下载等基本Google服务，由于Gmail等应用程序同步需要，耗电量稍微多于基本运行状态</string>
+    <string name="serviceTagSuper">服务运行于增强模式</string>
+    <!-- 设置界面文本 -->
+    <string name="PREF_CATEGORY_BASE">基础设置</string>
+    <string name="PREF_TITLE_AUTO_BOOT">自动开启</string>
+    <string name="PREF_SUMMARY_AUTO_BOOT">是否在启动时自动启动服务</string>
+    <string name="PREF_TITLE_ONLY_HTTP">限于HTTP</string>
+    <string name="PREF_SUMMARY_ONLY_HTTP">仅启用HTTP转向代理，有助于节省电量，但很多服务无法使用</string>
+    <string name="PREF_TITLE_ULTRA_MODE">增强模式</string>
+    <string name="PREF_SUMMARY_ULTRA_MODE">是否使用增强模式运行（注意：此模式会降低系统效率）</string>
+    <string name="PREF_TITLE_AUTO_CHANGE">智能切换</string>
+    <string name="PREF_SUMMARY_AUTO_CHANGE">是否根据当前数据连接自动改变状态</string>
+    <string name="PREF_TITLE_ONLY_CMWAP">代理仅作用于CMWAP</string>
+    <string name="PREF_SUMMARY_ONLY_CMWAP">仅对中国移动cmwap数据进行代理</string>
+    <string name="PREF_TITLE_LATENCY">延时</string>
+    <string name="PREF_SUMMARY_LATENCY">数据连接改变后状态改变的延时（以秒为单位）</string>
+    <string name="PREF_CATEGORY_PROXY">代理服务器设置</string>
+    <string name="PREF_TITLE_PROXY_HOST">代理服务器地址</string>
+    <string name="PREF_SUMMARY_PROXY_HOST">设置计划使用的HTTP代理服务器地址，默认10.0.0.172</string>
+    <string name="PREF_TITLE_PROXY_PORT">代理服务器端口</string>
+    <string name="PREF_SUMMARY_PROXY_PORT">设置计划使用的HTTP代理服务器端口，默认80</string>
+    <string name="PREF_CATEGORY_DNS">DNS服务器设置</string>
+    <string name="PREF_TITLE_DNS_ENABLE">是否启用DNS穿越</string>
+    <string name="PREF_SUMMARY_DNS_ENABLE">如果您目前的连接方式无法提供DNS解析，可使用此功能。</string>
+    <string name="PREF_ADV_DNSSETTING">高级DNS设置</string>
+    <string name="PREF_TITLE_HTTP_DNS_ENABLE">启用HTTP DNS解析</string>
+    <string name="PREF_SUMMARY_HTTP_DNS_ENABLE"></string>
+    <string name="PREF_TITLE_DNS">DNS服务器地址</string>
+    <string name="PREF_SUMMARY_DNS">设置计划使用的DNS服务器地址，默认 </string>
+    <!-- 设置界面文本结束 -->
+    <string name="proxyServer">10.0.0.172</string>
+    <string name="proxyPort">80</string>
+    <string name="CMDipForwardEnable">echo 1 &gt; /proc/sys/net/ipv4/ip_forward</string>
+    <string name="CMDipForwardDisable">echo 0 &gt; /proc/sys/net/ipv4/ip_forward</string>
+    <string name="CMDiptablesDisable">iptables -t nat -F</string>
+    <string name="CMDremount">mount -o rw,remount -t yaffs2
 		/dev/block/mtdblock3
-		/system
-	</string>
-	<string
-		name="UserAgent">biAji wap channel</string>
-	<string
-		name="BUTTON_ENABLE">禁用</string>
-	<string
-		name="BUTTON_DISABLE">启用</string>
-	<string
-		name="MENU_TEST">环境测试</string>
-	<string
-		name="MENU_SETTING">设置</string>
-	<string
-		name="MENU_ABOUT">关于Cmwrap</string>
-	<string
-		name="TEST_ROOT">测试是否具有root权限</string>
-	<string
-		name="TEST_IPTABLES">测试是否有iptables支持</string>
-	<string
-		name="TEST_CMWAP">测试当前是否CMWAP连接</string>
-	<string
-		name="TEST_HTTPS">测试是否支持HTTPS代理</string>
-	<string
-		name="TEST_DNS">测试是否支持当前DNS服务器</string>
-	<string
-		name="TEST_OTHER">测试是否支持HTTPS以外的协议代理</string>
-	<string
-		name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n
-	</string>
-	<string
-		name="ERR_NO_IPTABLES">无法在现用ROM中找到iptables支持，或支持不全，此程序功能无法实现或仅能部分实现，请斟酌使用。\n
-	</string>
-	<string
-		name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。\n</string>
-	<string
-		name="ERR_UNSUPPORT_HTTPS">当前cmwap代理不支持HTTPS代理，无法使用Gmail等功能。\n
-	</string>
-	<string
-		name="ERR_UNSUPPORT_DNS">当前DNS不可用，或者网关不支持DNS穿越。\n</string>
-	<string
-		name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n
-	</string>
-	<string
-		name="TEST_PASSED">测试通过</string>
-	<string
-		name="LogLevel">5</string>
+		/system</string>
+    <string name="UserAgent">biAji wap channel</string>
+    <string name="BUTTON_ENABLE">禁用</string>
+    <string name="BUTTON_DISABLE">启用</string>
+    <string name="MENU_TEST">环境测试</string>
+    <string name="MENU_SETTING">设置</string>
+    <string name="MENU_ABOUT">关于Cmwrap</string>
+    <string name="TEST_ROOT">测试是否具有root权限</string>
+    <string name="TEST_IPTABLES">测试是否有iptables支持</string>
+    <string name="TEST_CMWAP">测试当前是否CMWAP连接</string>
+    <string name="TEST_HTTPS">测试是否支持HTTPS代理</string>
+    <string name="TEST_DNS">测试是否支持当前DNS服务器</string>
+    <string name="TEST_OTHER">测试是否支持HTTPS以外的协议代理</string>
+    <string name="ERR_NO_ROOT">对不起，您的手机没有root权限，此程序无法正常使用，请卸载。\n</string>
+    <string name="ERR_NO_IPTABLES">无法在现用ROM中找到iptables支持，或支持不全，此程序功能无法实现或仅能部分实现，请斟酌使用。\n</string>
+    <string name="ERR_NOT_CMWAP">当前数据链接非CMWAP，本程序无用。\n</string>
+    <string name="ERR_UNSUPPORT_HTTPS">当前cmwap代理不支持HTTPS代理，无法使用Gmail等功能。\n</string>
+    <string name="ERR_UNSUPPORT_DNS">当前DNS不可用，或者网关不支持DNS穿越。\n</string>
+    <string name="ERR_UNSUPPORT_OTHERS">当前地区代理不支持HTTPS以外的端口，意味着Gtalk之类的服务无法正常使用\n</string>
+    <string name="TEST_PASSED">测试通过</string>
+    <string name="LogLevel">5</string>
 
-	<!-- 关于 -->
-	<string
-		name="ABOUT_VERSION">版本</string>
-	<string
-		name="ABOUT_HOMEPAGE">主页</string>
-	<string
-		name="HOMEPAGE">http://code.google.com/p/cmwrap/
-	</string>
-	<string
-		name="ABOUT_EMAIL">邮箱</string>
-	<string
-		name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
-	<string
-		name="OKOK">喔</string>
+    <!-- 关于 -->
+    <string name="ABOUT_VERSION">版本</string>
+    <string name="ABOUT_HOMEPAGE">主页</string>
+    <string name="HOMEPAGE">http://code.google.com/p/cmwrap/</string>
+    <string name="ABOUT_EMAIL">邮箱</string>
+    <string name="ABOUT_EMAIL_ADDRESS">cmwrap@biaji.net</string>
+    <string name="OKOK">喔</string>
 
-	<!-- 文字提示 -->
-	<string
-		name="MSG_FISRT_TIME">这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n</string>
-	<string
-		name="MSG_DNS_FILES_UPDATE">DNS解析文件更新...\n</string>
-	<string
-		name="MSG_INSTALL_COMPLETED">安装完毕~！\n</string>
-	<string
-		name="MSG_DNS_NONEED_UPDATE">DNS解析文件不须更新。\n</string>
+    <!-- 文字提示 -->
+    <string name="MSG_FISRT_TIME">这好似是您第一次安装cmwrap，请先运行菜单中的环境测试已确认此程序对您有用。\n</string>
+    <string name="MSG_DNS_FILES_UPDATE">DNS解析文件更新...\n</string>
+    <string name="MSG_INSTALL_COMPLETED">安装完毕~！\n</string>
+    <string name="MSG_DNS_NONEED_UPDATE">DNS解析文件不须更新。\n</string>
 
 </resources>
