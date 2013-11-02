@@ -2,7 +2,8 @@
 package net.biaji.android.cmwrap;
 
 import net.biaji.android.cmwrap.utils.Utils;
-
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import java.net.NetworkInterface;
@@ -158,15 +159,26 @@ public class IptablesManager {
      */
     private String getInterfaceName() {
         String result = "rmnet0";
+
         try {
             for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces(); interfaces
                     .hasMoreElements();) {
-                String interfacename = interfaces.nextElement().getName();
-                if (!interfacename.contains("lo") && !interfacename.contains("usb")
-                        && !interfacename.contains("wifi") && !interfacename.contains("wlan")) {
-                    // 如果不是lo，也不是usb，也不是wifi，就假定是移动网络 >.<
-                    return interfacename;
+
+                NetworkInterface nInterface = interfaces.nextElement();
+
+                String interfacename = nInterface.getName();
+
+                if (interfacename.contains("lo") || interfacename.contains("usb")
+                        || interfacename.contains("wifi") || interfacename.contains("wlan")) {
+                    continue;
                 }
+
+                if (!nInterface.getInetAddresses().hasMoreElements()) {
+                    continue;
+                }
+
+                return interfacename;
+
             }
         } catch (SocketException e) {
             Log.e(TAG, e.getLocalizedMessage());
