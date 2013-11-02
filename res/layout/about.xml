@@ -1,63 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	android:id="@+id/LinearLayout01"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<TableLayout
-		android:id="@+id/TableLayout01"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="5sp">
-		<TableRow
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<TextView
-				android:text="@string/ABOUT_VERSION"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textStyle="bold"
-				android:textColor="#FFF"
-				android:layout_marginRight="10dp" />
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="1.5.3"/>
-		</TableRow>
-		<TableRow
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<TextView
-				android:text="@string/ABOUT_HOMEPAGE"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textStyle="bold"
-				android:textColor="#FFF"
-				android:layout_marginRight="10dp" />
-			<TextView
-				android:layout_width="wrap_content"
-				android:autoLink="web"
-				android:layout_height="wrap_content"
-				android:text="@string/HOMEPAGE" />
-		</TableRow>
-		<TableRow
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<TextView
-				android:text="@string/ABOUT_EMAIL"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textStyle="bold"
-				android:textColor="#FFF"
-				android:layout_marginRight="10dp" />
-			<TextView
-				android:layout_width="wrap_content"
-				android:autoLink="web"
-				android:layout_height="wrap_content"
-				android:text="@string/ABOUT_EMAIL_ADDRESS" />
-		</TableRow>
-	</TableLayout>
-	<TableRow
-		android:id="@+id/TableRow03"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"></TableRow>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TableLayout
+        android:id="@+id/TableLayout01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5sp" >
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/ABOUT_VERSION"
+                android:textColor="#FFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_version" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/ABOUT_HOMEPAGE"
+                android:textColor="#FFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:text="@string/HOMEPAGE" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/ABOUT_EMAIL"
+                android:textColor="#FFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:text="@string/ABOUT_EMAIL_ADDRESS" />
+        </TableRow>
+    </TableLayout>
+
+    <TableRow
+        android:id="@+id/TableRow03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TableRow>
+
 </LinearLayout>
