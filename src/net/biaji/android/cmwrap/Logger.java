@@ -5,7 +5,7 @@ import android.util.Log;
 
 public class Logger {
 
-    private static int debugLevel = Log.DEBUG;
+    private static int debugLevel = Log.VERBOSE;
 
     private static final String TAG = "CMWRAP";
 
