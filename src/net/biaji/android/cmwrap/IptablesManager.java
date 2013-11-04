@@ -169,7 +169,8 @@ public class IptablesManager {
                 String interfacename = nInterface.getName();
 
                 if (interfacename.contains("lo") || interfacename.contains("usb")
-                        || interfacename.contains("wifi") || interfacename.contains("wlan")) {
+                        || interfacename.contains("wifi") || interfacename.contains("wlan")
+                        || interfacename.contains("rndis")) {
                     continue;
                 }
 
