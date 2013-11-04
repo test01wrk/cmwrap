@@ -210,8 +210,9 @@ public class WrapService extends Service {
                 break;
         }
 
-        Notification notify = new Notification(icon, notifyText, System.currentTimeMillis());
-
+        Notification notify = new Notification.Builder(this).setContentTitle(notifyText)
+                .setSmallIcon(icon).getNotification();
+        
         PendingIntent reviewIntent = PendingIntent.getActivity(this, 0, new Intent(this,
                 Cmwrap.class), 0);
         notify.setLatestEventInfo(this, getText(R.string.app_name), notifyText, reviewIntent);
