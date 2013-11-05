@@ -1,16 +1,14 @@
 
 package net.biaji.android.cmwrap;
 
-import net.biaji.android.cmwrap.utils.Utils;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.util.Log;
-
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.TreeSet;
+
+import net.biaji.android.cmwrap.utils.Utils;
+import android.util.Log;
 
 /**
  * 用于管理iptables规则和状态的类
@@ -166,11 +164,18 @@ public class IptablesManager {
 
                 NetworkInterface nInterface = interfaces.nextElement();
 
+                if (nInterface.isLoopback()) {
+                    continue;
+                }
+
+                if (!nInterface.isUp()) {
+                    continue;
+                }
+
                 String interfacename = nInterface.getName();
 
-                if (interfacename.contains("lo") || interfacename.contains("usb")
-                        || interfacename.contains("wifi") || interfacename.contains("wlan")
-                        || interfacename.contains("rndis")) {
+                if (interfacename.contains("usb") || interfacename.contains("wifi")
+                        || interfacename.contains("wlan") || interfacename.contains("rndis")) {
                     continue;
                 }
 
