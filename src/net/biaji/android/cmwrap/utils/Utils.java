@@ -86,22 +86,31 @@ public class Utils {
      * @param context
      * @return 当前数据连接名称
      */
-    public static String getCurrentDataConn(Context context) {
+    private static String getCurrentDataConn(Context context) {
         String dataConn = "";
-
-        Cursor cursor = context.getContentResolver().query(Uri.parse(PREFER_APN_URI), new String[] {
-            "apn"
-        }, null, null, null);
-        if (cursor.getCount() > 0) {
-            try {
-                if (cursor.moveToFirst()) {
-                    dataConn = cursor.getString(0);
+        try {
+            Cursor cursor = context.getContentResolver().query(Uri.parse(PREFER_APN_URI),
+                    new String[] {
+                        "apn"
+                    }, null, null, null);
+            if (cursor.getCount() > 0) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        dataConn = cursor.getString(0);
+                    }
+                } catch (Exception e) {
+                    Logger.e(TAG, "Can not get Network info", e);
+                } finally {
+                    cursor.close();
                 }
-            } catch (Exception e) {
-                Logger.e(TAG, "Can not get Network info", e);
-            } finally {
-                cursor.close();
             }
+        } catch (SecurityException e) {
+            Logger.e(TAG, "Can not get Network info", e);
+        } finally {
+            //TODO
+            //错误
+            dataConn = "cmwap"; 
+            Logger.w(TAG, "Maybe another samsung device");
         }
         return dataConn;
     }
@@ -144,7 +153,7 @@ public class Utils {
             String resp;
 
             while ((resp = bro.readLine()) != null) {
-                //Logger.d(TAG, resp);
+                // Logger.d(TAG, resp);
                 errMsg = resp;
             }
             result = process.waitFor();
