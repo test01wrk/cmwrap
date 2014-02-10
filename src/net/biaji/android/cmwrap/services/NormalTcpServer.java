@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;
@@ -50,12 +52,9 @@ public class NormalTcpServer implements WrapServer {
     }
 
     /**
-     * @param name
-     *            服务名称
-     * @param proxyHost
-     *            HTTP代理服务器地址
-     * @param proxyPort
-     *            HTTP代理服务器端口
+     * @param name 服务名称
+     * @param proxyHost HTTP代理服务器地址
+     * @param proxyPort HTTP代理服务器端口
      */
     public NormalTcpServer(String name, String proxyHost, int proxyPort) {
         this.name = name;
@@ -162,10 +161,14 @@ public class NormalTcpServer implements WrapServer {
     }
 
     /**
-     * 根据源端口号，由dmesg找出iptables记录的目的地址
+     * 根据源端口号，由dmesg找出iptables记录的目的地址<br>
+     * dmesg行示例：
      * 
-     * @param sourcePort
-     *            连接源端口号
+     * <pre>
+     * <6>[127175.834507] CMWRAP IN= OUT=ppp0 SRC=10.146.16.132 DST=159.106.121.75 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=39471 DF PROTO=TCP SPT=49956 DPT=443 WINDOW=13600 RES=0x00 SYN URGP=0
+     * </pre>
+     * 
+     * @param sourcePort 连接源端口号
      * @return 目的地址，形式为 addr:port
      */
     private synchronized String getTarget(String sourcePort) {
@@ -201,42 +204,32 @@ public class NormalTcpServer implements WrapServer {
 
                 boolean match = false;
 
-                if (line.contains("CMWRAP")) {
+                if (line.contains("CMWRAP")) {                  
+                    
+                    Logger.v(TAG, line);                                       
                     String addr = "", destPort = "", srcPort = "";
-                    String[] parmArr = line.split(" ");
-                    for (String parm : parmArr) {
-                        String trimParm = parm.trim();
-                        if (trimParm.startsWith("DST")) {
-                            addr = getValue(trimParm);
+                    
+                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*").matcher(line);
+                    if (m.find()) {
+                        addr = m.group(1);
+                        srcPort = m.group(2);
+                        destPort = m.group(3);
+                        
+                        if(srcPort.equals(sourcePort)){
+                            result = addr + ":" + destPort;
+                        } else {
+                            connReq.put(srcPort, addr + ":" + destPort);
+                            Logger.d(TAG, "connReq count:" + connReq.size());
                         }
-
-                        if (trimParm.startsWith("SPT")) {
-                            if (sourcePort.equals(getValue(trimParm))) {
-                                match = true;
-                            } else {
-                                srcPort = getValue(trimParm);
-                            }
-                        }
-
-                        if (trimParm.startsWith("DPT")) {
-                            destPort = getValue(trimParm);
-                        }
-
                     }
-
-                    if (match)
-                        result = addr + ":" + destPort;
-                    else
-                        connReq.put(srcPort, addr + ":" + destPort);
-
                 }
             }
 
             int execResult = process.waitFor();
             if (execResult == 0)
-                Logger.d(TAG, command + " exec success");
+                Logger.v(TAG, command + " exec success");
             else {
-                Logger.d(TAG, command + " exec with result " + execResult);
+                Logger.w(TAG, command + " exec with result " + execResult);
             }
 
             os.close();
