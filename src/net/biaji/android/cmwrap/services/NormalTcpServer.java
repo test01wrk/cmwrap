@@ -44,7 +44,7 @@ public class NormalTcpServer implements WrapServer {
 
     private final String[] iptablesRules = new String[] {
             "iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j DNAT  --to-destination 127.0.0.1:7443",
-            " iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j LOG --log-level info --log-prefix \"CMWRAP \""
+            " iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j LOG --log-uid --log-level info --log-prefix \"CMWRAP \""
     };
 
     public NormalTcpServer(String name) {
@@ -165,7 +165,7 @@ public class NormalTcpServer implements WrapServer {
      * dmesg行示例：
      * 
      * <pre>
-     * <6>[127175.834507] CMWRAP IN= OUT=ppp0 SRC=10.146.16.132 DST=159.106.121.75 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=39471 DF PROTO=TCP SPT=49956 DPT=443 WINDOW=13600 RES=0x00 SYN URGP=0
+     * <6>[ 5739.482168] CMWRAP IN= OUT=ppp0 SRC=10.94.85.105 DST=121.14.125.26 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=49871 DF PROTO=TCP SPT=51454 DPT=8080 WINDOW=13600 RES=0x00 SYN URGP=0 UID=10126 GID=10126
      * </pre>
      * 
      * @param sourcePort 连接源端口号
@@ -206,7 +206,7 @@ public class NormalTcpServer implements WrapServer {
 
                 if (line.contains("CMWRAP")) {                  
                     
-                    Logger.v(TAG, line);                                       
+                    Logger.d(TAG, line);                                       
                     String addr = "", destPort = "", srcPort = "";
                     
                     Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*").matcher(line);
