@@ -250,7 +250,7 @@ public class WrapService extends Service {
             iptablesManager.addAllRules(Arrays.asList(dnsSer.getRules()));
         }
 
-        NormalTcpServer tcpSer = new NormalTcpServer("Tcp Tunnel", proxyHost, proxyPort);
+        NormalTcpServer tcpSer = new NormalTcpServer(this, "Tcp Tunnel", proxyHost, proxyPort);
         new Thread(tcpSer).start();
         servers.add(tcpSer);
 

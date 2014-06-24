@@ -1,6 +1,9 @@
 
 package net.biaji.android.cmwrap.services;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,6 +25,8 @@ import net.biaji.android.cmwrap.utils.Utils;
 
 public class NormalTcpServer implements WrapServer {
 
+    private Context context;
+    
     private ServerSocket serSocket;
 
     private final int servPort = 7443;
@@ -46,7 +51,7 @@ public class NormalTcpServer implements WrapServer {
     };
 
     public NormalTcpServer(String name) {
-        this(name, "10.0.0.172", 80);
+        this(null, name, "10.0.0.172", 80); //TODO: context should not null;
     }
 
     /**
@@ -54,7 +59,8 @@ public class NormalTcpServer implements WrapServer {
      * @param proxyHost HTTP代理服务器地址
      * @param proxyPort HTTP代理服务器端口
      */
-    public NormalTcpServer(String name, String proxyHost, int proxyPort) {
+    public NormalTcpServer(Context context, String name, String proxyHost, int proxyPort) {
+        this.context = context;
         this.name = name;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
@@ -135,7 +141,11 @@ public class NormalTcpServer implements WrapServer {
                     socket.close();
                     continue;
                 } else {
-                    Logger.d(TAG, "UID:"+ target.uid + " SPT:" + srcPort + "----->" + target.destAddr+":" +target.destPort);
+                    PackageManager pm = context.getPackageManager();
+
+                    String packageName = pm.getPackagesForUid(Integer.parseInt(target.uid))[0];
+                    Logger.d(TAG, "package:" + packageName + " SPT:" + srcPort + "----->"
+                            + target.destAddr + ":" + target.destPort);
                 }
                 serv.execute(new WapChannel(socket, target, proxyHost, proxyPort));
 
@@ -206,7 +216,7 @@ public class NormalTcpServer implements WrapServer {
                     
                     Logger.v(TAG, line);            
                     
-                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .* .*UID=(.*?)").matcher(line);
+                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*UID=(.*?) .*").matcher(line);
                     if (m.find()) {
                         
                         LinkRecord record = new LinkRecord();
