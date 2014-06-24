@@ -133,23 +133,20 @@ public class NormalTcpServer implements WrapServer {
                 Logger.v(TAG, "获得客户端请求");
 
                 String srcPort = socket.getPort() + "";
-                Logger.d(TAG, "source port:" + srcPort);
+                Logger.v(TAG, "source port:" + srcPort);
 
                 LinkRecord target = getTarget(srcPort);
                 if (target == null) {
                     Logger.d(TAG, "SPT:" + srcPort + " doesn't match");
                     socket.close();
                     continue;
-                } else {
-                    PackageManager pm = context.getPackageManager();
-
-                    String packageName = pm.getPackagesForUid(Integer.parseInt(target.uid))[0];
-                    Logger.d(TAG, "package:" + packageName + " SPT:" + srcPort + "----->"
+                } else {                   
+                    Logger.d(TAG, "package:" + target.packageName + " SPT:" + srcPort + "----->"
                             + target.destAddr + ":" + target.destPort);
                 }
                 serv.execute(new WapChannel(socket, target, proxyHost, proxyPort));
-
                 TimeUnit.MILLISECONDS.sleep(100);
+                
             } catch (IOException e) {
                 Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
             } catch (InterruptedException e) {
@@ -210,25 +207,29 @@ public class NormalTcpServer implements WrapServer {
             // 根据输出构建以源端口为key的地址表
             while ((line = outR.readLine()) != null) {
 
-                boolean match = false;
-
                 if (line.contains("CMWRAP")) {                  
                     
                     Logger.v(TAG, line);            
                     
                     Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*UID=(.*?) .*").matcher(line);
                     if (m.find()) {
-                        
+
                         LinkRecord record = new LinkRecord();
                         record.destAddr = m.group(1);
                         record.srcPort = m.group(2);
                         record.destPort = m.group(3);
-                        record.uid = m.group(4);
+
+                        try {
+                            PackageManager pm = context.getPackageManager();
+                            record.packageName = pm.getPackagesForUid(Integer.parseInt(m.group(4)))[0];
+                        } catch (NumberFormatException e) {
+                            Logger.w(TAG, "failed to got uid");
+                        }
                         
-                        if(record.srcPort.equals(sourcePort)){
+                        if (record.srcPort.equals(sourcePort)) {
                             result = record;
                         } else {
-                            connReq.put(record.srcPort ,record);
+                            connReq.put(record.srcPort, record);
                             Logger.d(TAG, "connReq count:" + connReq.size());
                         }
                     }
@@ -278,7 +279,7 @@ public class NormalTcpServer implements WrapServer {
      */
     class LinkRecord {
 
-        String uid;        
+        String packageName = "UNKNOWN";
 
         String srcPort;
 
