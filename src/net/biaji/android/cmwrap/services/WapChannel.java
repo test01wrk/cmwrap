@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import net.biaji.android.cmwrap.Logger;
+import net.biaji.android.cmwrap.services.NormalTcpServer.LinkRecord;
 
 public class WapChannel implements Runnable {
 
@@ -31,6 +32,17 @@ public class WapChannel implements Runnable {
         this(socket, "android.clients.google.com:443", proxyHost, proxyPort);
     }
 
+    /**
+     * 
+     * @param socket
+     * @param target
+     * @param proxyHost
+     * @param ProxyPort
+     */
+    public WapChannel(Socket socket, LinkRecord target, String proxyHost, int ProxyPort){
+        this(socket, target.destAddr+":"+target.destPort, proxyHost, ProxyPort);
+    }
+    
     /**
      * @param socket 本地服务侦听接受的Socket
      * @param target 将要连接的目标地址，格式为 主机地址:端口号

@@ -26,8 +26,6 @@ public class NormalTcpServer implements WrapServer {
 
     private final int servPort = 7443;
 
-    private String target;
-
     private String name;
 
     private String proxyHost;
@@ -40,7 +38,7 @@ public class NormalTcpServer implements WrapServer {
 
     private ExecutorService serv = Executors.newCachedThreadPool();
 
-    private static Hashtable<String, String> connReq = new Hashtable<String, String>();
+    private static Hashtable<String, LinkRecord> connReq = new Hashtable<String, LinkRecord>();
 
     private final String[] iptablesRules = new String[] {
             "iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j DNAT  --to-destination 127.0.0.1:7443",
@@ -101,7 +99,7 @@ public class NormalTcpServer implements WrapServer {
      * @param dest
      */
     public void setTarget(String dest) {
-        this.target = dest;
+       
     }
 
     public void setProxyHost(String proxyHost) {
@@ -131,13 +129,13 @@ public class NormalTcpServer implements WrapServer {
                 String srcPort = socket.getPort() + "";
                 Logger.d(TAG, "source port:" + srcPort);
 
-                target = getTarget(srcPort);
-                if (target == null || target.trim().equals("")) {
+                LinkRecord target = getTarget(srcPort);
+                if (target == null) {
                     Logger.d(TAG, "SPT:" + srcPort + " doesn't match");
                     socket.close();
                     continue;
                 } else {
-                    Logger.d(TAG, "SPT:" + srcPort + "----->" + target);
+                    Logger.d(TAG, "UID:"+ target.uid + " SPT:" + srcPort + "----->" + target.destAddr+":" +target.destPort);
                 }
                 serv.execute(new WapChannel(socket, target, proxyHost, proxyPort));
 
@@ -169,10 +167,10 @@ public class NormalTcpServer implements WrapServer {
      * </pre>
      * 
      * @param sourcePort 连接源端口号
-     * @return 目的地址，形式为 addr:port
+     * @return 连接描述
      */
-    private synchronized String getTarget(String sourcePort) {
-        String result = "";
+    private synchronized LinkRecord getTarget(String sourcePort) {
+        LinkRecord result = null;
 
         // 在表中查找已匹配项目
         if (connReq.containsKey(sourcePort)) {
@@ -206,19 +204,21 @@ public class NormalTcpServer implements WrapServer {
 
                 if (line.contains("CMWRAP")) {                  
                     
-                    Logger.d(TAG, line);                                       
-                    String addr = "", destPort = "", srcPort = "";
+                    Logger.v(TAG, line);            
                     
-                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*").matcher(line);
+                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .* .*UID=(.*?)").matcher(line);
                     if (m.find()) {
-                        addr = m.group(1);
-                        srcPort = m.group(2);
-                        destPort = m.group(3);
                         
-                        if(srcPort.equals(sourcePort)){
-                            result = addr + ":" + destPort;
+                        LinkRecord record = new LinkRecord();
+                        record.destAddr = m.group(1);
+                        record.srcPort = m.group(2);
+                        record.destPort = m.group(3);
+                        record.uid = m.group(4);
+                        
+                        if(record.srcPort.equals(sourcePort)){
+                            result = record;
                         } else {
-                            connReq.put(srcPort, addr + ":" + destPort);
+                            connReq.put(record.srcPort ,record);
                             Logger.d(TAG, "connReq count:" + connReq.size());
                         }
                     }
@@ -259,6 +259,23 @@ public class NormalTcpServer implements WrapServer {
 
     public String[] getRules() {
         return iptablesRules;
+    }
+
+    /**
+     * 描述单一连接的类
+     * 
+     * @author biaji
+     */
+    class LinkRecord {
+
+        String uid;        
+
+        String srcPort;
+
+        String destPort;
+
+        String destAddr;
+
     }
 
 }
