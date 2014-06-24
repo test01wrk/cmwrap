@@ -183,6 +183,7 @@ public class NormalTcpServer implements WrapServer {
         if (connReq.containsKey(sourcePort)) {
             result = connReq.get(sourcePort);
             connReq.remove(sourcePort);
+            Logger.d(TAG, "Got from queue "+ sourcePort+"  "+result.packageName);
             return result;
         }
 
