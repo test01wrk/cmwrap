@@ -1,6 +1,9 @@
 
 package net.biaji.android.cmwrap.services;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,17 +17,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.biaji.android.cmwrap.Logger;
 import net.biaji.android.cmwrap.utils.Utils;
 
 public class NormalTcpServer implements WrapServer {
 
+    private Context context;
+    
     private ServerSocket serSocket;
 
     private final int servPort = 7443;
-
-    private String target;
 
     private String name;
 
@@ -38,26 +43,24 @@ public class NormalTcpServer implements WrapServer {
 
     private ExecutorService serv = Executors.newCachedThreadPool();
 
-    private static Hashtable<String, String> connReq = new Hashtable<String, String>();
+    private static Hashtable<String, LinkRecord> connReq = new Hashtable<String, LinkRecord>();
 
     private final String[] iptablesRules = new String[] {
             "iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j DNAT  --to-destination 127.0.0.1:7443",
-            " iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j LOG --log-level info --log-prefix \"CMWRAP \""
+            " iptables -t nat -%3$s OUTPUT %1$s -p tcp -m multiport ! --destination-port 80,7442,7443,8000 -j LOG --log-uid --log-level info --log-prefix \"CMWRAP \""
     };
 
     public NormalTcpServer(String name) {
-        this(name, "10.0.0.172", 80);
+        this(null, name, "10.0.0.172", 80); //TODO: context should not null;
     }
 
     /**
-     * @param name
-     *            服务名称
-     * @param proxyHost
-     *            HTTP代理服务器地址
-     * @param proxyPort
-     *            HTTP代理服务器端口
+     * @param name 服务名称
+     * @param proxyHost HTTP代理服务器地址
+     * @param proxyPort HTTP代理服务器端口
      */
-    public NormalTcpServer(String name, String proxyHost, int proxyPort) {
+    public NormalTcpServer(Context context, String name, String proxyHost, int proxyPort) {
+        this.context = context;
         this.name = name;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
@@ -102,7 +105,7 @@ public class NormalTcpServer implements WrapServer {
      * @param dest
      */
     public void setTarget(String dest) {
-        this.target = dest;
+       
     }
 
     public void setProxyHost(String proxyHost) {
@@ -130,19 +133,20 @@ public class NormalTcpServer implements WrapServer {
                 Logger.v(TAG, "获得客户端请求");
 
                 String srcPort = socket.getPort() + "";
-                Logger.d(TAG, "source port:" + srcPort);
+                Logger.v(TAG, "source port:" + srcPort);
 
-                target = getTarget(srcPort);
-                if (target == null || target.trim().equals("")) {
+                LinkRecord target = getTarget(srcPort);
+                if (target == null) {
                     Logger.d(TAG, "SPT:" + srcPort + " doesn't match");
                     socket.close();
                     continue;
-                } else {
-                    Logger.d(TAG, "SPT:" + srcPort + "----->" + target);
+                } else {                   
+                    Logger.d(TAG, "package:" + target.packageName + " SPT:" + srcPort + "----->"
+                            + target.destAddr + ":" + target.destPort);
                 }
                 serv.execute(new WapChannel(socket, target, proxyHost, proxyPort));
-
                 TimeUnit.MILLISECONDS.sleep(100);
+                
             } catch (IOException e) {
                 Logger.e(TAG, "伺服客户请求失败" + e.getMessage());
             } catch (InterruptedException e) {
@@ -162,19 +166,24 @@ public class NormalTcpServer implements WrapServer {
     }
 
     /**
-     * 根据源端口号，由dmesg找出iptables记录的目的地址
+     * 根据源端口号，由dmesg找出iptables记录的目的地址<br>
+     * dmesg行示例：
      * 
-     * @param sourcePort
-     *            连接源端口号
-     * @return 目的地址，形式为 addr:port
+     * <pre>
+     * <6>[ 5739.482168] CMWRAP IN= OUT=ppp0 SRC=10.94.85.105 DST=121.14.125.26 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=49871 DF PROTO=TCP SPT=51454 DPT=8080 WINDOW=13600 RES=0x00 SYN URGP=0 UID=10126 GID=10126
+     * </pre>
+     * 
+     * @param sourcePort 连接源端口号
+     * @return 连接描述
      */
-    private synchronized String getTarget(String sourcePort) {
-        String result = "";
+    private synchronized LinkRecord getTarget(String sourcePort) {
+        LinkRecord result = null;
 
         // 在表中查找已匹配项目
         if (connReq.containsKey(sourcePort)) {
             result = connReq.get(sourcePort);
             connReq.remove(sourcePort);
+            Logger.d(TAG, "Got from queue "+ sourcePort+"  "+result.packageName);
             return result;
         }
 
@@ -199,44 +208,40 @@ public class NormalTcpServer implements WrapServer {
             // 根据输出构建以源端口为key的地址表
             while ((line = outR.readLine()) != null) {
 
-                boolean match = false;
+                if (line.contains("CMWRAP")) {                  
+                    
+                    Logger.v(TAG, line);            
+                    
+                    Matcher m = Pattern.compile(".*DST=(.*?) .*SPT=(.*?) .*DPT=(.*?) .*UID=(.*?) .*").matcher(line);
+                    if (m.find()) {
 
-                if (line.contains("CMWRAP")) {
-                    String addr = "", destPort = "", srcPort = "";
-                    String[] parmArr = line.split(" ");
-                    for (String parm : parmArr) {
-                        String trimParm = parm.trim();
-                        if (trimParm.startsWith("DST")) {
-                            addr = getValue(trimParm);
+                        LinkRecord record = new LinkRecord();
+                        record.destAddr = m.group(1);
+                        record.srcPort = m.group(2);
+                        record.destPort = m.group(3);
+
+                        try {
+                            PackageManager pm = context.getPackageManager();
+                            record.packageName = pm.getPackagesForUid(Integer.parseInt(m.group(4)))[0];
+                        } catch (NumberFormatException e) {
+                            Logger.w(TAG, "failed to got uid");
                         }
-
-                        if (trimParm.startsWith("SPT")) {
-                            if (sourcePort.equals(getValue(trimParm))) {
-                                match = true;
-                            } else {
-                                srcPort = getValue(trimParm);
-                            }
+                        
+                        if (record.srcPort.equals(sourcePort)) {
+                            result = record;
+                        } else {
+                            connReq.put(record.srcPort, record);
+                            Logger.d(TAG, "connReq count:" + connReq.size());
                         }
-
-                        if (trimParm.startsWith("DPT")) {
-                            destPort = getValue(trimParm);
-                        }
-
                     }
-
-                    if (match)
-                        result = addr + ":" + destPort;
-                    else
-                        connReq.put(srcPort, addr + ":" + destPort);
-
                 }
             }
 
             int execResult = process.waitFor();
             if (execResult == 0)
-                Logger.d(TAG, command + " exec success");
+                Logger.v(TAG, command + " exec success");
             else {
-                Logger.d(TAG, command + " exec with result " + execResult);
+                Logger.w(TAG, command + " exec with result " + execResult);
             }
 
             os.close();
@@ -266,6 +271,23 @@ public class NormalTcpServer implements WrapServer {
 
     public String[] getRules() {
         return iptablesRules;
+    }
+
+    /**
+     * 描述单一连接的类
+     * 
+     * @author biaji
+     */
+    class LinkRecord {
+
+        String packageName = "UNKNOWN";
+
+        String srcPort;
+
+        String destPort;
+
+        String destAddr;
+
     }
 
 }

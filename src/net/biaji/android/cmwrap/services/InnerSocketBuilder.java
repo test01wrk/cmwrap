@@ -82,7 +82,7 @@ public class InnerSocketBuilder {
 						+ (System.currentTimeMillis() - starTime) / 1000);
 				isConnected = true;
 			} else {
-				Logger.d(TAG, "建立隧道失败");
+				Logger.w(TAG, "建立隧道失败:"+result);
 			}
 
 		} catch (IOException e) {
